@@ -1,0 +1,2 @@
+apache-airflow==1.10.4
+lxml==4.5.0

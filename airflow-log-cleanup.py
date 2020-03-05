@@ -17,7 +17,7 @@ import airflow
 DAG_ID = os.path.basename(__file__).replace(".pyc", "").replace(".py", "")  # airflow-log-cleanup
 START_DATE = airflow.utils.dates.days_ago(1)
 BASE_LOG_FOLDER = conf.get("core", "BASE_LOG_FOLDER")
-SCHEDULE_INTERVAL = "@weekly"        # How often to Run. @daily - Once a day at Midnight
+SCHEDULE_INTERVAL = "0 0 */3 * *"        # How often to Run. @daily - Once a day at Midnight
 DAG_OWNER_NAME = "airflow"       # Who is listed as the owner of this DAG in the Airflow Web Server
 ALERT_EMAIL_ADDRESSES = ['cas-airflow@gov.bc.ca']          # List of email address to send email alerts to if this job fails
 DEFAULT_MAX_LOG_AGE_IN_DAYS = Variable.get("airflow_log_cleanup__max_log_age_in_days", 30)  # Length to retain the log files if not already provided in the conf. If this is set to 30, the job will remove those files that are 30 days old or older

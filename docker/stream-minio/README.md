@@ -1,11 +1,14 @@
-# k8s Docker image
-
-it contains a script to stream public files to Minio
+# k8s Docker image contains a script to stream public files to Minio
+- The Kubernetes Executor allows us to run tasks on Kubernetes as Pods.
+   - It gives us benefits to run one script inside one container within its own quota, and to schedule to the least-congested node in the cluster.
+- The KubernetesPodOperator allows us to create Pods on Kubernetes.
+   - It gives us the freedom to run the command in any arbitrary image, sandboxing the job run inside a docker container.
+- [`Airflow Kubernetes`](https://airflow.apache.org/docs/stable/kubernetes.html 'Airflow Kubernetes')
 
 ## stream-minio.js takes following arguments
 - `host`: string | a host name or an IP address.
    - it falls back to env var `MINIO_HOST` if not found.
-   - eg) --host="cas-minio-wksv3k-dev.pathfinder.gov.bc.ca"
+   - eg) --host="minio.pathfinder.gov.bc.ca"
 
 - `port`: number | optional, TCP/IP port number. Default value set to 80 for HTTP and 443 for HTTPs.
    - it falls back to env var `MINIO_PORT` if not found.
@@ -53,7 +56,7 @@ node stream-minio --bucket="$BUCKET_NAME" --host="$MINIO_HOST" --ssl $(`bash com
 
 ### example
 ```bash
-node stream-minio --bucket="new-bucket" --host="cas-minio-wksv3k-dev.pathfinder.gov.bc.ca" --access_key="AKIAIOSFODNN7EXAMPLE" --secret_key="wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY" --ssl $(wget -r -nd --spider --delete-after --force-html -l 2 "https://nodejs.org/dist/" 2>&1 \
+node stream-minio --bucket="new-bucket" --host="minio.pathfinder.gov.bc.ca" --access_key="AKIAIOSFODNN7EXAMPLE" --secret_key="wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY" --ssl $(wget -r -nd --spider --delete-after --force-html -l 2 "https://nodejs.org/dist/" 2>&1 \
 | awk '/^--/ {u=$3} /^HTTP request sent, awaiting response... / {s=$6} /^Length: .*\[(.+)\]$/ {t=$NF} /^$/ {printf "--url=\"%s\"\n",u}' | egrep "\.png|\.svg" | sort | uniq | tr '\n' ' ')
 ```
 

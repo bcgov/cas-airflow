@@ -176,4 +176,3 @@ for log_cleanup_id in range(1, NUMBER_OF_WORKERS + 1):
             dag=dag)
 
         log_cleanup_op.set_upstream(start)
-

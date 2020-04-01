@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "minio": "^7.0.15",
+    "yargs": "^15.3.1"
+  }
+}

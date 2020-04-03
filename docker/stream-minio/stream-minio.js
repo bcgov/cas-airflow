@@ -14,7 +14,12 @@ const ACCESS_KEY = argv.access_key || process.env.MINIO_ACCESS_KEY;
 const SECRET_KEY = argv.secret_key || process.env.MINIO_SECRET_KEY;
 const BUCKET_NAME = argv.bucket;
 const REGION = argv.region || 'northamerica-northeast1'; // Montreal
-const FILE_URLS = Array.isArray(argv.url) ? argv.url : [argv.url || ''];
+const FILE_URLS = Array.isArray(argv.url) ? argv.url : (argv.url && [argv.url]) || [];
+
+if (FILE_URLS.length === 0) {
+  console.error('at least one url required');
+  return;
+}
 
 const minioClient = new Minio.Client({
   endPoint: END_POINT,
@@ -41,11 +46,11 @@ const streamFileToMinio = (url, objectMap = {}) => {
   const filename = path.basename(url);
 
   if (objectMap[filename]) {
-    console.log(`skipping "${filename}"`);
+    console.log(`skipping ${filename}`);
     return;
   }
 
-  console.log(`uploading "${filename}"`);
+  console.log(`uploading ${filename}`);
 
   return new Promise((resolve, reject) => {
     fetch[protocol].get(url, resp => {
@@ -60,11 +65,9 @@ const streamFileToMinio = (url, objectMap = {}) => {
 (async () => {
   try {
     const hasBucket = await minioClient.bucketExists(BUCKET_NAME);
-
     if (!hasBucket) await minioClient.makeBucket(BUCKET_NAME, REGION);
 
     const objectMap = await getObjectMap();
-
     await asyncForEach(FILE_URLS, url => streamFileToMinio(url, objectMap));
   } catch (err) {
     console.error(err);

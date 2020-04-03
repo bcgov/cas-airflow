@@ -47,7 +47,10 @@ jobs:
           name: Test Docker image
           command: |
             CONTEXT="--env DEPTH=2 --env WEBSITE=https://nodejs.org/dist/ --env FILTER=\.png|\.svg --env MINIO_HOST=$MINIO_HOST --env MINIO_ACCESS_KEY=$MINIO_ACCESS_KEY --env MINIO_SECRET_KEY=$MINIO_SECRET_KEY"
-            docker run -it $CONTEXT stream-minio ./init.sh testproject
+            COUNT1=$(docker run -it $CONTEXT stream-minio ./bin/wget-spider.sh | wc -l)
+            COUNT2=$(docker run -it $CONTEXT stream-minio ./init.sh tmpproject | grep -c uploading)
+            COUNT3=$(docker run -it $CONTEXT stream-minio ./init.sh tmpproject | grep -c skipping)
+            if [ COUNT1 -ne COUNT2 ]; then exit 1 fi
           working_directory: ~/app/docker/stream-minio
       # - deploy:
       #     name: Push application Docker image

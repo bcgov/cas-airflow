@@ -44,10 +44,10 @@ jobs:
             - /caches/stream-minio.tar
           working_directory: ~/app/docker/stream-minio
       - run:
-        name: Test Docker image
-        command: |
-          docker run -it --entrypoint="./init.sh testproject" --env DEPTH=2 --env WEBSITE="https://nodejs.org/dist/" --env FILTER="\.png|\.svg" --env MINIO_HOST="$MINIO_HOST" --env MINIO_ACCESS_KEY="$MINIO_ACCESS_KEY" --env MINIO_SECRET_KEY="$MINIO_SECRET_KEY" stream-minio
-        working_directory: ~/app/docker/stream-minio
+          name: Test Docker image
+          command: |
+            docker run -it --entrypoint="./init.sh testproject" --env DEPTH=2 --env WEBSITE="https://nodejs.org/dist/" --env FILTER="\.png|\.svg" --env MINIO_HOST="$MINIO_HOST" --env MINIO_ACCESS_KEY="$MINIO_ACCESS_KEY" --env MINIO_SECRET_KEY="$MINIO_SECRET_KEY" stream-minio
+          working_directory: ~/app/docker/stream-minio
       # - deploy:
       #     name: Push application Docker image
       #     command: |

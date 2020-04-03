@@ -1,0 +1,7 @@
+https://nodejs.org/static/images/favicons/apple-touch-icon.png
+https://nodejs.org/static/images/favicons/favicon-16x16.png
+https://nodejs.org/static/images/favicons/favicon-32x32.png
+https://nodejs.org/static/images/favicons/safari-pinned-tab.svg
+https://nodejs.org/static/images/logo.svg
+https://nodejs.org/static/images/logos/js-green.svg
+https://nodejs.org/static/images/openjs_foundation-logo.svg

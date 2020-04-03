@@ -46,11 +46,11 @@ const streamFileToMinio = (url, objectMap = {}) => {
   const filename = path.basename(url);
 
   if (objectMap[filename]) {
-    console.log(`skipping ${filename}`);
+    console.log(`skipping ${url}`);
     return;
   }
 
-  console.log(`uploading ${filename}`);
+  console.log(`uploading ${url}`);
 
   return new Promise((resolve, reject) => {
     fetch[protocol].get(url, resp => {

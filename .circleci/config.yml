@@ -47,12 +47,11 @@ jobs:
           name: Test Docker image
           command: |
             CONTEXT="--env DEPTH=2 --env WEBSITE=https://nodejs.org/dist/ --env FILTER=\.png|\.svg --env MINIO_HOST=$MINIO_HOST --env MINIO_ACCESS_KEY=$MINIO_ACCESS_KEY --env MINIO_SECRET_KEY=$MINIO_SECRET_KEY"
+            docker run -it $CONTEXT stream-minio node remove-bucket-minio --ssl --bucket="testbucket"
             COUNT1=$(docker run -it $CONTEXT stream-minio ./bin/wget-spider.sh | wc -l)
-            COUNT2=$(docker run -it $CONTEXT stream-minio ./init.sh tmpproject | grep -c uploading)
-            COUNT3=$(docker run -it $CONTEXT stream-minio ./init.sh tmpproject | grep -c skipping)
-            echo $COUNT1
-            echo $COUNT2
-            echo $COUNT3
+            COUNT2=$(docker run -it $CONTEXT stream-minio ./init.sh testbucket | grep -c uploading)
+            COUNT3=$(docker run -it $CONTEXT stream-minio ./init.sh testbucket | grep -c skipping)
+            docker run -it $CONTEXT stream-minio node remove-bucket-minio --ssl --bucket="testbucket"
             if [ $COUNT1 -ne $COUNT2 ]; then exit 1; fi
             if [ $COUNT1 -ne $COUNT3 ]; then exit 1; fi
           working_directory: ~/app/docker/stream-minio

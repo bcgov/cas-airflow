@@ -50,11 +50,18 @@ jobs:
             CONTAINER_ID=$(docker run -itd $CONTEXT stream-minio /bin/bash)
             docker exec -it $CONTAINER_ID ./test.sh testbucket
           working_directory: ~/app/docker/stream-minio
+      - deploy:
+          name: Push application Docker image
+          command: |
+            docker login docker.pkg.github.com -u $GITHUB_USERNAME -u $GITHUB_TOKEN
+            TARGET="docker.pkg.github.com/bcgov/cas-airflow-dags/stream-minio:${CIRCLE_SHA1}"
+            docker tag stream-minio "$TARGET"
+            docker push "$TARGET"
       # - deploy:
       #     name: Push application Docker image
       #     command: |
       #       if [ "${CIRCLE_BRANCH}" == "master" ]; then
-      #         docker login docker.pkg.github.com -u $GH_USERNAME -u $GH_ACCESS_TOKEN
-      #         docker tag app "${ECR_ENDPOINT}/app:${CIRCLE_SHA1}"
+      #         docker login docker.pkg.github.com -u $GITHUB_USERNAME -u $GITHUB_ACCESS_TOKEN
+      #         docker tag stream-minio docker.pkg.github.com/OWNER/REPOSITORY/IMAGE_NAME:VERSION
       #         docker push "${ECR_ENDPOINT}/app:${CIRCLE_SHA1}"
       #       fi

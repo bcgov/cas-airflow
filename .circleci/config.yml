@@ -48,21 +48,15 @@ jobs:
           command: |
             CONTEXT="--env DEPTH=2 --env WEBSITE=https://nodejs.org/dist/ --env FILTER=\.png|\.svg --env MINIO_HOST=$MINIO_HOST --env MINIO_ACCESS_KEY=$MINIO_ACCESS_KEY --env MINIO_SECRET_KEY=$MINIO_SECRET_KEY"
             CONTAINER_ID=$(docker run -itd $CONTEXT stream-minio /bin/bash)
-            docker exec -it $CONTAINER_ID node remove-bucket-minio --ssl --bucket="testbucket"
-            docker exec -it $CONTAINER_ID ./bin/wget-spider.sh > list.txt
-            COUNT1=$(docker exec -it $CONTAINER_ID cat list.txt | wc -l)
-            COUNT2=$(docker exec -it $CONTAINER_ID ./init.sh testbucket list.txt | grep -c uploading)
-            COUNT3=$(docker exec -it $CONTAINER_ID ./init.sh testbucket list.txt | grep -c skipping)
-            docker exec -it $CONTAINER_ID node remove-bucket-minio --ssl --bucket="testbucket"
-            if [ $COUNT1 -ne $COUNT2 ]; then exit 1; fi
-            if [ $COUNT1 -ne $COUNT3 ]; then exit 1; fi
+            RESULT=$(docker exec -it $CONTAINER_ID ./test.sh)
+            echo $RESULT
+            if [ "$RESULT" != "passed" ]; then exit 1; fi
           working_directory: ~/app/docker/stream-minio
       # - deploy:
       #     name: Push application Docker image
       #     command: |
       #       if [ "${CIRCLE_BRANCH}" == "master" ]; then
-      #         login="$(aws ecr get-login)"
-      #         ${login}
+      #         docker login docker.pkg.github.com -u $GH_USERNAME --password-stdin
       #         docker tag app "${ECR_ENDPOINT}/app:${CIRCLE_SHA1}"
       #         docker push "${ECR_ENDPOINT}/app:${CIRCLE_SHA1}"
       #       fi

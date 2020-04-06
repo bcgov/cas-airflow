@@ -49,9 +49,10 @@ jobs:
             CONTEXT="--env DEPTH=2 --env WEBSITE=https://nodejs.org/dist/ --env FILTER=\.png|\.svg --env MINIO_HOST=$MINIO_HOST --env MINIO_ACCESS_KEY=$MINIO_ACCESS_KEY --env MINIO_SECRET_KEY=$MINIO_SECRET_KEY"
             CONTAINER_ID=$(docker run -itd $CONTEXT stream-minio /bin/bash)
             docker exec -it $CONTAINER_ID node remove-bucket-minio --ssl --bucket="testbucket"
-            COUNT1=$(docker exec -it $CONTAINER_ID ./bin/wget-spider.sh | wc -l)
-            COUNT2=$(docker exec -it $CONTAINER_ID ./init.sh testbucket | grep -c uploading)
-            COUNT3=$(docker exec -it $CONTAINER_ID ./init.sh testbucket | grep -c skipping)
+            docker exec -it $CONTAINER_ID ./bin/wget-spider.sh > list.txt
+            COUNT1=$(docker exec -it $CONTAINER_ID cat list.txt | wc -l)
+            COUNT2=$(docker exec -it $CONTAINER_ID ./init.sh testbucket list.txt | grep -c uploading)
+            COUNT3=$(docker exec -it $CONTAINER_ID ./init.sh testbucket list.txt | grep -c skipping)
             docker exec -it $CONTAINER_ID node remove-bucket-minio --ssl --bucket="testbucket"
             if [ $COUNT1 -ne $COUNT2 ]; then exit 1; fi
             if [ $COUNT1 -ne $COUNT3 ]; then exit 1; fi

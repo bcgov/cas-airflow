@@ -23,4 +23,5 @@ if [ "$COUNT1" -ne "$COUNT3" ]; then
     echo "failed"
     exit 1
 fi
+exit 1
 echo "passed"

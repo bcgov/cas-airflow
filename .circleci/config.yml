@@ -48,15 +48,13 @@ jobs:
           command: |
             CONTEXT="--env DEPTH=2 --env WEBSITE=https://nodejs.org/dist/ --env FILTER=\.png|\.svg --env MINIO_HOST=$MINIO_HOST --env MINIO_ACCESS_KEY=$MINIO_ACCESS_KEY --env MINIO_SECRET_KEY=$MINIO_SECRET_KEY"
             CONTAINER_ID=$(docker run -itd $CONTEXT stream-minio /bin/bash)
-            RESULT=$(docker exec -it $CONTAINER_ID ./test.sh testbucket)
-            echo $RESULT
-            if [ "$RESULT" != "passed" ]; then exit 1; fi
+            docker exec -it $CONTAINER_ID ./test.sh testbucket
           working_directory: ~/app/docker/stream-minio
       # - deploy:
       #     name: Push application Docker image
       #     command: |
       #       if [ "${CIRCLE_BRANCH}" == "master" ]; then
-      #         docker login docker.pkg.github.com -u $GH_USERNAME --password-stdin
+      #         docker login docker.pkg.github.com -u $GH_USERNAME -u $GH_ACCESS_TOKEN
       #         docker tag app "${ECR_ENDPOINT}/app:${CIRCLE_SHA1}"
       #         docker push "${ECR_ENDPOINT}/app:${CIRCLE_SHA1}"
       #       fi

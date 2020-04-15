@@ -15,11 +15,15 @@ const SECRET_KEY = argv.secret_key || process.env.MINIO_SECRET_KEY;
 const BUCKET_NAME = argv.bucket;
 const REGION = argv.region || 'northamerica-northeast1'; // Montreal
 const FILE_URLS = Array.isArray(argv.url) ? argv.url : (argv.url && [argv.url]) || [];
+const USER = process.env.USER;
+const PASSWORD = process.env.PASSWORD;
 
 if (FILE_URLS.length === 0) {
   console.error('at least one url required');
   return;
 }
+
+const httpOption = USER && PASSWORD && { auth: `${USER}:${PASSWORD}` };
 
 const minioClient = new Minio.Client({
   endPoint: END_POINT,
@@ -53,7 +57,7 @@ const streamFileToMinio = (url, objectMap = {}) => {
   console.log(`uploading ${url}`);
 
   return new Promise((resolve, reject) => {
-    fetch[protocol].get(url, resp => {
+    fetch[protocol].get(url, httpOption, resp => {
       minioClient.putObject(BUCKET_NAME, filename, resp, (err, etag) => {
         if (err) return reject(err);
         else return resolve(etag);

@@ -52,7 +52,7 @@ jobs:
           command: |
             CONTEXT="--env DEPTH=$DEPTH --env WEBSITE=$WEBSITE --env FILTER=$FILTER --env MINIO_HOST=$MINIO_HOST --env MINIO_ACCESS_KEY=$MINIO_ACCESS_KEY --env MINIO_SECRET_KEY=$MINIO_SECRET_KEY"
             CONTAINER_ID=$(docker run -itd $CONTEXT stream-minio /bin/bash)
-            docker exec -it $CONTAINER_ID ./test.sh testbucket
+            docker exec -it $CONTAINER_ID ./test.sh veryuniquetestbucket2020
           working_directory: ~/app/docker/stream-minio
       - deploy:
           name: Push application Docker image

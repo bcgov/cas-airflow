@@ -8,12 +8,18 @@ fi
 node remove-bucket-minio --ssl --bucket="$1"
 
 ./bin/wget-spider.sh >.list
+cat .list
+
 COUNT1=$(cat .list | wc -l)
 COUNT2=$(./init.sh "$1" .list | grep -c uploading)
 COUNT3=$(./init.sh "$1" .list | grep -c skipping)
 rm .list
 
 node remove-bucket-minio --ssl --bucket="$1"
+
+echo $COUNT1
+echo $COUNT2
+echo $COUNT3
 
 if [ "$COUNT1" -ne "$COUNT2" ]; then
     echo "failed"

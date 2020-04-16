@@ -23,7 +23,7 @@ if (FILE_URLS.length === 0) {
   return;
 }
 
-const httpOption = USER && PASSWORD && { auth: `${USER}:${PASSWORD}` };
+const httpOption = (USER && PASSWORD && { auth: `${USER}:${PASSWORD}` }) || {};
 
 const minioClient = new Minio.Client({
   endPoint: END_POINT,

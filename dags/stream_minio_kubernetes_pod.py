@@ -34,14 +34,16 @@ env_vars = {
     'MINIO_HOST': os.getenv('MINIO_HOST'),
 }
 
+image = "docker.pkg.github.com/bcgov/cas-airflow-dags/stream-minio:" + os.getenv('STREAM_MINIO_IMAGE_TAG')
+
 with dag:
     k = KubernetesPodOperator(
         task_id=DAG_ID,
         name=DAG_ID,
         namespace=namespace,
-        image="docker.pkg.github.com/bcgov/cas-airflow-dags/stream-minio:lasted",
+        image=image,
         cmds=["./init.sh"],
-        arguments=[],
+        arguments=["swrs-import"],
         env_vars=env_vars,
         resources=compute_resource,
         is_delete_operator_pod=True,

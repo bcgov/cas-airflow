@@ -23,7 +23,7 @@ dag = DAG(DAG_ID, schedule_interval=SCHEDULE_INTERVAL, default_args=default_args
 
 namespace = conf.get('kubernetes', 'NAMESPACE')
 
-compute_resource = {'request_cpu': '800m', 'request_memory': '3Gi', 'limit_cpu': '800m', 'limit_memory': '3Gi'}
+# compute_resource = {'request_cpu': '800m', 'request_memory': '3Gi', 'limit_cpu': '800m', 'limit_memory': '3Gi'}
 
 env_vars = {
     'DEPTH': os.getenv('SWRS_DEPTH'),
@@ -42,10 +42,9 @@ with dag:
         name=DAG_ID,
         namespace=namespace,
         image=image,
-        cmds=["./init.sh"],
+        cmds=["echo"],
         arguments=["swrs-import"],
         env_vars=env_vars,
-        resources=compute_resource,
         is_delete_operator_pod=True,
         get_logs=True,
         in_cluster=True,

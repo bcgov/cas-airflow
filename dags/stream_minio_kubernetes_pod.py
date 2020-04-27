@@ -39,7 +39,7 @@ with dag:
         task_id=DAG_ID,
         name=DAG_ID,
         namespace=namespace,
-        image=image,
+        image="ubuntu:16.04",
         cmds=["echo"],
         arguments=["swrs-import"],
         env_vars=env_vars

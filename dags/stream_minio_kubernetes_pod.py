@@ -56,4 +56,7 @@ with dag:
         # project-id as the gcr.io images and the service account that Composer
         # uses has permission to access the Google Container Registry
         # (the default service account has permission)
-        image='gcr.io/gcp-runtimes/ubuntu_18_0_4')
+        image='gcr.io/gcp-runtimes/ubuntu_18_0_4',
+        in_cluster=True # if set to true, will look in the cluster, if false, looks for file
+        is_delete_operator_pod=True,
+        get_logs=True))

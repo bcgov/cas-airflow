@@ -1,7 +1,6 @@
 from airflow import DAG
 from datetime import datetime, timedelta
 from airflow.contrib.operators.kubernetes_pod_operator import KubernetesPodOperator
-from airflow import configuration as conf
 import os
 
 YESTERDAY = datetime.now() - timedelta(days=1)
@@ -21,8 +20,6 @@ SCHEDULE_INTERVAL = '0 0 * * *'
 
 dag = DAG(DAG_ID, schedule_interval=SCHEDULE_INTERVAL, default_args=default_args)
 
-namespace = conf.get('kubernetes', 'NAMESPACE')
-
 compute_resource = {'request_cpu': '800m', 'request_memory': '3Gi', 'limit_cpu': '800m', 'limit_memory': '3Gi'}
 
 env_vars = {
@@ -35,12 +32,13 @@ env_vars = {
 }
 
 image = "docker.pkg.github.com/bcgov/cas-airflow-dags/stream-minio:" + os.getenv('STREAM_MINIO_IMAGE_TAG')
+namespace = os.getenv('NAMESPACE')
 
 with dag:
     k = KubernetesPodOperator(
         task_id=DAG_ID,
         name=DAG_ID,
-        namespace="wksv3k-tools",
+        namespace=namespace,
         image=image,
         cmds=["./init.sh"],
         arguments=["swrs-import"],

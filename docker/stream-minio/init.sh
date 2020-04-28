@@ -6,6 +6,9 @@ if [ -z "$1" ]; then
 fi
 
 if [ -z "$2" ]; then
+    echo $DEPTH
+    echo $WEBSITE
+    echo $FILTER
     FILE_URLS=$(sh bin/wget-spider.sh | awk '{printf "--url=\"%s\" ",$0}')
     echo $FILE_URLS
 else

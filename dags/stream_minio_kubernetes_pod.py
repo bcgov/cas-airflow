@@ -40,7 +40,7 @@ with dag:
     k = KubernetesPodOperator(
         task_id=DAG_ID,
         name=DAG_ID,
-        namespace=namespace,
+        namespace="wksv3k-tools",
         image=image,
         cmds=["./init.sh"],
         arguments=["swrs-import"],

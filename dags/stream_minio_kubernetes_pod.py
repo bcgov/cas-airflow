@@ -21,19 +21,6 @@ SCHEDULE_INTERVAL = '0 0 * * *'
 
 dag = DAG(DAG_ID, schedule_interval=SCHEDULE_INTERVAL, default_args=default_args)
 
-namespace = conf.get('kubernetes', 'NAMESPACE')
-
-env_vars = {
-    'DEPTH': os.getenv('SWRS_DEPTH'),
-    'WEBSITE': os.getenv('SWRS_WEBSITE'),
-    'FILTER': os.getenv('SWRS_FILTER'),
-    'MINIO_ACCESS_KEY': os.getenv('MINIO_ACCESS_KEY'),
-    'MINIO_SECRET_KEY': os.getenv('MINIO_SECRET_KEY'),
-    'MINIO_HOST': os.getenv('MINIO_HOST'),
-}
-
-image = "docker.pkg.github.com/bcgov/cas-airflow-dags/stream-minio:" + os.getenv('STREAM_MINIO_IMAGE_TAG')
-
 with dag:
     k =KubernetesPodOperator(
         # The ID specified for the task.

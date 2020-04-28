@@ -59,4 +59,4 @@ with dag:
         image='gcr.io/gcp-runtimes/ubuntu_18_0_4',
         in_cluster=True, # if set to true, will look in the cluster, if false, looks for file
         is_delete_operator_pod=True,
-        get_logs=True))
+        get_logs=True)

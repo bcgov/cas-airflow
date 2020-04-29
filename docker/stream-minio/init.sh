@@ -5,11 +5,8 @@ if [ -z "$1" ]; then
     exit 0
 fi
 
-FILE="_tmp.file"
-touch "$FILE"
-
-if [ ! -f "$FILE" ]; then
-    echo "UESR $(whoami) does not have write permissions"
+if ! test -w .; then
+    echo "User $(whoami) does not have write permissions"
     exit 1
 fi
 

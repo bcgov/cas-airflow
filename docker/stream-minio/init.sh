@@ -5,8 +5,17 @@ if [ -z "$1" ]; then
     exit 0
 fi
 
+FILE="_tmp.file"
+touch "$FILE"
+
+if [ ! -f "$FILE" ]; then
+    echo "UESR $(whoami) does not have write permissions"
+    exit 1
+fi
+
 if [ -z "$2" ]; then
     FILE_URLS=$(sh bin/wget-spider.sh | awk '{printf "--url=\"%s\" ",$0}')
+    echo $FILE_URLS
 else
     cat $2
     FILE_URLS=$(cat $2 | awk '{printf "--url=\"%s\" ",$0}')

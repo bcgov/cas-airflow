@@ -12,10 +12,10 @@ fi
 
 if [ -z "$2" ]; then
     FILE_URLS=$(sh bin/wget-spider.sh | awk '{printf "--url=\"%s\" ",$0}')
-    echo $FILE_URLS
+    echo "$FILE_URLS"
 else
-    cat $2
-    FILE_URLS=$(cat $2 | awk '{printf "--url=\"%s\" ",$0}')
+    cat "$2"
+    FILE_URLS="$(awk '{printf "--url=\"%s\" ",$0}' < "$2")"
 fi
 
-node stream-minio --ssl --bucket="$1" $FILE_URLS
+node stream-minio --ssl --bucket="$1" "$FILE_URLS"

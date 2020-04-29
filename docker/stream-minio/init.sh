@@ -5,7 +5,7 @@ if [ -z "$1" ]; then
     exit 0
 fi
 
-if ! test -w .; then
+if [ ! -w . ]; then
     echo "User $(whoami) does not have write permissions"
     exit 1
 fi

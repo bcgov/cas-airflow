@@ -26,6 +26,8 @@ env_vars = {
     'DEPTH': os.getenv('SWRS_DEPTH'),
     'WEBSITE': os.getenv('SWRS_WEBSITE'),
     'FILTER': os.getenv('SWRS_FILTER'),
+    'USER': os.getenv('SWRS_USER'),
+    'PASSWORD': os.getenv('SWRS_PASSWORD'),
     'MINIO_ACCESS_KEY': os.getenv('MINIO_ACCESS_KEY'),
     'MINIO_SECRET_KEY': os.getenv('MINIO_SECRET_KEY'),
     'MINIO_HOST': os.getenv('MINIO_HOST'),

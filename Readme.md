@@ -4,12 +4,10 @@ This is an experiment coupled with the [cas-helm](https://github.com/bcgov/cas-h
 
 ## Cloning
 
+It's important that this repository be cloned to the default airflow home folder of `~/airflow`.
+
 ```bash
-mkdir -p ~/airflow
-git clone https://github.com/bcgov/cas-airflow-dags.git ~/airflow/tmp
-cp ~/airflow/tmp/dags ~/airflow/dags
-rm -rf ~/airflow/tmp
-cd ~/airflow/dags
+git clone git@github.com:bcgov/cas-airflow-dags.git ~/airflow && cd $_
 ```
 
 ## Getting started
@@ -32,7 +30,7 @@ Then reshim asdf to ensure the correct version of airflow is in your path.
 asdf reshim
 ```
 
-Set up airflow in a parent folder of this repo (`~/airflow`). Be sure to set `AIRFLOW_HOME` if you cloned do a different path.
+Be sure to set the `$AIRFLOW_HOME` environment variably if you cloned this repo to a path other than `~/airflow`.
 
 ```bash
 airflow initdb

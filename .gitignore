@@ -130,3 +130,7 @@ dmypy.json
 
 # Nodejs packages
 node_modules
+logs/
+airflow.cfg
+airflow.db
+unittests.cfg

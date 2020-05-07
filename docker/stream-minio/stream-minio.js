@@ -1,6 +1,7 @@
 const path = require('path');
 const Minio = require('minio');
 const argv = require('yargs').argv;
+const fs = require('fs');
 
 const fetch = {
   'http:': require('http'),
@@ -17,6 +18,7 @@ const REGION = argv.region || 'northamerica-northeast1'; // Montreal
 const FILE_URLS = Array.isArray(argv.url) ? argv.url : (argv.url && [argv.url]) || [];
 const USER = process.env.USER;
 const PASSWORD = process.env.PASSWORD;
+const XCOM_FILE = '/airflow/xcom/return.json';
 
 if (FILE_URLS.length === 0) {
   console.error('at least one url required');
@@ -45,14 +47,18 @@ const getObjectMap = () => {
   });
 };
 
-const streamFileToMinio = (url, objectMap = {}) => {
+const writeXCom = (data) => {
+  return new Promise((resolve, reject) => {
+    fs.writeFile(XCOM_FILE, JSON.stringify(data), (err) => {
+        if (err) return reject(err);
+        resolve();
+    });
+  });
+}
+
+const streamFileToMinio = (url) => {
   const protocol = new URL(url).protocol;
   const filename = path.basename(url);
-
-  if (objectMap[filename]) {
-    console.log(`skipping ${url}`);
-    return;
-  }
 
   console.log(`uploading ${url}`);
 
@@ -60,7 +66,7 @@ const streamFileToMinio = (url, objectMap = {}) => {
     fetch[protocol].get(url, httpOption, resp => {
       minioClient.putObject(BUCKET_NAME, filename, resp, (err, etag) => {
         if (err) return reject(err);
-        else return resolve(etag);
+        else return resolve({bucketName: BUCKET_NAME, objectName: filename, etag});
       });
     });
   });
@@ -72,14 +78,25 @@ const streamFileToMinio = (url, objectMap = {}) => {
     if (!hasBucket) await minioClient.makeBucket(BUCKET_NAME, REGION);
 
     const objectMap = await getObjectMap();
-    await asyncForEach(FILE_URLS, url => streamFileToMinio(url, objectMap));
+    console.log(`received ${FILE_URLS.length} urls to upload to MinIO.`)
+    const skippedUrls = FILE_URLS.filter((url) => path.basename(url) in objectMap);
+    for (const url of skippedUrls) {
+      console.log(`skipping ${url}`);
+    }
+    const urlsToUpload = FILE_URLS.filter((url) => !(path.basename(url) in objectMap));
+    // We use asyncForEach instead of Promise.all to avoid overloading the MinIO server
+    // Ideally we'd have a queue system that limits the number of simultaneous uploads
+    const uploadedObjects = await asyncMap(urlsToUpload, (url) => streamFileToMinio(url));
+    await writeXCom({uploadedObjects, skippedUrls});
   } catch (err) {
     console.error(err);
   }
 })();
 
-async function asyncForEach(array, callback) {
+async function asyncMap(array, callback) {
+  const result = []
   for (let index = 0; index < array.length; index++) {
-    await callback(array[index], index, array);
+    result.push(await callback(array[index], index, array));
   }
+  return result;
 }

@@ -5,6 +5,7 @@ COPY package.json /app
 RUN npm install
 COPY . /app
 RUN chmod 777 /app/init.sh
-
 RUN chown -R 1000880000:node /app
+RUN mkdir -p /airflow/xcom
+RUN chown -R 1000880000:node /airflow/xcom
 USER 1000880000

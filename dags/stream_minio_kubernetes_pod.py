@@ -49,4 +49,4 @@ with dag:
         is_delete_operator_pod=True,
         get_logs=True,
         in_cluster=True,
-        do_xcom_push=False)
+        do_xcom_push=True)

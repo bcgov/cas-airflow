@@ -1,6 +1,8 @@
 from airflow import DAG
 from datetime import datetime, timedelta
 from airflow.contrib.operators.kubernetes_pod_operator import KubernetesPodOperator
+from airflow.operators.python_operator import ShortCircuitOperator
+
 import os
 
 YESTERDAY = datetime.now() - timedelta(days=1)
@@ -36,10 +38,14 @@ env_vars = {
 image = "docker.pkg.github.com/bcgov/cas-airflow-dags/stream-minio:" + os.getenv('STREAM_MINIO_IMAGE_TAG')
 namespace = os.getenv('NAMESPACE')
 
+def should_extract_zips(**context):
+    download_return = context['task_instance'].xcom_pull(task_ids = 'download_eccc_files')
+    return len(download_return['uploadedObjects']) > 0
+
 with dag:
-    k = KubernetesPodOperator(
-        task_id=DAG_ID,
-        name=DAG_ID,
+    download_eccc_files = KubernetesPodOperator(
+        task_id='download_eccc_files',
+        name='download_eccc_files',
         namespace=namespace,
         image=image,
         cmds=["./init.sh"],
@@ -50,3 +56,10 @@ with dag:
         get_logs=True,
         in_cluster=True,
         do_xcom_push=True)
+
+    should_extract_zips_op = ShortCircuitOperator(
+        task_id='should_extract_zips',
+        provide_context=True,
+        python_callable=should_extract_zips)
+
+    download_eccc_files >> should_extract_zips_op

@@ -11,7 +11,7 @@ if [ ! -w . ]; then
 fi
 
 if [ -z "$2" ]; then
-    FILE_URLS=$(sh bin/wget-spider.sh | awk '{printf "--url=\"%s\" ",$0}')
+    FILE_URLS=$(wget-spider | awk '{printf "--url=\"%s\" ",$0}')
     echo "$FILE_URLS"
 else
     cat "$2"

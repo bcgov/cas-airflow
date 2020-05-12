@@ -134,3 +134,7 @@ logs/
 airflow.cfg
 airflow.db
 unittests.cfg
+
+*.err
+
+*.out

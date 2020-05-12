@@ -1,11 +1,10 @@
 FROM node:12
 
+COPY root /
+COPY app /app
 WORKDIR /app
-COPY package.json /app
 RUN npm install
-COPY . /app
-RUN chmod 777 /app/init.sh
-RUN chown -R 1000880000:node /app
 RUN mkdir -p /airflow/xcom
-RUN chown -R 1000880000:node /airflow/xcom
-USER 1000880000
+RUN chmod g=u /etc/passwd && \
+    /usr/libexec/fix-permissions /app /airflow/xcom
+USER 1001

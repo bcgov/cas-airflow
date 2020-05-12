@@ -12,7 +12,7 @@ chmod +x ./jq
 
 node remove-bucket-minio --ssl --bucket="$1"
 
-./bin/wget-spider.sh >.list
+wget-spider >.list
 cat .list
 
 num_files=$(wc -l < .list)

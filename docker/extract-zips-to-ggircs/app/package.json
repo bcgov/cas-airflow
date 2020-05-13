@@ -1,0 +1,24 @@
+{
+  "name": "extract-zips-to-ggircs",
+  "version": "0.1.0",
+  "main": "index.js",
+  "repository": "https://github.com/bcgov/cas-airflow-dags",
+  "author": "Matthieu Foucault",
+  "license": "Apache 2.0",
+  "dependencies": {
+    "@google-cloud/storage": "^4.7.0",
+    "etl": "^0.6.12",
+    "minio": "^7.0.16",
+    "pg": "^8.1.0",
+    "unzip-stream": "^0.3.0",
+    "unzipper": "^0.10.11",
+    "yargs": "^15.3.1"
+  },
+  "devDependencies": {
+    "xo": "^0.30.0"
+  },
+  "xo": {
+    "space": true,
+    "prettier": true
+  }
+}

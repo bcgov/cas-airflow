@@ -1,7 +1,6 @@
 FROM node:12
 
 COPY root /
-COPY ../common/root /
 COPY app /app
 WORKDIR /app
 RUN npm install

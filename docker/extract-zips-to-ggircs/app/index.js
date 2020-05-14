@@ -1,11 +1,16 @@
 const argv = require('yargs').argv;
 const unzipperDirectory = require('unzipper/lib/Open/directory');
+const {Open} = require('unzipper');
 const {Storage} = require('@google-cloud/storage');
 const chardet = require('chardet');
 const pg = require('pg');
 const md5 = require('md5');
+const fs = require('fs');
 
 const pgPool = new pg.Pool(); // Uses libpq env variables for connection information
+const TMP_ZIP_DESTINATION =
+  argv.tmp_zip_destination || process.env.TMP_ZIP_DESTINATION;
+
 /* eslint-disable no-await-in-loop */
 (async function () {
   if (!process.env.GCS_KEY) {
@@ -33,6 +38,8 @@ const pgPool = new pg.Pool(); // Uses libpq env variables for connection informa
   const ECCC_ZIP_PASSWORDS =
     argv.eccc_zip_passwords || process.env.ECCC_ZIP_PASSWORDS;
 
+  const STREAM_FILES = argv.stream_files || process.env.STREAM_FILES === 'true';
+
   if (!ECCC_ZIP_PASSWORDS) {
     console.log('ECCC_ZIP_PASSWORDS env variable is required');
     return;
@@ -54,7 +61,11 @@ const pgPool = new pg.Pool(); // Uses libpq env variables for connection informa
       }
 
       const zipFile = storage.bucket(bucketName).file(objectName);
-      await processZipFile(zipFile, zipPasswords);
+      if (!STREAM_FILES) {
+        await zipFile.download({destination: TMP_ZIP_DESTINATION});
+      }
+
+      await processZipFile(zipFile, zipPasswords, STREAM_FILES);
     }
   } else if (GCS_BUCKET) {
     console.log('Processing all zip files in gcs bucket');
@@ -67,42 +78,28 @@ const pgPool = new pg.Pool(); // Uses libpq env variables for connection informa
         continue;
       }
 
-      await processZipFile(file, zipPasswords);
+      if (!STREAM_FILES) {
+        await file.download({destination: TMP_ZIP_DESTINATION});
+      }
+
+      await processZipFile(file, zipPasswords, STREAM_FILES);
     }
+  }
+
+  if (!STREAM_FILES) {
+    fs.unlinkSync(TMP_ZIP_DESTINATION);
   }
 })().catch((error) => console.error(error.stack));
 
-async function processZipFile(zipFile, zipPasswords, passwordIndex = 0) {
+async function processZipFile(
+  zipFile,
+  zipPasswords,
+  streamFile = false,
+  passwordIndex = 0
+) {
   let shouldTryNextPassword = false;
   const metadata = await zipFile.getMetadata();
   const zipFileMd5 = Buffer.from(metadata[0].md5Hash, 'base64').toString('hex');
-  const directorySource = {
-    async size() {
-      const metadata = await zipFile.getMetadata();
-      return metadata[0].size;
-    },
-    stream(offset, length) {
-      const readStream = zipFile
-        .createReadStream({
-          start: offset,
-          end: length && offset + length
-        })
-        .on('end', () => console.log('stream ended'));
-
-      // This could reduce a memory leak by reading the stream.
-      // There's still some memory leak somewhere, and it it quite slow.
-      // readStream.abort = () => {
-      //   readStream.unpipe();
-      //   readStream.on('readable', () => {
-      //     while (readStream.read() !== null) {
-      //       //console.log(`Received ${chunk.length} bytes of data.`);
-      //     }
-      //   });
-      // };
-
-      return readStream;
-    }
-  };
   let password;
   if (passwordIndex === zipPasswords.length) {
     console.log(`Opening ${zipFile.name} without password `);
@@ -115,7 +112,41 @@ async function processZipFile(zipFile, zipPasswords, passwordIndex = 0) {
     password = zipPasswords[passwordIndex];
   }
 
-  const directory = await unzipperDirectory(directorySource, {crx: true});
+  let directory;
+  if (streamFile) {
+    const directorySource = {
+      async size() {
+        const metadata = await zipFile.getMetadata();
+        return metadata[0].size;
+      },
+      stream(offset, length) {
+        const readStream = zipFile
+          .createReadStream({
+            start: offset,
+            end: length && offset + length
+          })
+          .on('end', () => console.log('stream ended'));
+
+        // This could reduce a memory leak by reading the stream.
+        // There's still some memory leak somewhere, and it is quite slow.
+        // The memory leak is caused by unzipper not finishing to read the stream
+        // readStream.abort = () => {
+        //   readStream.unpipe();
+        //   readStream.on('readable', () => {
+        //     while (readStream.read() !== null) {
+        //       //console.log(`Received ${chunk.length} bytes of data.`);
+        //     }
+        //   });
+        // };
+
+        return readStream;
+      }
+    };
+    directory = await unzipperDirectory(directorySource);
+  } else {
+    directory = await Open.file(TMP_ZIP_DESTINATION);
+  }
+
   const pgClient = await pgPool.connect();
   try {
     const insertZipFileResult = await pgClient.query(
@@ -167,7 +198,7 @@ async function processZipFile(zipFile, zipPasswords, passwordIndex = 0) {
   }
 
   if (shouldTryNextPassword)
-    await processZipFile(zipFile, zipPasswords, passwordIndex + 1);
+    await processZipFile(zipFile, zipPasswords, streamFile, passwordIndex + 1);
 }
 
 /* eslint-enable no-await-in-loop */

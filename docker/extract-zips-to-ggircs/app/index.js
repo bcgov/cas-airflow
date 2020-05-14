@@ -6,7 +6,6 @@ const pg = require('pg');
 const md5 = require('md5');
 
 const pgPool = new pg.Pool(); // Uses libpq env variables for connection information
-
 /* eslint-disable no-await-in-loop */
 (async function () {
   if (!process.env.GCS_KEY) {
@@ -73,7 +72,7 @@ const pgPool = new pg.Pool(); // Uses libpq env variables for connection informa
   }
 })().catch((error) => console.error(error.stack));
 
-async function processZipFile(zipFile, zipPasswords, passwordIndex = -1) {
+async function processZipFile(zipFile, zipPasswords, passwordIndex = 0) {
   let shouldTryNextPassword = false;
   const metadata = await zipFile.getMetadata();
   const zipFileMd5 = Buffer.from(metadata[0].md5Hash, 'base64').toString('hex');
@@ -83,16 +82,31 @@ async function processZipFile(zipFile, zipPasswords, passwordIndex = -1) {
       return metadata[0].size;
     },
     stream(offset, length) {
-      return zipFile.createReadStream({
-        start: offset,
-        end: length && offset + length
-      });
+      const readStream = zipFile
+        .createReadStream({
+          start: offset,
+          end: length && offset + length
+        })
+        .on('end', () => console.log('stream ended'));
+
+      // This could reduce a memory leak by reading the stream.
+      // There's still some memory leak somewhere, and it it quite slow.
+      // readStream.abort = () => {
+      //   readStream.unpipe();
+      //   readStream.on('readable', () => {
+      //     while (readStream.read() !== null) {
+      //       //console.log(`Received ${chunk.length} bytes of data.`);
+      //     }
+      //   });
+      // };
+
+      return readStream;
     }
   };
   let password;
-  if (passwordIndex === -1) {
+  if (passwordIndex === zipPasswords.length) {
     console.log(`Opening ${zipFile.name} without password `);
-  } else if (passwordIndex >= zipPasswords.length) {
+  } else if (passwordIndex > zipPasswords.length) {
     throw new Error(
       `Tried all passwords to open ${zipFile.name}, but none worked.`
     );
@@ -104,8 +118,6 @@ async function processZipFile(zipFile, zipPasswords, passwordIndex = -1) {
   const directory = await unzipperDirectory(directorySource, {crx: true});
   const pgClient = await pgPool.connect();
   try {
-    await pgClient.query('begin');
-
     const insertZipFileResult = await pgClient.query(
       `insert into swrs_extract.eccc_zip_file(zip_file_name, zip_file_md5_hash)
       values ($1, $2)
@@ -118,7 +130,7 @@ async function processZipFile(zipFile, zipPasswords, passwordIndex = -1) {
     for (const file of directory.files) {
       if (file.path.toLowerCase().endsWith('.xml')) {
         console.log(`Streaming ${file.path}`);
-        const xmlReportBuffer = await streamFile(file, password);
+        const xmlReportBuffer = await file.buffer(password);
         const encoding = chardet.detect(xmlReportBuffer);
         const xmlReportMd5 = md5(xmlReportBuffer);
         await pgClient.query(
@@ -130,7 +142,7 @@ async function processZipFile(zipFile, zipPasswords, passwordIndex = -1) {
           zip_file_id=excluded.zip_file_id
           `,
           [
-            xmlReportBuffer.toString(encoding),
+            xmlReportBuffer.toString(encoding).replace(/\0/g, ''),
             file.path,
             xmlReportMd5,
             zipFileId
@@ -140,10 +152,7 @@ async function processZipFile(zipFile, zipPasswords, passwordIndex = -1) {
         console.log(`Skipping ${file.path}`);
       }
     }
-
-    await pgClient.query('commit');
   } catch (error) {
-    await pgClient.query('rollback');
     if (error.message === 'MISSING_PASSWORD') {
       console.log(`${zipFile.name} needs a password`);
       shouldTryNextPassword = true;
@@ -159,20 +168,6 @@ async function processZipFile(zipFile, zipPasswords, passwordIndex = -1) {
 
   if (shouldTryNextPassword)
     await processZipFile(zipFile, zipPasswords, passwordIndex + 1);
-}
-
-function streamFile(file, password) {
-  return new Promise((resolve, reject) => {
-    const chunks = [];
-    file
-      .stream(password)
-      .on('error', reject)
-      .on('data', (chunk) => chunks.push(chunk))
-      .on('end', () => {
-        const buffer = Buffer.concat(chunks);
-        resolve(buffer);
-      });
-  });
 }
 
 /* eslint-enable no-await-in-loop */

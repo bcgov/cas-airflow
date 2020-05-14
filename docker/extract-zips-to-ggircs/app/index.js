@@ -29,31 +29,47 @@ const pgPool = new pg.Pool(); // Uses libpq env variables for connection informa
   const DOWNLOAD_ECCC_FILES_XCOM =
     argv.download_eccc_files_xcom || process.env.DOWNLOAD_ECCC_FILES_XCOM;
 
+  const GCS_BUCKET = argv.gcs_bucket || process.env.GCS_BUCKET;
+
   const ECCC_ZIP_PASSWORDS =
     argv.eccc_zip_passwords || process.env.ECCC_ZIP_PASSWORDS;
-  if (!DOWNLOAD_ECCC_FILES_XCOM) {
-    console.log('DOWNLOAD_ECCC_FILES_XCOM env variable is required');
-    return;
-  }
 
   if (!ECCC_ZIP_PASSWORDS) {
     console.log('ECCC_ZIP_PASSWORDS env variable is required');
     return;
   }
 
-  const {uploadedObjects} = JSON.parse(DOWNLOAD_ECCC_FILES_XCOM);
   const zipPasswords = JSON.parse(ECCC_ZIP_PASSWORDS);
-  for (const {bucketName, objectName} of uploadedObjects) {
-    if (!objectName || !bucketName) continue;
-    if (!objectName.endsWith('.zip')) {
-      console.log(
-        `${objectName} was uploaded in the bucket ${bucketName}, but that doesn't look like a zip file. Skipping.`
-      );
-      continue;
-    }
 
-    const zipFile = storage.bucket(bucketName).file(objectName);
-    await processZipFile(zipFile, zipPasswords);
+  if (DOWNLOAD_ECCC_FILES_XCOM) {
+    console.log('processing files listed in DOWNLOAD_ECCC_FILES_XCOM');
+    const {uploadedObjects} = JSON.parse(DOWNLOAD_ECCC_FILES_XCOM);
+
+    for (const {bucketName, objectName} of uploadedObjects) {
+      if (!objectName || !bucketName) continue;
+      if (!objectName.endsWith('.zip')) {
+        console.log(
+          `${objectName} was uploaded in the bucket ${bucketName}, but that doesn't look like a zip file. Skipping.`
+        );
+        continue;
+      }
+
+      const zipFile = storage.bucket(bucketName).file(objectName);
+      await processZipFile(zipFile, zipPasswords);
+    }
+  } else if (GCS_BUCKET) {
+    console.log('Processing all zip files in gcs bucket');
+    const files = await storage.bucket(GCS_BUCKET).getFiles();
+    for (const file of files[0]) {
+      if (!file.name.endsWith('.zip')) {
+        console.log(
+          `${file.name} was uploaded in the bucket ${file.name}, but that doesn't look like a zip file. Skipping.`
+        );
+        continue;
+      }
+
+      await processZipFile(file, zipPasswords);
+    }
   }
 })().catch((error) => console.error(error.stack));
 

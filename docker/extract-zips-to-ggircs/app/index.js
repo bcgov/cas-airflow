@@ -89,7 +89,9 @@ const TMP_ZIP_DESTINATION =
   if (!STREAM_FILES) {
     fs.unlinkSync(TMP_ZIP_DESTINATION);
   }
-})().catch((error) => console.error(error.stack));
+})().catch((error) => {
+  throw error;
+});
 
 async function processZipFile(
   zipFile,
@@ -162,23 +164,37 @@ async function processZipFile(
       if (file.path.toLowerCase().endsWith('.xml')) {
         console.log(`Streaming ${file.path}`);
         const xmlReportBuffer = await file.buffer(password);
-        const encoding = chardet.detect(xmlReportBuffer);
         const xmlReportMd5 = md5(xmlReportBuffer);
-        await pgClient.query(
-          `insert into swrs_extract.eccc_xml_file(xml_file, xml_file_name, xml_file_md5_hash, zip_file_id)
+        let encoding;
+        let xmlReportString;
+        try {
+          encoding = chardet.detect(xmlReportBuffer);
+          xmlReportString = xmlReportBuffer
+            .toString(encoding)
+            .replace(/\0/g, '');
+        } catch (error) {
+          console.error(
+            `Failed to decode file ${file.path} from ${zipFile.name} with encoding ${encoding}`
+          );
+          console.error(error);
+          continue;
+        }
+
+        try {
+          await pgClient.query(
+            `insert into swrs_extract.eccc_xml_file(xml_file, xml_file_name, xml_file_md5_hash, zip_file_id)
           values ($1, $2, $3, $4)
           on conflict(xml_file_md5_hash) do update set
           xml_file=excluded.xml_file,
           xml_file_name=excluded.xml_file_name,
           zip_file_id=excluded.zip_file_id
           `,
-          [
-            xmlReportBuffer.toString(encoding).replace(/\0/g, ''),
-            file.path,
-            xmlReportMd5,
-            zipFileId
-          ]
-        );
+            [xmlReportString, file.path, xmlReportMd5, zipFileId]
+          );
+        } catch (error) {
+          console.error(error);
+          continue;
+        }
       } else {
         console.log(`Skipping ${file.path}`);
       }
@@ -192,7 +208,7 @@ async function processZipFile(
         `${zipFile.name} failed to open with password #${passwordIndex + 1}`
       );
       shouldTryNextPassword = true;
-    } else throw error;
+    } else console.error(error);
   } finally {
     pgClient.release();
   }

@@ -138,3 +138,5 @@ unittests.cfg
 *.err
 
 *.out
+
+*.pid

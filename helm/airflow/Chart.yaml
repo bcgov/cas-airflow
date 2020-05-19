@@ -1,0 +1,25 @@
+apiVersion: v2
+appVersion: 1.10.4
+description: Airflow is a platform to programmatically author, schedule and monitor
+  workflows
+home: https://airflow.apache.org/
+icon: https://airflow.apache.org/_images/pin_large.png
+keywords:
+  - workflow
+  - dag
+maintainers:
+  - email: alec@button.is
+    name: Alec Wenzowski
+name: airflow
+sources:
+  - https://airflow.apache.org/
+version: 5.2.5-p3
+dependencies:
+  - name: postgresql
+    version: 0.13.1-p4
+    repository: "file://../postgresql"
+    condition: postgresql.enabled
+  - name: redis
+    version: 7.0.0
+    repository: https://kubernetes-charts.storage.googleapis.com/
+    condition: redis.enabled

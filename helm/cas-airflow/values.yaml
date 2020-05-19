@@ -1,0 +1,87 @@
+airflow:
+  web:
+    initialDelaySeconds: 60
+  dags:
+    git:
+      url: https://github.com/bcgov/cas-airflow.git
+      ref: master
+    initContainer:
+      enabled: true
+      installRequirements: false
+  airflow:
+    image:
+      repository: docker-registry.default.svc:5000/wksv3k-tools/cas-airflow
+      tag: '0.1.0-pre.38'
+      pullPolicy: Always
+    executor: Kubernetes
+    # create placeholder connections and it requires manual setup
+    connections:
+      - id: gcs_logs
+        type: google_cloud_platform
+    config:
+      AIRFLOW__KUBERNETES__GIT_SUBPATH: dags
+      AIRFLOW__CORE__REMOTE_LOGGING: True
+      AIRFLOW__CORE__REMOTE_BASE_LOG_FOLDER: gs://wksv3k-dev
+      AIRFLOW__CORE__REMOTE_LOG_CONN_ID: gcs_logs
+      # AIRFLOW__KUBERNETES__KUBE_CLIENT_REQUEST_ARGS: '{\"_request_timeout\":[300,300]}'
+      # see https://github.com/puckel/docker-airflow/issues/521
+      AIRFLOW__KUBERNETES__LOGS_VOLUME_CLAIM: cas-airflow-logs
+      AIRFLOW__KUBERNETES__DAGS_VOLUME_CLAIM: cas-airflow
+      AIRFLOW__KUBERNETES__NAMESPACE: wksv3k-dev
+      AIRFLOW__KUBERNETES__WORKER_SERVICE_ACCOUNT_NAME: cas-airflow
+      # see https://github.com/helm/helm/issues/1707
+      AIRFLOW__KUBERNETES__IN_CLUSTER: True
+      AIRFLOW__KUBERNETES__WORKER_CONTAINER_REPOSITORY: docker-registry.default.svc:5000/wksv3k-tools/cas-airflow
+      AIRFLOW__KUBERNETES__WORKER_CONTAINER_TAG: 0.1.0-pre.38
+      AIRFLOW__KUBERNETES_ENVIRONMENT_VARIABLES__AIRFLOW__CORE__REMOTE_LOGGING: True
+      AIRFLOW__KUBERNETES_ENVIRONMENT_VARIABLES__AIRFLOW__CORE__REMOTE_BASE_LOG_FOLDER: gs://wksv3k-dev-cas-airflow
+      AIRFLOW__KUBERNETES_ENVIRONMENT_VARIABLES__AIRFLOW__CORE__REMOTE_LOG_CONN_ID: gcs_logs
+    extraVolumeMounts:
+      - name: cas-airflow-secret-volume
+        mountPath: /usr/local/etc/secrets/gcp-wksv3k-dev-cas-airflow-service-account-key
+    extraVolumes:
+      - name: cas-airflow-secret-volume
+        secret:
+          secretName: gcp-wksv3k-dev-cas-airflow-service-account-key
+    extraEnv:
+      - name: AIRFLOW__CORE__FERNET_KEY
+        valueFrom:
+          secretKeyRef:
+            name: cas-airflow
+            key: fernet_key
+      - name: C_FORCE_ROOT
+        value: 'true'
+      - name: AIRFLOW__KUBERNETES_ENVIRONMENT_VARIABLES__AIRFLOW__CORE__FERNET_KEY
+        valueFrom:
+          secretKeyRef:
+            name: cas-airflow
+            key: fernet_key
+      - name: NAMESPACE
+        value: wksv3k-dev
+      - name: STREAM_MINIO_IMAGE_TAG
+        value: '2210961eaca42f946dfaeb897eba476190fc6a10'
+      - name: AIRFLOW__KUBERNETES_ENVIRONMENT_VARIABLES__STREAM_MINIO_IMAGE_TAG
+        value: '2210961eaca42f946dfaeb897eba476190fc6a10'
+      - name: AIRFLOW__KUBERNETES__RUN_AS_USER
+        value: '1009900000'
+      - name: AIRFLOW__KUBERNETES__FS_GROUP
+        value: '1009900000'
+  flower:
+    enabled: false
+  persistence:
+      enabled: true
+      storageClass: netapp-file-standard
+      accessMode: ReadWriteMany
+      size: 1Gi
+  logsPersistence:
+    enabled: true
+    storageClass: netapp-file-standard
+    accessMode: ReadWriteMany
+    size: 1Gi
+  postgresql:
+    enabled: true
+    postgresDatabase: postgres
+  workers:
+    enabled: false
+  redis:
+    enabled: false

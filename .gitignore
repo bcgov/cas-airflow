@@ -135,8 +135,10 @@ airflow.cfg
 airflow.db
 unittests.cfg
 
+# logs
 *.err
-
 *.out
-
 *.pid
+
+# Helm
+helm/**/charts/**/*

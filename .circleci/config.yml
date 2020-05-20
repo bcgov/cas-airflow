@@ -10,8 +10,10 @@ jobs:
         default: 1
     docker:
       - image: docker:17.05.0-ce-git
+    working_directory: ~/cas-airflow/docker/<< parameters.image_name >>
     steps:
-      - checkout
+      - checkout:
+          at: ~/cas-airflow
       - setup_remote_docker
       - run:
           name: Install docker compose
@@ -25,33 +27,28 @@ jobs:
             - v<< parameters.cache_version>>-{{ .Branch }}
           paths:
             - /caches/<< parameters.image_name >>.tar
-          working_directory: ~/docker/<< parameters.image_name >>
       - run:
           name: Load cache
           command: |
             set +o pipefail
             docker load -i /caches/<< parameters.image_name >>.tar | true
-          working_directory: ~/docker/<< parameters.image_name >>
       - run:
           name: Build image
           command: |
             docker build --cache-from=<< parameters.image_name >> -t << parameters.image_name >> .
-          working_directory: ~/docker/<< parameters.image_name >>
       - run:
           name: Save Docker image layer cache
           command: |
             mkdir -p /caches
             docker save -o /caches/<< parameters.image_name >>.tar << parameters.image_name >>
-          working_directory: ~/docker/<< parameters.image_name >>
       - save_cache:
           key: v<< parameters.cache_version>>-{{ .Branch }}-{{ epoch }}
           paths:
             - /caches/<< parameters.image_name >>.tar
-          working_directory: ~/docker/<< parameters.image_name >>
       - persist_to_workspace:
           root: ~/
           paths:
-            - docker/stream-minio
+            - cas-airflow/docker/stream-minio
 
   test_stream_minio:
     docker:
@@ -69,7 +66,7 @@ jobs:
             CONTEXT="--env DEPTH=$DEPTH --env WEBSITE=$WEBSITE --env FILTER=$FILTER --env MINIO_HOST=$MINIO_HOST --env MINIO_ACCESS_KEY=$MINIO_ACCESS_KEY --env MINIO_SECRET_KEY=$MINIO_SECRET_KEY"
             CONTAINER_ID=$(docker run -itd $CONTEXT stream-minio /bin/bash)
             docker exec -it $CONTAINER_ID ./test.sh veryuniquebucket$CIRCLE_WORKFLOW_ID
-          working_directory: ~/docker/stream-minio
+          working_directory: ~/cas-airflow/docker/stream-minio
 
   deploy_docker_image:
     parameters:
@@ -87,7 +84,7 @@ jobs:
             TARGET="docker.pkg.github.com/bcgov/cas-airflow/<< parameters.image_name >>:${CIRCLE_SHA1}"
             docker tag << parameters.image_name >> "$TARGET"
             docker push "$TARGET"
-          working_directory: ~/docker/<< parameters.image_name >>
+          working_directory: ~/cas-airflow/docker/<< parameters.image_name >>
 
 
 workflows:

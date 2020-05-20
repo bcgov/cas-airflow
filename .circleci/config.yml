@@ -56,6 +56,7 @@ jobs:
     steps:
       - attach_workspace:
           at: ~/
+      - setup_remote_docker
       - run:
           name: Test Docker image
           environment:
@@ -77,6 +78,7 @@ jobs:
     steps:
       - attach_workspace:
           at: ~/
+      - setup_remote_docker
       - deploy:
           name: Push application Docker image
           command: |

@@ -13,7 +13,7 @@ jobs:
     working_directory: ~/cas-airflow/docker/<< parameters.image_name >>
     steps:
       - checkout:
-          at: ~/cas-airflow
+          path: ~/cas-airflow
       - setup_remote_docker
       - run:
           name: Install docker compose
@@ -24,7 +24,7 @@ jobs:
               docker-compose==1.12.0
       - restore_cache:
           keys:
-            - v<< parameters.cache_version>>-{{ .Branch }}
+            - v<< parameters.cache_version>>-<< parameters.image_name >>-{{ .Branch }}
           paths:
             - /caches/<< parameters.image_name >>.tar
       - run:
@@ -42,7 +42,7 @@ jobs:
             mkdir -p /caches
             docker save -o /caches/<< parameters.image_name >>.tar << parameters.image_name >>
       - save_cache:
-          key: v<< parameters.cache_version>>-{{ .Branch }}-{{ epoch }}
+          key: v<< parameters.cache_version>>-<< parameters.image_name >>-{{ .Branch }}-{{ epoch }}
           paths:
             - /caches/<< parameters.image_name >>.tar
       - persist_to_workspace:

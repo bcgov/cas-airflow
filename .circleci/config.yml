@@ -105,6 +105,9 @@ workflows:
           matrix:
             parameters:
               image_name: ["cas-airflow", "extract-zips-to-ggircs"]
+          filters:
+            tags:
+              only: /^v.*/
       - deploy_docker_image:
           name: deploy_docker_image_sha1_<< matrix.image_name >>
           matrix:
@@ -135,9 +138,15 @@ workflows:
       - build_docker_image:
           name: build_docker_stream-minio
           image_name: stream-minio
+          filters:
+            tags:
+              only: /^v.*/
       - test_stream_minio:
           requires:
             - build_docker_stream-minio
+          filters:
+            tags:
+              only: /^v.*/
       - deploy_docker_image:
           name: deploy_docker_image_sha1_stream
           image_name: stream-minio

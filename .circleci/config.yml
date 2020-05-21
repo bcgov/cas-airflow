@@ -101,36 +101,45 @@ workflows:
   cas-airflow:
     jobs:
       - build_docker_image:
-          image_name: cas-airflow
+          name: build_docker_<< matrix.image_name >>
+          matrix:
+            parameters:
+              image_name: ["cas-airflow", "extract-zips-to-ggircs"]
       - deploy_docker_image:
-          image_name: cas-airflow
+          name: deploy_docker_image_sha1_<< matrix.image_name >>
+          matrix:
+            parameters:
+              image_name: ["cas-airflow", "extract-zips-to-ggircs"]
           image_tag: ${CIRCLE_SHA1}
           requires:
-            - build_docker_image
+            - build_docker_<< matrix.image_name >>
           filters:
             branches:
               only:
                 - develop
                 - master
       - deploy_docker_image:
-          image_name: cas-airflow
+          name: deploy_docker_image_tag_<< matrix.image_name >>
+          matrix:
+            parameters:
+              image_name: ["cas-airflow", "extract-zips-to-ggircs"]
           image_tag: ${CIRCLE_TAG/v/''}
           requires:
-            - build_docker_image
+            - build_docker_<< matrix.image_name >>
           filters:
             tags:
               only: /^v.*/
             branches:
               ignore: /.*/
-
-  stream-minio:
-    jobs:
+      # TODO: add generic test job to avoid code duplication below
       - build_docker_image:
+          name: build_docker_stream-minio
           image_name: stream-minio
       - test_stream_minio:
           requires:
-            - build_docker_image
+            - build_docker_stream-minio
       - deploy_docker_image:
+          name: deploy_docker_image_sha1_stream
           image_name: stream-minio
           image_tag: ${CIRCLE_SHA1}
           requires:
@@ -141,35 +150,11 @@ workflows:
                 - develop
                 - master
       - deploy_docker_image:
+          name: deploy_docker_image_tag_stream-minio
           image_name: stream-minio
           image_tag: ${CIRCLE_TAG/v/''}
           requires:
             - test_stream_minio
-          filters:
-            tags:
-              only: /^v.*/
-            branches:
-              ignore: /.*/
-
-  extract-zips-to-ggircs:
-    jobs:
-      - build_docker_image:
-          image_name: extract-zips-to-ggircs
-      - deploy_docker_image:
-          image_name: extract-zips-to-ggircs
-          image_tag: ${CIRCLE_SHA1}
-          requires:
-            - build_docker_image
-          filters:
-            branches:
-              only:
-                - develop
-                - master
-      - deploy_docker_image:
-          image_name: extract-zips-to-ggircs
-          image_tag: ${CIRCLE_TAG/v/''}
-          requires:
-            - build_docker_image
           filters:
             tags:
               only: /^v.*/

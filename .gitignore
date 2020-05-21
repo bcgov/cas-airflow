@@ -131,7 +131,9 @@ dmypy.json
 # Nodejs packages
 node_modules
 logs/
-airflow.cfg
+
+# local development airflow files
+/airflow.cfg
 airflow.db
 unittests.cfg
 

@@ -42,25 +42,24 @@ jobs:
             mkdir -p /caches
             docker save -o /caches/<< parameters.image_name >>.tar << parameters.image_name >>
       - save_cache:
-          key: v<< parameters.cache_version>>-<< parameters.image_name >>-{{ .Branch }}-{{ epoch }}
+          key: v<< parameters.cache_version>>-<< parameters.image_name >>-{{ .Branch }}
           paths:
             - /caches/<< parameters.image_name >>.tar
       - persist_to_workspace:
-          root: ~/
+          root: /caches
           paths:
-            - cas-airflow/docker/stream-minio
+            - ./<< parameters.image_name >>.tar
 
   test_stream_minio:
     docker:
       - image: docker:17.05.0-ce-git
-    working_directory: ~/cas-airflow/docker/stream-minio
     steps:
       - attach_workspace:
-          at: ~/
+          at: /tmp/workspace
       - setup_remote_docker
       - run:
           name: Load archived Docker image
-          command: docker load -i ./stream-minio.tar
+          command: docker load -i /tmp/workspace/stream-minio.tar
       - run:
           name: Test Docker image
           environment:
@@ -76,25 +75,26 @@ jobs:
     parameters:
       image_name:
         type: string
+      image_tag:
+        type: string
     docker:
       - image: docker:17.05.0-ce-git
-    working_directory: ~/cas-airflow/docker/<< parameters.image_name >>
     steps:
       - attach_workspace:
-          at: ~/
+          at: /tmp/workspace
       - setup_remote_docker
       - run:
           name: Load archived Docker image
-          command: docker load -i ./<< parameters.image_name >>.tar
+          command: docker load -i /tmp/workspace/<< parameters.image_name >>.tar
       - deploy:
           name: Push application Docker image
           command: |
             docker login docker.pkg.github.com -u $GITHUB_USERNAME -p $GITHUB_TOKEN
-            TARGET="docker.pkg.github.com/bcgov/cas-airflow/<< parameters.image_name >>:${CIRCLE_SHA1}"
+            IMAGE_TAG=${CIRCLE_TAG/v/''}
+            TARGET="docker.pkg.github.com/bcgov/cas-airflow/<< parameters.image_name >>:<< parameters.image_tag >>"
             docker tag << parameters.image_name >> "$TARGET"
             docker push "$TARGET"
           working_directory: ~/cas-airflow/docker/<< parameters.image_name >>
-
 
 workflows:
   version: 2
@@ -104,6 +104,7 @@ workflows:
           image_name: cas-airflow
       - deploy_docker_image:
           image_name: cas-airflow
+          image_tag: ${CIRCLE_SHA1}
           requires:
             - build_docker_image
           filters:
@@ -111,6 +112,15 @@ workflows:
               only:
                 - develop
                 - master
+      - deploy_docker_image:
+          image_name: cas-airflow
+          image_tag: ${CIRCLE_TAG/v/''}
+          requires:
+            - build_docker_image
+          filters:
+            tags:
+              only: /^v.*/
+
   stream-minio:
     jobs:
       - build_docker_image:
@@ -120,13 +130,24 @@ workflows:
             - build_docker_image
       - deploy_docker_image:
           image_name: stream-minio
+          image_tag: ${CIRCLE_SHA1}
           requires:
             - test_stream_minio
           filters:
+            tags:
+              only: /^v.*/
             branches:
               only:
                 - develop
                 - master
+      - deploy_docker_image:
+          image_name: stream-minio
+          image_tag: ${CIRCLE_TAG/v/''}
+          requires:
+            - test_stream_minio
+          filters:
+            tags:
+              only: /^v.*/
 
   extract-zips-to-ggircs:
     jobs:
@@ -134,6 +155,7 @@ workflows:
           image_name: extract-zips-to-ggircs
       - deploy_docker_image:
           image_name: extract-zips-to-ggircs
+          image_tag: ${CIRCLE_SHA1}
           requires:
             - build_docker_image
           filters:
@@ -141,3 +163,11 @@ workflows:
               only:
                 - develop
                 - master
+      - deploy_docker_image:
+          image_name: extract-zips-to-ggircs
+          image_tag: ${CIRCLE_TAG/v/''}
+          requires:
+            - build_docker_image
+          filters:
+            tags:
+              only: /^v.*/

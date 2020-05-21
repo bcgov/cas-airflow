@@ -126,7 +126,7 @@ workflows:
           matrix:
             parameters:
               image_name: ["cas-airflow", "extract-zips-to-ggircs"]
-          image_tag: ${CIRCLE_TAG/v/''}
+          image_tag: ${CIRCLE_TAG/v/}
           requires:
             - build_docker_<< matrix.image_name >>
           filters:
@@ -161,7 +161,7 @@ workflows:
       - deploy_docker_image:
           name: deploy_docker_image_tag_stream-minio
           image_name: stream-minio
-          image_tag: ${CIRCLE_TAG/v/''}
+          image_tag: ${CIRCLE_TAG/v/}
           requires:
             - test_stream_minio
           filters:

@@ -53,10 +53,14 @@ jobs:
   test_stream_minio:
     docker:
       - image: docker:17.05.0-ce-git
+    working_directory: ~/cas-airflow/docker/stream-minio
     steps:
       - attach_workspace:
           at: ~/
       - setup_remote_docker
+      - run:
+          name: Load archived Docker image
+          command: docker load -i ./stream-minio.tar
       - run:
           name: Test Docker image
           environment:
@@ -67,7 +71,6 @@ jobs:
             CONTEXT="--env DEPTH=$DEPTH --env WEBSITE=$WEBSITE --env FILTER=$FILTER --env MINIO_HOST=$MINIO_HOST --env MINIO_ACCESS_KEY=$MINIO_ACCESS_KEY --env MINIO_SECRET_KEY=$MINIO_SECRET_KEY"
             CONTAINER_ID=$(docker run -itd $CONTEXT stream-minio /bin/bash)
             docker exec -it $CONTAINER_ID ./test.sh veryuniquebucket$CIRCLE_WORKFLOW_ID
-          working_directory: ~/cas-airflow/docker/stream-minio
 
   deploy_docker_image:
     parameters:
@@ -75,10 +78,14 @@ jobs:
         type: string
     docker:
       - image: docker:17.05.0-ce-git
+    working_directory: ~/cas-airflow/docker/<< parameters.image_name >>
     steps:
       - attach_workspace:
           at: ~/
       - setup_remote_docker
+      - run:
+          name: Load archived Docker image
+          command: docker load -i ./<< parameters.image_name >>.tar
       - deploy:
           name: Push application Docker image
           command: |

@@ -717,3 +717,8 @@ extraManifests: []
 ##    spec:
 ##      securityPolicy:
 ##        name: "gcp-cloud-armor-policy-test"
+
+route:
+  enabled: false
+  prefix: airflow
+  clusterDomain: openshift.local

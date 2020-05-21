@@ -120,6 +120,8 @@ workflows:
           filters:
             tags:
               only: /^v.*/
+            branches:
+              ignore: /.*/
 
   stream-minio:
     jobs:
@@ -134,8 +136,6 @@ workflows:
           requires:
             - test_stream_minio
           filters:
-            tags:
-              only: /^v.*/
             branches:
               only:
                 - develop
@@ -148,6 +148,8 @@ workflows:
           filters:
             tags:
               only: /^v.*/
+            branches:
+              ignore: /.*/
 
   extract-zips-to-ggircs:
     jobs:
@@ -171,3 +173,5 @@ workflows:
           filters:
             tags:
               only: /^v.*/
+            branches:
+              ignore: /.*/

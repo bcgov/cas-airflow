@@ -1,27 +1,28 @@
 
 namespace: &namespace wksv3k-dev
 namespace-uid: &namespace-uid '1009900000'
-gcs-folder: &gcs-folder 'gs://wksv3k-dev'
+gcs-folder: &gcs-folder 'gs://wksv3k-dev-cas-airflow'
+tag: &airflow-tag 7ebfde06d7b3e5f5a6cb748b64be8b49f6364221
 airflow:
-  namespace: wksv3k-dev
   route:
     enabled: true
-    prefix: airflow
+    prefix: cas-airflow-dev
     clusterDomain: pathfinder.gov.bc.ca
   web:
     initialDelaySeconds: 60
   dags:
     git:
       url: https://github.com/bcgov/cas-airflow.git
-      ref: master
+      ref: develop
     initContainer:
       enabled: true
       installRequirements: false
   airflow:
     image:
       repository: &airflow-repo docker.pkg.github.com/bcgov/cas-airflow/cas-airflow
-      tag: &airflow-tag 0.1.0-alpha.1
+      tag: *airflow-tag
       pullPolicy: Always
+      pullSecret: github-registry
     executor: Kubernetes
     # create placeholder connections and it requires manual setup
     connections:
@@ -30,7 +31,9 @@ airflow:
     config:
       AIRFLOW__KUBERNETES__GIT_SUBPATH: dags
       AIRFLOW__CORE__REMOTE_LOGGING: True
+      AIRFLOW__CORE__REMOTE_BASE_LOG_FOLDER: *gcs-folder
       AIRFLOW__CORE__REMOTE_LOG_CONN_ID: gcs_logs
+      AIRFLOW__KUBERNETES__NAMESPACE: *namespace
       # AIRFLOW__KUBERNETES__KUBE_CLIENT_REQUEST_ARGS: '{\"_request_timeout\":[300,300]}'
       # see https://github.com/puckel/docker-airflow/issues/521
       AIRFLOW__KUBERNETES__LOGS_VOLUME_CLAIM: cas-airflow-logs
@@ -40,29 +43,44 @@ airflow:
       AIRFLOW__KUBERNETES__IN_CLUSTER: True
       AIRFLOW__KUBERNETES__WORKER_CONTAINER_REPOSITORY: *airflow-repo
       AIRFLOW__KUBERNETES__WORKER_CONTAINER_TAG: *airflow-tag
+      AIRFLOW__KUBERNETES__IMAGE_PULL_SECRETS: github-registry
       AIRFLOW__KUBERNETES_ENVIRONMENT_VARIABLES__AIRFLOW__CORE__REMOTE_LOGGING: True
       AIRFLOW__KUBERNETES_ENVIRONMENT_VARIABLES__AIRFLOW__CORE__REMOTE_LOG_CONN_ID: gcs_logs
+      AIRFLOW__KUBERNETES_ENVIRONMENT_VARIABLES__AIRFLOW__CORE__REMOTE_BASE_LOG_FOLDER: *gcs-folder
+      AIRFLOW__KUBERNETES__RUN_AS_USER: *namespace-uid
+      AIRFLOW__KUBERNETES__FS_GROUP: *namespace-uid
     extraEnv:
       - name: AIRFLOW__CORE__FERNET_KEY
         valueFrom:
           secretKeyRef:
-            name: cas-airflow
-            key: fernet_key
+            name: cas-airflow-fernet
+            key: fernet-key
       - name: C_FORCE_ROOT
         value: 'true'
       - name: AIRFLOW__KUBERNETES_ENVIRONMENT_VARIABLES__AIRFLOW__CORE__FERNET_KEY
         valueFrom:
           secretKeyRef:
-            name: cas-airflow
-            key: fernet_key
-      - name: NAMESPACE
-        value: *namespace
-      - name: NAMESPACE_UID
-        value: *namespace-uid
+            name: cas-airflow-fernet
+            key: fernet-key
       - name: AIRFLOW_IMAGE_TAG
         value: *airflow-tag
-      - name: REMOTE_BASE_LOG_FOLDER
-        value: *gcs-folder
+      - name: AIRFLOW__KUBERNETES_ENVIRONMENT_VARIABLES__AIRFLOW_IMAGE_TAG
+        value: *airflow-tag
+      - name: AIRFLOW__KUBERNETES__RUN_AS_USER
+        value: *namespace-uid
+      - name: AIRFLOW__KUBERNETES__FS_GROUP
+        value: *namespace-uid
+  scheduler:
+    affinity:
+      podAntiAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+        - labelSelector:
+            matchExpressions:
+            - key: component
+              operator: In
+              values:
+              - web
+          topologyKey: "kubernetes.io/hostname"
   flower:
     enabled: false
   persistence:

@@ -30,7 +30,7 @@ import json
 YESTERDAY = datetime.now() - timedelta(days=1)
 
 namespace = os.getenv('NAMESPACE')
-in_cluster = os.getenv('LOCAL_AIRFLOW', False) == 'False'
+in_cluster = os.getenv('LOCAL_AIRFLOW', False) == False
 
 default_args = {
     'owner': 'airflow',

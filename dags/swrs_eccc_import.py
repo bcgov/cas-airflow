@@ -63,8 +63,8 @@ env_vars = {
     'MINIO_HOST': cas_minio_connection.host
 }
 
-stream_minio_image = "docker.pkg.github.com/bcgov/cas-airflow-dags/stream-minio:" + os.getenv('AIRFLOW_IMAGE_TAG')
-extract_zips_image = "docker.pkg.github.com/bcgov/cas-airflow-dags/extract-zips-to-ggircs:" + os.getenv('AIRFLOW_IMAGE_TAG')
+stream_minio_image = "docker.pkg.github.com/bcgov/cas-airflow/stream-minio:" + os.getenv('AIRFLOW_IMAGE_TAG')
+extract_zips_image = "docker.pkg.github.com/bcgov/cas-airflow/extract-zips-to-ggircs:" + os.getenv('AIRFLOW_IMAGE_TAG')
 
 extract_zips_volume_mount = VolumeMount('extract-zips-to-ggircs',
                                         mount_path='/app/tmp',

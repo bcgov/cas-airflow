@@ -87,7 +87,7 @@ extract_zips_env = {
     'PGPASSWORD': ggircs_postgres_connection.password,
     'PGDATABASE' : ggircs_postgres_connection.schema,
     'ECCC_ZIP_PASSWORDS': json.dumps(json.loads(swrs_eccc_connection.extra)['zip_passwords']),
-    'GCS_KEY': json.dumps(json.loads(BaseHook.get_connection('cas_ggl_storage').extra)["extra__google_cloud_platform__keyfile_dict"])
+    'GCS_KEY': json.loads(BaseHook.get_connection('cas_ggl_storage').extra)["extra__google_cloud_platform__keyfile_dict"]
 }
 
 extract_zips_to_ggircs_full = KubernetesPodOperator(

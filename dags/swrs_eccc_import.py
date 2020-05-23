@@ -82,12 +82,12 @@ extract_zips_env = {
     'GCS_BUCKET': 'swrs-import',
     'TMP_ZIP_DESTINATION': '/app/tmp/eccc-zip.zip',
     'PGHOST': ggircs_postgres_connection.host,
-    'PGPORT': ggircs_postgres_connection.port,
+    'PGPORT': str(ggircs_postgres_connection.port) if ggircs_postgres_connection.port else None,
     'PGUSER': ggircs_postgres_connection.login,
     'PGPASSWORD': ggircs_postgres_connection.password,
     'PGDATABASE' : ggircs_postgres_connection.schema,
-    'ECCC_ZIP_PASSWORDS': json.loads(swrs_eccc_connection.extra)['zip_passwords'],
-    'GCS_KEY': json.loads(BaseHook.get_connection('cas_ggl_storage').extra)["extra__google_cloud_platform__keyfile_dict"]
+    'ECCC_ZIP_PASSWORDS': json.dumps(json.loads(swrs_eccc_connection.extra)['zip_passwords']),
+    'GCS_KEY': json.dumps(json.loads(BaseHook.get_connection('cas_ggl_storage').extra)["extra__google_cloud_platform__keyfile_dict"])
 }
 
 extract_zips_to_ggircs_full = KubernetesPodOperator(
@@ -151,7 +151,7 @@ def load_ggircs(dag):
         image='docker-registry.default.svc:5000/wksv3k-dev/cas-ggircs-etl:latest',
         env_vars={
             'PGHOST': ggircs_postgres_connection.host,
-            'PGPORT': ggircs_postgres_connection.port,
+            'PGPORT': str(ggircs_postgres_connection.port) if ggircs_postgres_connection.port else None,
             'PGUSER': ggircs_postgres_connection.login,
             'PGPASSWORD': ggircs_postgres_connection.password,
             'PGDATABASE' : ggircs_postgres_connection.schema

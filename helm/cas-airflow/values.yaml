@@ -2,7 +2,7 @@
 namespace: &namespace wksv3k-dev
 namespace-uid: &namespace-uid '1009900000'
 gcs-folder: &gcs-folder 'gs://wksv3k-dev-cas-airflow'
-tag: &airflow-tag 7ebfde06d7b3e5f5a6cb748b64be8b49f6364221
+tag: &airflow-tag e590b7386309d989a53bfa78f49a6f99b5b4d71f
 airflow:
   route:
     enabled: true
@@ -47,8 +47,6 @@ airflow:
       AIRFLOW__KUBERNETES_ENVIRONMENT_VARIABLES__AIRFLOW__CORE__REMOTE_LOGGING: True
       AIRFLOW__KUBERNETES_ENVIRONMENT_VARIABLES__AIRFLOW__CORE__REMOTE_LOG_CONN_ID: gcs_logs
       AIRFLOW__KUBERNETES_ENVIRONMENT_VARIABLES__AIRFLOW__CORE__REMOTE_BASE_LOG_FOLDER: *gcs-folder
-      AIRFLOW__KUBERNETES__RUN_AS_USER: *namespace-uid
-      AIRFLOW__KUBERNETES__FS_GROUP: *namespace-uid
     extraEnv:
       - name: AIRFLOW__CORE__FERNET_KEY
         valueFrom:
@@ -70,6 +68,10 @@ airflow:
         value: *namespace-uid
       - name: AIRFLOW__KUBERNETES__FS_GROUP
         value: *namespace-uid
+      - name: NAMESPACE
+        value: *namespace
+      - name: AIRFLOW__KUBERNETES_ENVIRONMENT_VARIABLES__NAMESPACE
+        value: *namespace
   scheduler:
     affinity:
       podAntiAffinity:

@@ -162,7 +162,7 @@ def load_ggircs(dag):
         is_delete_operator_pod=True,
         get_logs=True,
         in_cluster=in_cluster,
-        do_xcom_push=True,
+        do_xcom_push=False,
         dag=dag)
 
 download_eccc_files >> should_extract_zips_op >> extract_zips_to_ggircs >> load_ggircs(dag_incremental)

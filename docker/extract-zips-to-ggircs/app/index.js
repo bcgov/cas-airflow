@@ -48,50 +48,101 @@ const TMP_ZIP_DESTINATION =
   const zipPasswords = JSON.parse(ECCC_ZIP_PASSWORDS);
 
   if (DOWNLOAD_ECCC_FILES_XCOM) {
-    console.log('processing files listed in DOWNLOAD_ECCC_FILES_XCOM');
-    const {uploadedObjects} = JSON.parse(DOWNLOAD_ECCC_FILES_XCOM);
-
-    for (const {bucketName, objectName} of uploadedObjects) {
-      if (!objectName || !bucketName) continue;
-      if (!objectName.endsWith('.zip')) {
-        console.log(
-          `${objectName} was uploaded in the bucket ${bucketName}, but that doesn't look like a zip file. Skipping.`
-        );
-        continue;
-      }
-
-      const zipFile = storage.bucket(bucketName).file(objectName);
-      if (!STREAM_FILES) {
-        await zipFile.download({destination: TMP_ZIP_DESTINATION});
-      }
-
-      await processZipFile(zipFile, zipPasswords, STREAM_FILES);
-    }
+    await extractXcomFiles(
+      storage,
+      DOWNLOAD_ECCC_FILES_XCOM,
+      STREAM_FILES,
+      zipPasswords
+    );
   } else if (GCS_BUCKET) {
-    console.log('Processing all zip files in gcs bucket');
-    const files = await storage.bucket(GCS_BUCKET).getFiles();
-    for (const file of files[0]) {
-      if (!file.name.endsWith('.zip')) {
-        console.log(
-          `${file.name} was uploaded in the bucket ${file.name}, but that doesn't look like a zip file. Skipping.`
-        );
-        continue;
-      }
-
-      if (!STREAM_FILES) {
-        await file.download({destination: TMP_ZIP_DESTINATION});
-      }
-
-      await processZipFile(file, zipPasswords, STREAM_FILES);
-    }
+    await extractBucketFiles(storage, GCS_BUCKET, STREAM_FILES, zipPasswords);
   }
 
-  if (!STREAM_FILES) {
-    fs.unlinkSync(TMP_ZIP_DESTINATION);
-  }
+  if (!STREAM_FILES) deleteTemporaryZipFile();
 })().catch((error) => {
   throw error;
 });
+
+async function extractXcomFiles(
+  storage,
+  DOWNLOAD_ECCC_FILES_XCOM,
+  STREAM_FILES,
+  zipPasswords
+) {
+  console.log('processing files listed in DOWNLOAD_ECCC_FILES_XCOM');
+  const {uploadedObjects} = JSON.parse(DOWNLOAD_ECCC_FILES_XCOM);
+
+  for (const {bucketName, objectName} of uploadedObjects) {
+    if (!objectName || !bucketName) continue;
+    if (!objectName.endsWith('.zip')) {
+      console.log(
+        `${objectName} was uploaded in the bucket ${bucketName}, but that doesn't look like a zip file. Skipping.`
+      );
+      continue;
+    }
+
+    const file = storage.bucket(bucketName).file(objectName);
+    if (!STREAM_FILES) {
+      const downloaded = await tryDownloadZipFile(file);
+      if (!downloaded) {
+        console.log(`Failed to download  ${file.name}. Skipping.`);
+        continue;
+      }
+    }
+
+    await processZipFile(file, zipPasswords, STREAM_FILES);
+  }
+}
+
+async function extractBucketFiles(
+  storage,
+  GCS_BUCKET,
+  STREAM_FILES,
+  zipPasswords
+) {
+  console.log('Processing all zip files in gcs bucket');
+  const files = await storage.bucket(GCS_BUCKET).getFiles();
+  for (const file of files[0]) {
+    if (!file.name.endsWith('.zip')) {
+      console.log(
+        `${file.name} was uploaded in the bucket ${file.name}, but that doesn't look like a zip file. Skipping.`
+      );
+      continue;
+    }
+
+    if (!STREAM_FILES) {
+      const downloaded = await tryDownloadZipFile(file);
+      if (!downloaded) {
+        console.log(`Failed to download  ${file.name}. Skipping.`);
+        continue;
+      }
+    }
+
+    await processZipFile(file, zipPasswords, STREAM_FILES);
+  }
+}
+
+async function tryDownloadZipFile(file, maxTries = 5) {
+  console.log(`downloading ${file.name} ...`);
+  let remainingTries = maxTries;
+  while (remainingTries > 0) {
+    try {
+      remainingTries--;
+      await file.download({destination: TMP_ZIP_DESTINATION});
+      return true;
+    } catch (error) {
+      console.log(
+        `failed to download ${file.name} with error "${error}" Attempting again.`
+      );
+    }
+  }
+
+  return false;
+}
+
+function deleteTemporaryZipFile() {
+  fs.unlinkSync(TMP_ZIP_DESTINATION);
+}
 
 async function processZipFile(
   zipFile,

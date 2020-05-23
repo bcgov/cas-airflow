@@ -8,4 +8,4 @@ RUN mkdir -p /airflow/xcom
 RUN chmod g=u /etc/passwd && \
     /usr/libexec/fix-permissions /app
 USER 1001
-ENTRYPOINT ["node", "/app/index.js"]
+ENTRYPOINT ["node", "--unhandled-rejections=strict", "/app/index.js"]

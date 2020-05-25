@@ -2,7 +2,7 @@
 namespace: &namespace wksv3k-dev
 namespace-uid: &namespace-uid '1009900000'
 gcs-folder: &gcs-folder gs://wksv3k-dev-cas-airflow
-tag: &airflow-tag v0.1.0-alpha.2
+airflow-tag: &airflow-tag v0.1.0-alpha.2
 airflow:
   route:
     enabled: true

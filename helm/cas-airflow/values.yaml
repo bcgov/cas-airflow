@@ -1,8 +1,8 @@
 
 namespace: &namespace wksv3k-dev
 namespace-uid: &namespace-uid '1009900000'
-gcs-folder: &gcs-folder 'gs://wksv3k-dev-cas-airflow'
-tag: &airflow-tag e590b7386309d989a53bfa78f49a6f99b5b4d71f
+gcs-folder: &gcs-folder gs://wksv3k-dev-cas-airflow
+tag: &airflow-tag v0.1.0-alpha.2
 airflow:
   route:
     enabled: true
@@ -44,6 +44,7 @@ airflow:
       AIRFLOW__KUBERNETES__WORKER_CONTAINER_REPOSITORY: *airflow-repo
       AIRFLOW__KUBERNETES__WORKER_CONTAINER_TAG: *airflow-tag
       AIRFLOW__KUBERNETES__IMAGE_PULL_SECRETS: github-registry
+      AIRFLOW__KUBERNETES_ENVIRONMENT_VARIABLES__AIRFLOW__KUBERNETES_IMAGE_PULL_SECRETS: github-registry
       AIRFLOW__KUBERNETES_ENVIRONMENT_VARIABLES__AIRFLOW__CORE__REMOTE_LOGGING: True
       AIRFLOW__KUBERNETES_ENVIRONMENT_VARIABLES__AIRFLOW__CORE__REMOTE_LOG_CONN_ID: gcs_logs
       AIRFLOW__KUBERNETES_ENVIRONMENT_VARIABLES__AIRFLOW__CORE__REMOTE_BASE_LOG_FOLDER: *gcs-folder

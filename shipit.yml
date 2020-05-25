@@ -1,0 +1,9 @@
+dependencies:
+  override: []
+deploy:
+  override:
+    - ./helm/cas-airflow/patch-values.sh
+    - helm dep up cas-airflow
+    - helm upgrade --install --atomic --timeout 600s --namespace "$ENVIRONMENT" cas-airflow ./helm/cas-airflow
+review:
+  checklist: []

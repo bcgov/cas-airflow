@@ -1,16 +1,78 @@
-# Airflow DAGs
+# CAS Airflow
 
-This is an experiment coupled with the [cas-helm](https://github.com/bcgov/cas-helm) deployment of Airflow.
+Configuration of [Apache Airflow](https://airflow.apache.org/) for the Climate Action Secretariat projects.
 
-## Cloning
+This repository contains the docker images, helm charts, and DAGs required to automate various workflows for the CAS team.
+
+## DAGs
+
+The dags directory contains the various workflows (Directed Acyclic Graphs)
+
+### Running tasks using the Kubernetes executor and KubernetesPodOperator
+
+- The Kubernetes Executor allows us to run tasks on Kubernetes as Pods.
+  - It gives us benefits to run one script inside one container within its own quota, and to schedule to the least-congested node in the cluster.
+- The KubernetesPodOperator allows us to create Pods on Kubernetes.
+  - It gives us the freedom to run the command in any arbitrary image, sandboxing the job run inside a docker container.
+- [`Airflow Kubernetes`](https://airflow.apache.org/docs/stable/kubernetes.html 'Airflow Kubernetes')
+
+## CI/CD
+
+The docker images are built on CircleCI for every commit, and pushed to this repository's GitHub registry if the build occurs on the `develop` or `master` branch, or if the commit is tagged.
+
+Deployement is done with Shipit, using the helm charts defined in the `helm` folder
+
+There are a couple manual steps required for installation (the first deployment) at the moment:
+
+1. Prior to deploying, the namespace where airflow is deployed should have a "github-registry" secret, containing the pull secrets to the docker registry
+
+1. Deploy with shipit
+
+1. The admin user should be created manually, by opening a terminal in the cas-airflow-web pod, and running the following commands:
+
+`export AIRFLOW__CORE__SQL_ALCHEMY_CONN="postgresql+psycopg2://$POSTGRES_USER:$POSTGRES_PASSWORD@$POSTGRES_HOST:$POSTGRES_PORT/$POSTGRES_DB"`
+
+In a Python terminal:
+
+```python
+import airflow
+from airflow import models, settings
+from airflow.contrib.auth.backends.password_auth import PasswordUser
+user = PasswordUser(models.User())
+user.username = 'cas-airflow-admin'
+user.email = 'new_user_email@example.com'
+user.password = '<password stored in button vault>'
+user.superuser = True
+session = settings.Session()
+session.add(user)
+session.commit()
+session.close()
+exit()
+
+```
+
+1. The connections required in the various dags need to be manually created
+1. The `extract-zips-to-ggircs-tmp` needs to be created (should probably be 20GB to be safe)
+
+## TODO
+
+- [ ] extract-zips-to-ggircs-tmp pvc (manually created) needs to be replaced with generic cas-airflow-tmp PVC
+- [ ] stream-minio should be replaced to use gcs client
+- [ ] the docker images should be imported in the cluster instead of pulling from GH every time we spin up a pod
+- [ ] authentication should be done with GitHub (allowing members of https://github.com/orgs/bcgov/teams/cas-developers)
+- [ ] automate the creation of connections on installation
+
+
+## Contributing
+### Cloning
 
 It's important that this repository be cloned to the default airflow home folder of `~/airflow`.
 
 ```bash
-git clone git@github.com:bcgov/cas-airflow-dags.git ~/airflow && cd $_
+git clone git@github.com:bcgov/cas-airflow.git ~/airflow && cd $_
 ```
 
-## Getting started
+### Getting started
 
 Use [asdf](https://asdf-vm.com/#/core-manage-asdf-vm) to install the correct version of python.
 
@@ -43,94 +105,10 @@ airflow webserver --daemon
 airflow scheduler --daemon
 ```
 
-## Writing
+### Writing
 
 Run a specific task in a specific dag.
 
 ```
 airflow test hello_world_dag hello_task $(date -u +"%Y-%m-%dT%H:%M:%SZ")
-```
-
-# k8s Docker image contains a script to stream public files to Minio
-
-- The Kubernetes Executor allows us to run tasks on Kubernetes as Pods.
-  - It gives us benefits to run one script inside one container within its own quota, and to schedule to the least-congested node in the cluster.
-- The KubernetesPodOperator allows us to create Pods on Kubernetes.
-  - It gives us the freedom to run the command in any arbitrary image, sandboxing the job run inside a docker container.
-- [`Airflow Kubernetes`](https://airflow.apache.org/docs/stable/kubernetes.html 'Airflow Kubernetes')
-
-## stream-minio.js takes following arguments
-
-- `host`: string | a host name or an IP address.
-
-  - it falls back to env var `MINIO_HOST` if not found.
-  - eg) --host="minio.pathfinder.gov.bc.ca"
-
-- `port`: number | optional, TCP/IP port number. Default value set to 80 for HTTP and 443 for HTTPs.
-
-  - it falls back to env var `MINIO_PORT` if not found.
-  - eg) --port=8080
-
-- `ssl`: boolean | If set to true, https is used instead of http. Default is false.
-
-  - it falls back to env var `MINIO_SSL` if not found.
-  - eg) --ssl
-
-- `access_key`: string | an unique identifier
-
-  - it falls back to env var `MINIO_ACCESS_KEY` if not found.
-  - eg) --access_key="AKIAIOSFODNN7EXAMPLE"
-
-- `secret_key`: string | the password to your account.
-
-  - it falls back to env var `MINIO_SECRET_KEY` if not found.
-  - eg) --secret_key="wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY"
-
-- `bucket`: string | a bucket name to store the files
-
-  - eg) --bucket="my-bucket"
-
-- `url`: string | one or more public file url(s)
-  - eg) --url="http://www.example.com/file1.txt"
-  - eg) --url="http://www.example.com/file1.txt" --url="http://www.example.com/file2.txt"
-
-## bash commands to crawl a website and generate url argument
-
-```bash
-wget -r -nd --spider --delete-after --force-html --user "$USER" --password "$PASSWORD" -D "$DOMAINS" -l $DEPTH "$WEBSITE" 2>&1 \
-| awk '/^--/ {u=$3} /^HTTP request sent, awaiting response... / {s=$6} /^Length: .*\[(.+)\]$/ {t=$NF} /^$/ {printf "--url=\"%s\"\n",u}' | egrep "$FILTER" | sort | uniq | tr '\n' ' '
-```
-
-### example
-
-```bash
-wget -r -nd --spider --delete-after --force-html -l 2 "https://nodejs.org/dist/" 2>&1 \
-| awk '/^--/ {u=$3} /^HTTP request sent, awaiting response... / {s=$6} /^Length: .*\[(.+)\]$/ {t=$NF} /^$/ {printf "--url=\"%s\"\n",u}' | egrep "\.png|\.svg" | sort | uniq | tr '\n' ' '
-```
-
-```
---url="https://nodejs.org/static/images/favicons/apple-touch-icon.png" --url="https://nodejs.org/static/images/favicons/favicon-16x16.png" --url="https://nodejs.org/static/images/favicons/favicon-32x32.png" --url="https://nodejs.org/static/images/favicons/safari-pinned-tab.svg" --url="https://nodejs.org/static/images/logos/js-green.svg" --url="https://nodejs.org/static/images/logo.svg" --url="https://nodejs.org/static/images/openjs_foundation-logo.svg"
-```
-
-## how to run the script with url argument generated by bash commands
-
-```bash
-node stream-minio --bucket="$BUCKET_NAME" --host="$MINIO_HOST" --ssl $(`bash commands above`)
-```
-
-### example
-
-```bash
-node stream-minio --bucket="new-bucket" --host="minio.pathfinder.gov.bc.ca" --access_key="AKIAIOSFODNN7EXAMPLE" --secret_key="wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY" --ssl $(wget -r -nd --spider --delete-after --force-html -l 2 "https://nodejs.org/dist/" 2>&1 \
-| awk '/^--/ {u=$3} /^HTTP request sent, awaiting response... / {s=$6} /^Length: .*\[(.+)\]$/ {t=$NF} /^$/ {printf "--url=\"%s\"\n",u}' | egrep "\.png|\.svg" | sort | uniq | tr '\n' ' ')
-```
-
-```
-uploading "apple-touch-icon.png"
-uploading "favicon-16x16.png"
-uploading "favicon-32x32.png"
-uploading "safari-pinned-tab.svg"
-uploading "js-green.svg"
-uploading "logo.svg"
-uploading "openjs_foundation-logo.svg"
 ```

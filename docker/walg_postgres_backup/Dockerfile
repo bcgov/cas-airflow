@@ -1,3 +1,5 @@
+FROM DEBIAN
+
 COPY root /
 
 WORKDIR /app

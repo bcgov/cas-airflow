@@ -33,11 +33,12 @@ DAG_ID = os.path.basename(__file__).replace(".pyc", "").replace(".py", "")
 SCHEDULE_INTERVAL = '0 * * * *' # @hourly
 make_backup = DAG(DAG_ID, schedule_interval=SCHEDULE_INTERVAL, default_args=default_args)
 compute_resource = {'request_cpu': '1', 'request_memory': '2Gi', 'limit_cpu': '2', 'limit_memory': '4Gi'}
-postgres_backup_image = "docker.pkg.github.com/bcgov/cas-airflow-dags/walg:" + os.getenv('AIRFLOW_IMAGE_TAG')
+# postgres_backup_image = "docker.pkg.github.com/bcgov/cas-airflow-dags/walg:" + os.getenv('AIRFLOW_IMAGE_TAG')
 
 DATABASE_CONNECTION_NAME = 'ciip_postgres'
 postgres_connection = BaseHook.get_connection(DATABASE_CONNECTION_NAME)
 
+# these should already exist in the postgres image?
 env_vars = {
     'GOOGLE_APPLICATION_CREDENTIALS'=json.loads(BaseHook.get_connection('cas_ggl_storage').extra)["extra__google_cloud_platform__keyfile_dict"]
     'WALG_GS_PREFIX'='gs://walg_test/uploadtest'
@@ -48,12 +49,14 @@ env_vars = {
     'PGDATABASE' : postgres_connection.schema
 }
 
+# can the path to the backup point to google storage or do we have to 'fetch' it first?
+# how to get the lsn?
 make_backup = KubernetesPodOperator(
     task_id='make_incremental_postgres_backup',
     name='make_incremental_postgres_backup',
     namespace=namespace,
-    image=postgres_backup_image,
-    cmds=["./make_incremental_backup.sh"],
+    # image=postgres_backup_image,
+    cmds=["walg catchup-push"],
     arguments=["<PATH_TO_BACKUP> && <REPLICA_LSN>"],
     # Needs the path to the backup & the LSN of the replica for the backup for incremental
     env_vars=env_vars,
@@ -74,3 +77,5 @@ make_backup
 # Update cas-postgres repo to:
 # 1) Deploy with the necessary configs outlined in docs.md
 # 2) Trigger the Full backup dag after deploy (a full backup is needed before incremental backups can happen)
+
+#wal-g catchup-push $1 $2

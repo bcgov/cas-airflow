@@ -144,3 +144,5 @@ unittests.cfg
 
 # Helm
 helm/**/charts/**/*
+
+.vscode/settings.json

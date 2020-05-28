@@ -6,6 +6,7 @@ deploy:
     - helm dep up ./helm/postgresql
     - helm dep up ./helm/airflow
     - helm dep up ./helm/cas-airflow
-    - helm upgrade --install --atomic --timeout 600s --namespace "$ENVIRONMENT" cas-airflow ./helm/cas-airflow
+    - helm upgrade --install --atomic --timeout 900s --namespace "$ENVIRONMENT" cas-airflow ./helm/cas-airflow:
+        timeout: 900
 review:
   checklist: []

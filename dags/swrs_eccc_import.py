@@ -18,11 +18,12 @@ These DAGs the following connections:
 from airflow import DAG
 from datetime import datetime, timedelta
 from airflow.contrib.operators.kubernetes_pod_operator import KubernetesPodOperator
-from airflow.operators.python_operator import ShortCircuitOperator
+from airflow.operators.python_operator import ShortCircuitOperator, PythonOperator
 from airflow.contrib.kubernetes.secret import Secret
 from airflow.contrib.kubernetes.volume import Volume
 from airflow.contrib.kubernetes.volume_mount import VolumeMount
 from airflow.hooks.base_hook import BaseHook
+from trigger_k8s_job import trigger_k8s_job
 
 import os
 import json
@@ -165,5 +166,22 @@ def load_ggircs(dag):
         do_xcom_push=False,
         dag=dag)
 
-download_eccc_files >> should_extract_zips_op >> extract_zips_to_ggircs >> load_ggircs(dag_incremental)
-extract_zips_to_ggircs_full >> load_ggircs(dag_full)
+def import_swrs_in_ciip(dag):
+    return PythonOperator(
+        python_callable=trigger_k8s_job,
+        task_id='cas_ciip_swrs_import_job',
+        op_args=['cas-ciip-swrs-import', namespace],
+        dag=dag
+    )
+
+def load_ciip_facilities(dag):
+    return PythonOperator(
+        python_callable=trigger_k8s_job,
+        task_id='load_ciip_facilities_job',
+        op_args=['cas-ciip-portal-schema-deploy', namespace],
+        dag=dag
+    )
+
+download_eccc_files >> should_extract_zips_op >> extract_zips_to_ggircs
+extract_zips_to_ggircs >> load_ggircs(dag_incremental) >> import_swrs_in_ciip(dag_incremental) >> load_ciip_facilities(dag_incremental)
+extract_zips_to_ggircs_full >> load_ggircs(dag_full) >> import_swrs_in_ciip(dag_full) >> load_ciip_facilities(dag_full)

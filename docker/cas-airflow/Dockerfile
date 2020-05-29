@@ -79,8 +79,6 @@ COPY root /
 RUN useradd -ms /bin/bash -d ${AIRFLOW_HOME} --uid ${USER_ID} airflow
 RUN chown -R airflow: ${AIRFLOW_HOME}
 
-RUN update-ca-certificates
-
 RUN chmod g=u /etc/passwd && \
     /usr/libexec/fix-permissions ${AIRFLOW_HOME}
 

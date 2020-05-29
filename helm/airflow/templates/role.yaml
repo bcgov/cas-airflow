@@ -21,4 +21,8 @@ rules:
   resources:
   - "pods/exec"
   verbs: ["create", "get"]
+- apiGroups: ["batch"]
+  resources:
+  - "jobs"
+  verbs: ["create", "get", "delete", "list", "watch"]
 {{ end }}

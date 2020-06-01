@@ -33,31 +33,15 @@ DAG_ID = os.path.basename(__file__).replace(".pyc", "").replace(".py", "")
 SCHEDULE_INTERVAL = null
 make_backup = DAG(DAG_ID, default_args=default_args)
 compute_resource = {'request_cpu': '1', 'request_memory': '2Gi', 'limit_cpu': '2', 'limit_memory': '4Gi'}
-# postgres_backup_image = "docker.pkg.github.com/bcgov/cas-airflow-dags/walg:" + os.getenv('AIRFLOW_IMAGE_TAG')
-
-DATABASE_CONNECTION_NAME = 'ciip_postgres'
-postgres_connection = BaseHook.get_connection(DATABASE_CONNECTION_NAME)
-
-# these should already exist in the postgres image?
-env_vars = {
-    'GOOGLE_APPLICATION_CREDENTIALS'=json.loads(BaseHook.get_connection('cas_ggl_storage').extra)["extra__google_cloud_platform__keyfile_dict"]
-    'WALG_GS_PREFIX'='gs://walg_test/uploadtest'
-    'PGHOST': postgres_connection.host,
-    'PGPORT': postgres_connection.port,
-    'PGUSER': postgres_connection.login,
-    'PGPASSWORD': postgres_connection.password,
-    'PGDATABASE' : postgres_connection.schema
-}
+postgres_image = "docker-registry.default.svc:5000/wksv3k-dev/cas-postgres:latest"
 
 make_backup = KubernetesPodOperator(
     task_id='make_full_postgres_backup',
     name='make_full_postgres_backup',
     namespace=namespace,
-    # image=postgres_backup_image,
+    image=postgres_image,
     cmds=["wal-g backup-push"],
-    arguments=["../var/lib/pgsql/data/userdata/global"],
-    # Needs the path to the postgres cluster to retrieve pg_control for a full backup
-    env_vars=env_vars,
+    arguments=["$PGDATA"],
     resources=compute_resource,
     is_delete_operator_pod=True,
     get_logs=True,
@@ -65,13 +49,3 @@ make_backup = KubernetesPodOperator(
     dag=make_backup)
 
 make_backup
-
-## WIP TODOs ##
-# Finalize dockerfile & Add docker image job to ci config
-# Resolve above comments / add necessary paths
-# Create more (similar) dags:
-# 1) Full backup dag (unscheduled, trigger by api?)
-# 2) Restore dag? (unscheduled, triggered by user?) (would need a restore.sh file with backup-fetch)
-# Update cas-postgres repo to:
-# 1) Deploy with the necessary configs outlined in docs.md
-# 2) Trigger the Full backup dag after deploy (a full backup is needed before incremental backups can happen)

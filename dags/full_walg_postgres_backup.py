@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-# DAG to backup the ciip_portal postgres database every hour to a gcs bucket.
+# DAG to make a full backup of a postgres database to a gcs bucket.
 """
 from airflow import DAG
 from datetime import datetime, timedelta
@@ -26,14 +26,20 @@ default_args = {
 }
 
 DAG_ID = os.path.basename(__file__).replace(".pyc", "").replace(".py", "")
-SCHEDULE_INTERVAL = null
-make_backup = DAG(DAG_ID, default_args=default_args)
+SCHEDULE_INTERVAL = None
+make_backup = DAG('full_walg_postgres_backup', default_args=default_args, schedule_interval=SCHEDULE_INTERVAL)
+
+exec_command = [
+    '/bin/sh',
+    '-c',
+    'source /usr/share/container-scripts/postgresql/common.sh; generate_passwd_file; wal-g backup-push $PGDATA'
+]
 
 def exec_backup_in_pod(dag):
     return PythonOperator(
         python_callable=exec_in_pod,
         task_id='make_full_postgres_backup',
-        op_args=['cas-ciip-postgres-master', namespace, 'wal-g backup-push $PGDATA'],
+        op_args=['cas-ciip-postgres-master', namespace, exec_command],
         dag=dag
     )
 

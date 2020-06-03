@@ -32,7 +32,7 @@ make_backup = DAG('incremental_walg_postgres_backup', default_args=default_args,
 exec_command = [
     '/bin/sh',
     '-c',
-    'source /usr/share/container-scripts/postgresql/common.sh; generate_passwd_file; lsn_string="$(pg_controldata -D $PGDATA | grep "Latest checkpoint\'s REDO location")"; echo "$lsn_string"; lsn_number=$(echo $lsn_string | cut -c 38- | sed "s/\//x/g"); echo $lsn_number'#;wal-g catchup-push $PGDATA --from-lsn 0x$lsn_number'
+    'source /usr/share/container-scripts/postgresql/common.sh; generate_passwd_file; lsn_string="$(pg_controldata -D $PGDATA | grep "Latest checkpoint\'s REDO WAL file")"; echo "$lsn_string"; lsn_number=$(echo $lsn_string | cut -c 44- | sed "s/\///g"); echo $lsn_number; wal-g catchup-push $PGDATA --from-lsn 0x$lsn_number'
 ]
 
 def exec_backup_in_pod(dag):

@@ -1,21 +1,23 @@
 from kubernetes import client, config
 import datetime
+import time
 
+# Retrieves a cron_job by name & namespace
 def get_cronjob(cronjob_name, namespace):
   configuration = client.Configuration()
-  api = client.BatchV1Api(client.ApiClient(configuration))
   # API client for cronjobs
   batch = client.BatchV1beta1Api(client.ApiClient(configuration))
-
-  cronjobs = batch.list_namespaced_cron_job(namespace).items
-  print('jobs')
-  # print(cronjobs)
-  for job in cronjobs:
-    if job.metadata.name == cronjob_name:
-      print(job.metadata.name)
-      return job
+  try:
+    cronjobs = batch.list_namespaced_cron_job(namespace).items
+    for job in cronjobs:
+      # cronjob names must be unique
+      if job.metadata.name == cronjob_name:
+        return job
+  except ApiException as e:
+    print("Exception when calling BatchV1Api->list_namespaced_cron_job: %s\n" % e)
   return False
 
+# Creates a job from a cronjob job_template
 def trigger_k8s_cronjob(cronjob_name, namespace):
   try:
       config.load_incluster_config()
@@ -29,10 +31,60 @@ def trigger_k8s_cronjob(cronjob_name, namespace):
 
   if cronjob:
     date_str = datetime.datetime.now().strftime("%Y%m%d%H%M%S.%f")
+    # Change the name of the job to be created to show that it was manually created at time: date_str
     cronjob.spec.job_template.metadata.name = str(cronjob.metadata.name + '-manual-' + date_str)[:50]
+    try:
+      # Create a job from the job_template of the cronjob
+      created_job = api.create_namespaced_job(namespace=namespace,body=cronjob.spec.job_template)
+    except ApiException as e:
+      print("Exception when calling BatchV1Api->create_namespaced_job: %s\n" % e)
 
-    return api.create_namespaced_job(namespace=namespace,body=cronjob.spec.job_template)
+    # Get the uid from the newly created job
+    controllerUid = created_job.metadata.uid
 
+    core_v1 = client.CoreV1Api(client.ApiClient(configuration))
+
+    # Create a label_selector from the job's UID
+    pod_label_selector = "controller-uid=" + controllerUid
+    try:
+      # Get the pod name for the newly created job
+      pods_list = core_v1.list_namespaced_pod(namespace, label_selector=pod_label_selector, timeout_seconds=10)
+      pod_name = pods_list.items[0].metadata.name
+    except ApiException as e:
+      print("Exception when calling CoreV1Api->list_namespaced_pod: %s\n" % e)
+
+
+    try:
+      # Get the status of the newly created job
+      status = core_v1.read_namespaced_pod_status(pod_name, namespace).status.phase
+    except ApiException as e:
+      print("Exception when calling CoreV1Api->read_namespaced_pod_status: %s\n" % e)
+
+    # Sleep while the pod has not completed, break on Failed or Succeeded status
+    while status == 'Pending' or status =='Running':
+      try:
+        status = core_v1.read_namespaced_pod_status(pod_name, namespace).status.phase
+        print('Current Status: ' + status)
+        if status == 'Succeeded' or status == 'Failed':
+          break
+        print('sleeping')
+        time.sleep(5)
+      except ApiException as e:
+        print("Exception when calling CoreV1Api->read_namespaced_pod_status: %s\n" % e)
+
+    try:
+      # Retrieve and print the log from the finished pod
+      pod_log = core_v1.read_namespaced_pod_log(name=pod_name, namespace=namespace, follow=True, pretty=True, timestamps=True)
+      print(pod_log)
+    except ApiException as e:
+      print("Exception when calling CoreV1Api->read_namespaced_pod_log: %s\n" % e)
+    print(status)
+    # Return True if status='Succeeded', False if 'Failed'
+    if status == 'Succeeded':
+      return True
+    return False
+
+  # get_cronjob() returned False
   else:
     print("job not found")
-    return False
+  return False

@@ -3,10 +3,11 @@ namespace: &namespace wksv3k-dev
 namespace-uid: &namespace-uid '1009900000'
 gcs-folder: &gcs-folder gs://wksv3k-dev-cas-airflow
 airflow-tag: &airflow-tag v0.1.0-alpha.2
+route-prefix: &route-prefix cas-airflow
 airflow:
   route:
     enabled: true
-    prefix: cas-airflow-dev
+    prefix: *route-prefix
     clusterDomain: pathfinder.gov.bc.ca
   web:
     initialDelaySeconds: 60

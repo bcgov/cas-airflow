@@ -1,7 +1,7 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: {{ template "cas-airflow.fullname" . }}-cas-shelf-bucket-provider
+  name: cas-airflow-cas-shelf-bucket-provider
   annotations:
     "helm.sh/hook": "pre-install"
     "helm.sh/hook-delete-policy": "before-hook-creation"
@@ -12,10 +12,10 @@ spec:
   activeDeadlineSeconds: 7200
   template:
     metadata:
-      name: {{ template "cas-airflow.fullname" . }}-cas-shelf-bucket-provider
+      name: cas-airflow-cas-shelf-bucket-provider
     spec:
       containers:
-        - name: {{ template "cas-airflow.fullname" . }}-cas-shelf-bucket-provider
+        - name: cas-airflow-cas-shelf-bucket-provider
           resources:
             limits:
               cpu: 100m
@@ -35,5 +35,5 @@ spec:
                 secretKeyRef:
                   key: workspace_id
                   name: terraform-cloud-workspace
-          command: ["bash",  "/script.sh", {{ .Values.namespace | quote }}, {{ template "cas-airflow.fullname" . | quote }}]
+          command: ["bash",  "/script.sh", {{ .Values.namespace | quote }}, "cas-airflow" ]
       restartPolicy: Never

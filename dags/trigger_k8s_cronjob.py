@@ -1,4 +1,5 @@
 from kubernetes import client, config
+from kubernetes.client.rest import ApiException
 import datetime
 import time
 
@@ -61,7 +62,8 @@ def trigger_k8s_cronjob(cronjob_name, namespace):
       print("Exception when calling CoreV1Api->read_namespaced_pod_status: %s\n" % e)
 
     # Sleep while the pod has not completed, break on Failed or Succeeded status
-    while status == 'Pending' or status =='Running':
+    pending_statuses = ['Pending', 'Running', 'Unknown']
+    while status in pending_statuses:
       try:
         status = core_v1.read_namespaced_pod_status(pod_name, namespace).status.phase
         print('Current Status: ' + status)
@@ -74,15 +76,15 @@ def trigger_k8s_cronjob(cronjob_name, namespace):
 
     try:
       # Retrieve and print the log from the finished pod
-      pod_log = core_v1.read_namespaced_pod_log(name=pod_name, namespace=namespace, follow=True, pretty=True, timestamps=True)
+      pod_log = core_v1.read_namespaced_pod_log(name=pod_name, namespace=namespace, pretty=True, timestamps=True)
       print(pod_log)
     except ApiException as e:
       print("Exception when calling CoreV1Api->read_namespaced_pod_log: %s\n" % e)
     print(status)
     # Return True if status='Succeeded', False if 'Failed'
     if status == 'Succeeded':
-      return True
-    return False
+      return 'Job Succeeded'
+    raise Exception('Job Failed')
 
   # get_cronjob() returned False
   else:

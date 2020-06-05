@@ -146,3 +146,4 @@ unittests.cfg
 helm/**/charts/**/*
 
 .vscode/settings.json
+.scratch

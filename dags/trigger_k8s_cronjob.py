@@ -88,5 +88,4 @@ def trigger_k8s_cronjob(cronjob_name, namespace):
 
   # get_cronjob() returned False
   else:
-    print("job not found")
-  return False
+    raise Exception("Could not find cronjob")

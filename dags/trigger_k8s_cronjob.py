@@ -48,6 +48,8 @@ def trigger_k8s_cronjob(cronjob_name, namespace):
     # Create a label_selector from the job's UID
     pod_label_selector = "controller-uid=" + controllerUid
     try:
+      # Wait a bit for the job to be created
+      time.sleep(10)
       # Get the pod name for the newly created job
       pods_list = core_v1.list_namespaced_pod(namespace, label_selector=pod_label_selector, timeout_seconds=10)
       pod_name = pods_list.items[0].metadata.name

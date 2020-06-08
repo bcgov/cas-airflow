@@ -31,9 +31,9 @@ def trigger_k8s_cronjob(cronjob_name, namespace):
   cronjob = get_cronjob(cronjob_name, namespace)
 
   if cronjob:
-    date_str = datetime.datetime.now().strftime("%Y%m%d%H%M%S.%f")
+    date_str = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
     # Change the name of the job to be created to show that it was manually created at time: date_str
-    cronjob.spec.job_template.metadata.name = str(cronjob.metadata.name + '-manual-' + date_str)[:50]
+    cronjob.spec.job_template.metadata.name = str(date_str + cronjob.metadata.name)[:63]
     try:
       # Create a job from the job_template of the cronjob
       created_job = api.create_namespaced_job(namespace=namespace,body=cronjob.spec.job_template)

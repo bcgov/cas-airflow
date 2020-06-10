@@ -145,42 +145,25 @@ extract_zips_to_ggircs = KubernetesPodOperator(
     dag=dag_incremental)
 
 def load_ggircs(dag):
-    return KubernetesPodOperator(
-        task_id='load_ggircs_swrs',
-        name='load_ggircs_swrs',
-        namespace=namespace,
-        image='docker-registry.default.svc:5000/wksv3k-dev/cas-ggircs-etl:latest',
-        env_vars={
-            'PGHOST': ggircs_postgres_connection.host,
-            'PGPORT': str(ggircs_postgres_connection.port) if ggircs_postgres_connection.port else None,
-            'PGUSER': ggircs_postgres_connection.login,
-            'PGPASSWORD': ggircs_postgres_connection.password,
-            'PGDATABASE' : ggircs_postgres_connection.schema
-        },
-        cmds=["psql"],
-        arguments=["-c", "select swrs_transform.load()"],
-        resources=compute_resource,
-        is_delete_operator_pod=True,
-        get_logs=True,
-        in_cluster=in_cluster,
-        do_xcom_push=False,
+    return PythonOperator(
+        python_callable=trigger_k8s_cronjob,
+        task_id='load_ggircs',
+        op_args=['cas-ggircs-etl-deploy', namespace],
         dag=dag)
 
 def import_swrs_in_ciip(dag):
     return PythonOperator(
-        python_callable=trigger_k8s_job,
-        task_id='cas_ciip_swrs_import_job',
-        op_args=['cas-ciip-swrs-import', namespace],
-        dag=dag
-    )
+        python_callable=trigger_k8s_cronjob,
+        task_id='import_swrs_in_ciip',
+        op_args=['cas-ciip-portal-swrs-import', namespace],
+        dag=dag)
 
 def load_ciip_facilities(dag):
     return PythonOperator(
-        python_callable=trigger_k8s_job,
-        task_id='load_ciip_facilities_job',
-        op_args=['cas-ciip-portal-schema-deploy', namespace],
-        dag=dag
-    )
+        python_callable=trigger_k8s_cronjob,
+        task_id='load_ciip_facilities',
+        op_args=['cas-ciip-portal-schema-deploy-data', namespace],
+        dag=dag)
 
 download_eccc_files >> should_extract_zips_op >> extract_zips_to_ggircs
 extract_zips_to_ggircs >> load_ggircs(dag_incremental) >> import_swrs_in_ciip(dag_incremental) >> load_ciip_facilities(dag_incremental)

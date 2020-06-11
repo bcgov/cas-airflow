@@ -16,7 +16,8 @@ def get_pod_name(deployment_name, namespace):
   api_instance = kubernetes.client.CoreV1Api(kubernetes.client.ApiClient(configuration))
 
   try:
-      api_response = api_instance.list_namespaced_pod(namespace, pretty='true')
+      pod_label_selector="app=" + deployment_name + ", spilo-role=master"
+      api_response = api_instance.list_namespaced_pod(namespace, label_selector=pod_label_selector, pretty='true')
       for x in api_response.items:
         if deployment_name in x.metadata.name:
           return x.metadata.name

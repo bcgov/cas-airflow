@@ -28,28 +28,81 @@ default_args = {
 full_exec_command = [
     '/bin/sh',
     '-c',
-    'source /usr/share/container-scripts/postgresql/common.sh; generate_passwd_file; wal-g backup-push $PGDATA'
+      'PGPASSWORD=$PGPASSWORD_SUPERUSER envdir $WALE_ENV_DIR wal-g backup-push $PGDATA'
 ]
 
 incremental_exec_command = [
     '/bin/sh',
     '-c',
-    'source /usr/share/container-scripts/postgresql/common.sh; generate_passwd_file; lsn_string="$(pg_controldata -D $PGDATA | grep "Latest checkpoint\'s REDO WAL file")"; echo "$lsn_string"; lsn_number=$(echo $lsn_string | cut -c 44- | sed "s/\///g"); echo $lsn_number; wal-g catchup-push $PGDATA --from-lsn 0x$lsn_number'
+    'lsn_string=$(psql -qtA -c \'select pg_walfile_name(pg_current_wal_lsn())\'); echo "$lsn_string"; lsn_number=$(echo $lsn_string | cut -c 9-); echo $lsn_number; PGPASSWORD=$PGPASSWORD_SUPERUSER envdir $WALE_ENV_DIR wal-g catchup-push $PGDATA --from-lsn 0x$lsn_number'
 ]
+
+## Work for later: recovery dag
+
+# https://www.postgresql.org/docs/12/runtime-config-wal.html#RUNTIME-CONFIG-WAL-RECOVERY-TARGET
+# before doing this, replicas should be lowered to 1
+# full_restore_exec_command = [
+#     '/bin/sh',
+#     '-c',
+#     'patronictl pause; \\
+#     pg_ctl stop; \\
+#     envdir $WALE_ENV_DIR wal-g backup-fetch /tmp/walg LATEST; \\
+#     touch /tmp/walg/recovery.signal; \\
+#     pg_ctl -D /tmp/walg/ start -o "--restore_command=\'PGPASSWORD=$PGPASSWORD_SUPERUSER envdir $WALE_ENV_DIR wal-g wal-fetch %f %p\' --recovery_target_time=\'2020-06-11 11:09:00-07\' --recovery_target_action=promote"; \\
+#     pg_ctl -D /tmp/walg/ stop; \\
+#     mv $PGDATA $PGDATA-bak; \\
+#     mv /tmp/walg/ $PGDATA; \\
+#     pg_ctl start; \\
+#     patronictl resume; \\
+#     rm -rf $PGDATA-bak'
+# ]
+
+# incremental_restore_exec_command = [
+#     '/bin/sh',
+#     '-c',
+#     'patronictl pause; \\
+#     pg_ctl stop; \\
+#     envdir $WALE_ENV_DIR wal-g catchup-fetch /tmp/walg LATEST; \\
+#     touch /tmp/walg/recovery.signal; \\
+#     pg_ctl -D /tmp/walg/ start -o "--restore_command=\'PGPASSWORD=$PGPASSWORD_SUPERUSER envdir $WALE_ENV_DIR wal-g wal-fetch %f %p\' --recovery_target_time=\'2020-06-11 11:09:00-07\' --recovery_target_action=promote"; \\
+#     pg_ctl -D /tmp/walg/ stop; \\
+#     mv $PGDATA $PGDATA-bak; \\
+#     mv /tmp/walg/ $PGDATA; \\
+#     pg_ctl start; \\
+#     patronictl resume; \\
+#     rm -rf $PGDATA-bak'
+# ]
+
+
+def test(a,b,c):
+  print('hello')
 
 DAG_ID = os.path.basename(__file__).replace(".pyc", "").replace(".py", "")
 SCHEDULE_INTERVAL = '@hourly'
 
-ciip_incremental_backup = DAG(DAG_ID + '_ciip_incremental', default_args=default_args, schedule_interval=SCHEDULE_INTERVAL, op_args=['cas-ciip-portal-patroni', namespace, incremental_exec_command])
-ciip_full_backup = DAG(DAG_ID + '_ciip_full', default_args=default_args, schedule_interval=None, op_args=['cas-ciip-portal-patroni', namespace, full_exec_command])
+ciip_incremental_backup = DAG(DAG_ID + '_ciip_incremental', default_args=default_args, schedule_interval=SCHEDULE_INTERVAL)
+ciip_full_backup = DAG(DAG_ID + '_ciip_full', default_args=default_args, schedule_interval=None)
 
-ggircs_incremental_backup = DAG(DAG_ID + '_ggircs_incremental', default_args=default_args, schedule_interval=SCHEDULE_INTERVAL, op_args=['cas-ggircs-patroni', namespace, incremental_exec_command])
-ggircs_full_backup = DAG(DAG_ID + '_ggircs_full', default_args=default_args, schedule_interval=None, op_args=['cas-ggircs-patroni', namespace, full_exec_command])
+ggircs_incremental_backup = DAG(DAG_ID + '_ggircs_incremental', default_args=default_args, schedule_interval=SCHEDULE_INTERVAL)
+ggircs_full_backup = DAG(DAG_ID + '_ggircs_full', default_args=default_args, schedule_interval=None)
+
+# remove this
+namespace = 'wksv3k-dev'
 
 def exec_backup_in_pod(dag):
+    exec_command = full_exec_command
+    deployment_name = 'cas-ciip-portal-patroni'
+
+    if dag.dag_id.find('incremental') != -1:
+      exec_command = incremental_exec_command
+
+    if dag.dag_id.find('ggircs') != -1:
+      deployment_name = 'cas-ggircs-patroni'
+
     return PythonOperator(
         python_callable=exec_in_pod,
-        task_id='make_full_postgres_backup',
+        task_id='make_postgres_backup',
+        op_args=[deployment_name, namespace, exec_command],
         dag=dag
     )
 

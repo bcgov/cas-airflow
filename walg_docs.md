@@ -24,3 +24,7 @@ https://www.fusionbox.com/blog/detail/postgresql-wal-archiving-with-wal-g-and-s3
 postgres write-ahead-logging
 https://www.postgresql.org/docs/9.0/wal-intro.html
 https://www.postgresql.org/docs/9.0/runtime-config-wal.html
+
+archive/recovery:
+https://www.postgresql.org/docs/current/runtime-config-wal.html#RUNTIME-CONFIG-WAL-RECOVERY-TARGET
+https://gist.github.com/pohzipohzi/2f111d11ae0469266ddf50a5d71bfd60

@@ -8,7 +8,6 @@ from airflow.operators.python_operator import PythonOperator
 from dags.exec_in_pod import exec_in_pod
 
 import os
-import json
 
 YESTERDAY = datetime.now() - timedelta(days=1)
 
@@ -73,21 +72,13 @@ incremental_exec_command = [
 #     rm -rf $PGDATA-bak'
 # ]
 
-
-def test(a,b,c):
-  print('hello')
-
 DAG_ID = os.path.basename(__file__).replace(".pyc", "").replace(".py", "")
-SCHEDULE_INTERVAL = '@hourly'
 
-ciip_incremental_backup = DAG(DAG_ID + '_ciip_incremental', default_args=default_args, schedule_interval=SCHEDULE_INTERVAL)
+ciip_incremental_backup = DAG(DAG_ID + '_ciip_incremental', default_args=default_args, schedule_interval='@hourly')
 ciip_full_backup = DAG(DAG_ID + '_ciip_full', default_args=default_args, schedule_interval=None)
 
-ggircs_incremental_backup = DAG(DAG_ID + '_ggircs_incremental', default_args=default_args, schedule_interval=SCHEDULE_INTERVAL)
+ggircs_incremental_backup = DAG(DAG_ID + '_ggircs_incremental', default_args=default_args, schedule_interval='@daily')
 ggircs_full_backup = DAG(DAG_ID + '_ggircs_full', default_args=default_args, schedule_interval=None)
-
-# remove this
-namespace = 'wksv3k-dev'
 
 def exec_backup_in_pod(dag):
     exec_command = full_exec_command

@@ -10,6 +10,13 @@ airflow:
     prefix: *route-prefix
     clusterDomain: pathfinder.gov.bc.ca
   web:
+    resources:
+      limits:
+        cpu: "300m"
+        memory: "1Gi"
+      requests:
+        cpu: "100m"
+        memory: "512Mi"
     initialDelaySeconds: 60
   dags:
     git:
@@ -75,6 +82,13 @@ airflow:
       - name: AIRFLOW__KUBERNETES_ENVIRONMENT_VARIABLES__NAMESPACE
         value: *namespace
   scheduler:
+    resources:
+      limits:
+        cpu: "1000m"
+        memory: "1Gi"
+      requests:
+        cpu: "500m"
+        memory: "512Mi"
     affinity:
       podAntiAffinity:
         requiredDuringSchedulingIgnoredDuringExecution:

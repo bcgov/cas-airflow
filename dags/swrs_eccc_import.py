@@ -23,7 +23,7 @@ from airflow.contrib.kubernetes.secret import Secret
 from airflow.contrib.kubernetes.volume import Volume
 from airflow.contrib.kubernetes.volume_mount import VolumeMount
 from airflow.hooks.base_hook import BaseHook
-from dags.trigger_k8s_job import trigger_k8s_job
+from dags.trigger_k8s_cronjob import trigger_k8s_cronjob
 
 import os
 import json

@@ -106,7 +106,7 @@ extract_zips_to_ggircs_full = KubernetesPodOperator(
     do_xcom_push=False,
     dag=dag_full)
 
-extract_zips_env['DOWNLOAD_ECCC_FILES_XCOM']: '{{task_instance.xcom_pull(task_ids="download_eccc_files", key="return_value")}}'
+extract_zips_env['DOWNLOAD_ECCC_FILES_XCOM']: '{{task_instance.xcom_pull(task_ids="download_eccc_files")}}'
 
 download_eccc_files = KubernetesPodOperator(
     task_id='download_eccc_files',

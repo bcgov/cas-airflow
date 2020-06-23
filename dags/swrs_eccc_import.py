@@ -106,7 +106,7 @@ extract_zips_to_ggircs_full = KubernetesPodOperator(
     do_xcom_push=False,
     dag=dag_full)
 
-extract_zips_env['DOWNLOAD_ECCC_FILES_XCOM']: '{{task_instance.xcom_pull(task_ids="download_eccc_files", key="return_value")}}'
+extract_zips_env['DOWNLOAD_ECCC_FILES_XCOM']: '{{task_instance.xcom_pull(task_ids="download_eccc_files")}}'
 
 download_eccc_files = KubernetesPodOperator(
     task_id='download_eccc_files',
@@ -165,6 +165,13 @@ def load_ciip_facilities(dag):
         op_args=['cas-ciip-portal-schema-deploy-data', namespace],
         dag=dag)
 
+def ggircs_read_only_user(dag):
+    return PythonOperator(
+        python_callable=trigger_k8s_cronjob,
+        task_id='ggircs_read_only_user',
+        op_args=['cas-ggircs-db-create-readonly-user', namespace],
+        dag=dag)
+
 download_eccc_files >> should_extract_zips_op >> extract_zips_to_ggircs
-extract_zips_to_ggircs >> load_ggircs(dag_incremental) >> import_swrs_in_ciip(dag_incremental) >> load_ciip_facilities(dag_incremental)
-extract_zips_to_ggircs_full >> load_ggircs(dag_full) >> import_swrs_in_ciip(dag_full) >> load_ciip_facilities(dag_full)
+extract_zips_to_ggircs >> load_ggircs(dag_incremental) >> ggircs_read_only_user(dag_incremental) >> import_swrs_in_ciip(dag_incremental) >> load_ciip_facilities(dag_incremental)
+extract_zips_to_ggircs_full >> load_ggircs(dag_full) >> ggircs_read_only_user(dag_incremental) >> import_swrs_in_ciip(dag_full) >> load_ciip_facilities(dag_full)

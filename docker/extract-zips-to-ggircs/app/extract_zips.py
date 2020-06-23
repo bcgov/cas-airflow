@@ -14,6 +14,8 @@ gcs_key_file.close()
 storage_client = storage.Client.from_service_account_json('gcs_key.json')
 
 gcs_bucket_name = os.getenv('GCS_BUCKET')
+eccc_files_xcom = json.loads(os.getenv('DOWNLOAD_ECCC_FILES_XCOM', '{}'))
+uploaded_objects = eccc_files_xcom.get('uploadedObjects')
 
 # zipfile.read expects the password to be in bytes
 def passwd_to_byte(pwd):
@@ -33,69 +35,80 @@ def read_xml_file(fin, path):
       log.info("trying next password")
   log.error(f"error: failed to open {path}")
 
+def process_zip_file(bucket_name, file, pg_connection):
+  if not file.name.endswith('.zip'):
+    log.debug(f"{file.name} was uploaded in the bucket {bucket_name}, but that doesn't look like a zip file. Skipping.")
+    return
+  file_path = f"gs://{bucket_name}/{file.name}"
+  zipfile_md5 = base64.b64decode(file.md5_hash).hex() if file.md5_hash is not None else None
+  try:
+    pg_cursor = pg_connection.cursor()
+    pg_cursor.execute(
+      """insert into swrs_extract.eccc_zip_file(zip_file_name, zip_file_md5_hash)
+      values (%s, %s)
+      on conflict(zip_file_md5_hash) do update set zip_file_name=excluded.zip_file_name
+      returning id""",
+      (file.name, zipfile_md5)
+    )
+    zipfile_id = pg_cursor.fetchone()[0]
+    log.info(f"zip id {zipfile_id}")
+    log.info(f"Processing {file_path}")
+    with open(file_path, 'rb', transport_params=dict(client=storage_client)) as fin:
+      with zipfile.ZipFile(fin) as finz:
+        for report_path in finz.namelist():
+          if not report_path.endswith('.xml'):
+            log.debug(f"skipping {report_path}")
+            continue
+
+          log.info(f"Processing {report_path}")
+          xml_bytes = read_xml_file(finz, report_path)
+          if xml_bytes is None:
+            continue
+          try:
+            encoding = chardet.detect(xml_bytes)['encoding']
+
+            xml_string = xml_bytes.decode(encoding)
+            log.debug(xml_string)
+            pg_cursor.execute("""
+              insert into swrs_extract.eccc_xml_file(xml_file, xml_file_name, xml_file_md5_hash, zip_file_id)
+              values (%s, %s, %s, %s)
+              on conflict(xml_file_md5_hash) do update set
+              xml_file=excluded.xml_file,
+              xml_file_name=excluded.xml_file_name,
+              zip_file_id=excluded.zip_file_id
+              """,
+              (
+                xml_string.replace('\0', ''),
+                file.name,
+                hashlib.md5(xml_bytes).hexdigest(),
+                zipfile_id
+              )
+            )
+            pg_connection.commit()
+          except (Exception, psycopg2.DatabaseError) as error:
+            log.error(f"Error while processing {report_path}: {error}")
+            pg_connection.rollback()
+
+    log.info(f"Finished processing {file_path}")
+    pg_connection.commit()
+  except (Exception, psycopg2.DatabaseError) as error:
+    log.error(f"Error while processing {file_path}: {error}")
+    pg_connection.rollback()
+  finally:
+    pg_cursor.close()
+
+
 try:
   pg_connection = psycopg2.connect('')
-  for file in storage_client.list_blobs(gcs_bucket_name):
-    if not file.name.endswith('.zip'):
-      log.debug(f"{file.name} was uploaded in the bucket {gcs_bucket_name}, but that doesn't look like a zip file. Skipping.")
-      continue
-    file_path = f"gs://{gcs_bucket_name}/{file.name}"
-    zipfile_md5 = base64.b64decode(file.md5_hash).hex() if file.md5_hash is not None else None
-    try:
-      pg_cursor = pg_connection.cursor()
-      pg_cursor.execute(
-        """insert into swrs_extract.eccc_zip_file(zip_file_name, zip_file_md5_hash)
-        values (%s, %s)
-        on conflict(zip_file_md5_hash) do update set zip_file_name=excluded.zip_file_name
-        returning id""",
-        (file.name, zipfile_md5)
-      )
-      zipfile_id = pg_cursor.fetchone()[0]
-      log.info(f"zip id {zipfile_id}")
-      log.info(f"Processing {file_path}")
-      with open(file_path, 'rb', transport_params=dict(client=storage_client)) as fin:
-        with zipfile.ZipFile(fin) as finz:
-          for report_path in finz.namelist():
-            if not report_path.endswith('.xml'):
-              log.debug(f"skipping {report_path}")
-              continue
+  if uploaded_objects is not None:
+    for uploaded_obj in uploaded_objects:
+      bucket = storage_client.get_bucket(uploaded_obj.get('bucketName'))
+      file = bucket.get_blob(uploaded_obj.get('objectName'))
+      process_zip_file(bucket.name, file, pg_connection)
+  else:
+    for file in storage_client.list_blobs(gcs_bucket_name):
+      process_zip_file(gcs_bucket_name, file, pg_connection)
 
-            log.info(f"Processing {report_path}")
-            xml_bytes = read_xml_file(finz, report_path)
-            if xml_bytes is None:
-              continue
-            try:
-              encoding = chardet.detect(xml_bytes)['encoding']
-
-              xml_string = xml_bytes.decode(encoding)
-              log.debug(xml_string)
-              pg_cursor.execute("""
-                insert into swrs_extract.eccc_xml_file(xml_file, xml_file_name, xml_file_md5_hash, zip_file_id)
-                values (%s, %s, %s, %s)
-                on conflict(xml_file_md5_hash) do update set
-                xml_file=excluded.xml_file,
-                xml_file_name=excluded.xml_file_name,
-                zip_file_id=excluded.zip_file_id
-                """,
-                (
-                  xml_string.replace('\0', ''),
-                  file.name,
-                  hashlib.md5(xml_bytes).hexdigest(),
-                  zipfile_id
-                )
-              )
-              pg_connection.commit()
-            except (Exception, psycopg2.DatabaseError) as error:
-              log.error(f"Error while processing {report_path}: {error}")
-              pg_connection.rollback()
-
-      log.info(f"Finished processing {file_path}")
-      pg_connection.commit()
-    except (Exception, psycopg2.DatabaseError) as error:
-      log.error(f"Error while processing {file_path}: {error}")
-      pg_connection.rollback()
-    finally:
-      pg_cursor.close()
 
 except (Exception, psycopg2.DatabaseError) as error:
   log.error(f"Error: {error}")

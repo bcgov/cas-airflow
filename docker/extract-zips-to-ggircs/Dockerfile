@@ -8,7 +8,6 @@ COPY root /
 COPY app /app
 WORKDIR /app
 RUN pip install -r requirements.txt
-RUN mkdir -p /airflow/xcom
 RUN chmod g=u /etc/passwd && \
     /usr/libexec/fix-permissions /app
 USER 1001

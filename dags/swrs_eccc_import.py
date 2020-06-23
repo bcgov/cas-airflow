@@ -174,4 +174,4 @@ def ggircs_read_only_user(dag):
 
 download_eccc_files >> should_extract_zips_op >> extract_zips_to_ggircs
 extract_zips_to_ggircs >> load_ggircs(dag_incremental) >> ggircs_read_only_user(dag_incremental) >> import_swrs_in_ciip(dag_incremental) >> load_ciip_facilities(dag_incremental)
-extract_zips_to_ggircs_full >> load_ggircs(dag_full) >> ggircs_read_only_user(dag_incremental) >> import_swrs_in_ciip(dag_full) >> load_ciip_facilities(dag_full)
+extract_zips_to_ggircs_full >> load_ggircs(dag_full) >> ggircs_read_only_user(dag_full) >> import_swrs_in_ciip(dag_full) >> load_ciip_facilities(dag_full)

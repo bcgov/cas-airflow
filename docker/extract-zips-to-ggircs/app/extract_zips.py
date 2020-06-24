@@ -79,7 +79,7 @@ def process_zip_file(bucket_name, file, pg_connection):
               """,
               (
                 xml_string.replace('\0', ''),
-                file.name,
+                report_path,
                 hashlib.md5(xml_bytes).hexdigest(),
                 zipfile_id
               )

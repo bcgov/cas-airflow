@@ -20,8 +20,6 @@ from datetime import datetime, timedelta
 from airflow.contrib.operators.kubernetes_pod_operator import KubernetesPodOperator
 from airflow.operators.python_operator import ShortCircuitOperator, PythonOperator
 from airflow.contrib.kubernetes.secret import Secret
-from airflow.contrib.kubernetes.volume import Volume
-from airflow.contrib.kubernetes.volume_mount import VolumeMount
 from airflow.hooks.base_hook import BaseHook
 from dags.trigger_k8s_cronjob import trigger_k8s_cronjob
 
@@ -67,12 +65,6 @@ env_vars = {
 stream_minio_image = "docker.pkg.github.com/bcgov/cas-airflow/stream-minio:" + os.getenv('AIRFLOW_IMAGE_TAG')
 extract_zips_image = "docker.pkg.github.com/bcgov/cas-airflow/extract-zips-to-ggircs:" + os.getenv('AIRFLOW_IMAGE_TAG')
 
-extract_zips_volume_mount = VolumeMount('extract-zips-to-ggircs',
-                                        mount_path='/app/tmp',
-                                        sub_path=None,
-                                        read_only=False)
-extract_zips_volume = Volume(name='extract-zips-to-ggircs', configs={ 'persistentVolumeClaim': { 'claimName': 'extract-zips-to-ggircs-tmp' }})
-
 def should_extract_zips(**context):
     download_return = context['task_instance'].xcom_pull(task_ids = 'download_eccc_files')
     return len(download_return['uploadedObjects']) > 0
@@ -81,7 +73,6 @@ ggircs_postgres_connection = BaseHook.get_connection('ggircs_postgres')
 
 extract_zips_env = {
     'GCS_BUCKET': 'swrs-import',
-    'TMP_ZIP_DESTINATION': '/app/tmp/eccc-zip.zip',
     'PGHOST': ggircs_postgres_connection.host,
     'PGPORT': str(ggircs_postgres_connection.port) if ggircs_postgres_connection.port else None,
     'PGUSER': ggircs_postgres_connection.login,
@@ -97,8 +88,6 @@ extract_zips_to_ggircs_full = KubernetesPodOperator(
     namespace=namespace,
     image=extract_zips_image,
     env_vars=extract_zips_env,
-    volumes=[extract_zips_volume],
-    volume_mounts=[extract_zips_volume_mount],
     resources=compute_resource,
     is_delete_operator_pod=True,
     get_logs=True,
@@ -136,8 +125,6 @@ extract_zips_to_ggircs = KubernetesPodOperator(
     namespace=namespace,
     image=extract_zips_image,
     env_vars=extract_zips_env_incremental,
-    volumes=[extract_zips_volume],
-    volume_mounts=[extract_zips_volume_mount],
     resources=compute_resource,
     is_delete_operator_pod=True,
     get_logs=True,

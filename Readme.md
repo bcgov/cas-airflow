@@ -52,11 +52,9 @@ exit()
 ```
 
 1. The connections required in the various dags need to be manually created
-1. The `extract-zips-to-ggircs-tmp` needs to be created (should probably be 20GB to be safe)
 
 ## TODO
 
-- [ ] extract-zips-to-ggircs-tmp pvc (manually created) needs to be replaced with generic cas-airflow-tmp PVC
 - [ ] stream-minio should be replaced to use gcs client
 - [ ] the docker images should be imported in the cluster instead of pulling from GH every time we spin up a pod
 - [ ] authentication should be done with GitHub (allowing members of https://github.com/orgs/bcgov/teams/cas-developers)

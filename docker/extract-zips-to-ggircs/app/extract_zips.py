@@ -4,6 +4,8 @@ from google.auth.credentials import Credentials
 from google.cloud import storage
 from psycopg2 import pool
 
+quarantined_files_md5_hash = ['d9fa31d1c971fe7573e808252713254c']
+
 logging.basicConfig(format='%(asctime)s | %(name)s | %(levelname)s: %(message)s')
 log = logging.getLogger('extract_zips')
 log.setLevel(os.getenv("LOGLEVEL", "INFO"))
@@ -33,7 +35,6 @@ def read_xml_file(fin, path):
       return file
     except Exception as inst:
       log.info("trying next password")
-  log.error(f"error: failed to open {path}")
 
 def process_zip_file(bucket_name, file, pg_connection):
   if not file.name.endswith('.zip'):
@@ -63,11 +64,17 @@ def process_zip_file(bucket_name, file, pg_connection):
           log.info(f"Processing {report_path}")
           xml_bytes = read_xml_file(finz, report_path)
           if xml_bytes is None:
+            log.error(f"error: failed to read {report_path} in zip file {file.name}")
             continue
           try:
             encoding = chardet.detect(xml_bytes)['encoding']
 
             xml_string = xml_bytes.decode(encoding)
+            xml_file_md5_hash = hashlib.md5(xml_bytes).hexdigest()
+            if xml_file_md5_hash in quarantined_files_md5_hash:
+              log.warn(f"skipping {report_path} as it is quarantined")
+              continue
+
             log.debug(xml_string)
             pg_cursor.execute("""
               insert into swrs_extract.eccc_xml_file(xml_file, xml_file_name, xml_file_md5_hash, zip_file_id)
@@ -80,7 +87,7 @@ def process_zip_file(bucket_name, file, pg_connection):
               (
                 xml_string.replace('\0', ''),
                 report_path,
-                hashlib.md5(xml_bytes).hexdigest(),
+                xml_file_md5_hash,
                 zipfile_id
               )
             )

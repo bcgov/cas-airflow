@@ -30,39 +30,53 @@ default_args = {
 DAG_ID = os.path.basename(__file__).replace(".pyc", "").replace(".py", "")
 SCHEDULE_INTERVAL = None
 
-dag = DAG(DAG_ID, schedule_interval=SCHEDULE_INTERVAL, default_args=default_args)
+default_dag = DAG(DAG_ID, schedule_interval=SCHEDULE_INTERVAL, default_args=default_args)
+test_dag = DAG(DAG_ID + '_test', schedule_interval=SCHEDULE_INTERVAL, default_args=default_args)
 
-ciip_portal_init_db = PythonOperator(
-  python_callable=trigger_k8s_cronjob,
-  task_id='ciip_portal_db_init',
-  op_args=['cas-ciip-portal-init-db', namespace],
-  dag=dag)
+def ciip_portal_init_db(dag):
+  return PythonOperator(
+    python_callable=trigger_k8s_cronjob,
+    task_id='ciip_portal_db_init',
+    op_args=['cas-ciip-portal-init-db', namespace],
+    dag=dag)
 
-ciip_portal_swrs_import = PythonOperator(
-  python_callable=trigger_k8s_cronjob,
-  task_id='ciip_portal_swrs_import',
-  op_args=['cas-ciip-portal-swrs-import', namespace],
-  dag=dag)
+def ciip_portal_swrs_import(dag):
+  return PythonOperator(
+    python_callable=trigger_k8s_cronjob,
+    task_id='ciip_portal_swrs_import',
+    op_args=['cas-ciip-portal-swrs-import', namespace],
+    dag=dag)
 
-ciip_portal_deploy_data = PythonOperator(
-  python_callable=trigger_k8s_cronjob,
-  task_id='ciip_portal_deploy_data',
-  op_args=['cas-ciip-portal-schema-deploy-data', namespace],
-  dag=dag)
+def ciip_portal_deploy_data(dag):
+  return PythonOperator(
+    python_callable=trigger_k8s_cronjob,
+    task_id='ciip_portal_deploy_data',
+    op_args=['cas-ciip-portal-schema-deploy-data', namespace],
+    dag=dag)
 
-ciip_portal_graphile_schema = PythonOperator(
-  python_callable=trigger_k8s_cronjob,
-  task_id='ciip_portal_graphile_schema',
-  op_args=['cas-ciip-portal-init-graphile-schema', namespace],
-  dag=dag)
+def ciip_portal_graphile_schema(dag):
+  return PythonOperator(
+    python_callable=trigger_k8s_cronjob,
+    task_id='ciip_portal_graphile_schema',
+    op_args=['cas-ciip-portal-init-graphile-schema', namespace],
+    dag=dag)
 
-ciip_portal_app_user = PythonOperator(
-  python_callable=trigger_k8s_cronjob,
-  task_id='ciip_portal_app_user',
-  op_args=['cas-ciip-portal-app-user', namespace],
-  dag=dag)
+def ciip_portal_app_user(dag):
+  return PythonOperator(
+    python_callable=trigger_k8s_cronjob,
+    task_id='ciip_portal_app_user',
+    op_args=['cas-ciip-portal-app-user', namespace],
+    dag=dag)
 
-ciip_portal_init_db >> ciip_portal_swrs_import >> ciip_portal_deploy_data  >> ciip_portal_graphile_schema >> ciip_portal_app_user
+def ciip_portal_prod_test_restore(dag):
+  return PythonOperator(
+    python_callable=trigger_k8s_cronjob,
+    task_id='cas-ciip-portal-prod-test-restore',
+    op_args=['cas-ciip-portal-prod-test-restore', namespace],
+    dag=dag)
+
+ciip_portal_init_db(default_dag) >> ciip_portal_swrs_import(default_dag) >> ciip_portal_deploy_data(default_dag)  >> ciip_portal_graphile_schema(default_dag) >> ciip_portal_app_user(default_dag)
+ciip_portal_init_db(test_dag) >> ciip_portal_prod_test_restore(test_dag) >> ciip_portal_deploy_data(test_dag)  >> ciip_portal_graphile_schema(test_dag) >> ciip_portal_app_user(test_dag)
 
 acme_issue_dag = DAG('ciip_portal_acme_issue', schedule_interval=SCHEDULE_INTERVAL, default_args=default_args)
 

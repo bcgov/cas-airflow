@@ -26,7 +26,7 @@ from dags.trigger_k8s_cronjob import trigger_k8s_cronjob
 import os
 import json
 
-YESTERDAY = datetime.now() - timedelta(days=1)
+START_DATE = datetime.now() - timedelta(days=2)
 
 namespace = os.getenv('NAMESPACE')
 in_cluster = os.getenv('LOCAL_AIRFLOW', False) == False
@@ -36,7 +36,7 @@ default_args = {
     'depends_on_past': False,
     'email_on_failure': False,
     'email_on_retry': False,
-    'start_date': YESTERDAY,
+    'start_date': START_DATE,
     'retries': 1,
     'retry_delay': timedelta(minutes=5),
 }
@@ -44,7 +44,7 @@ default_args = {
 DAG_ID = os.path.basename(__file__).replace(".pyc", "").replace(".py", "")
 SCHEDULE_INTERVAL = '0 0 * * *'
 
-dag_incremental = DAG(DAG_ID + '_incremental', schedule_interval=SCHEDULE_INTERVAL, default_args=default_args, user_defined_macros={'json': json}, start_date=YESTERDAY)
+dag_incremental = DAG(DAG_ID + '_incremental', schedule_interval=SCHEDULE_INTERVAL, default_args=default_args, user_defined_macros={'json': json}, start_date=START_DATE)
 dag_full = DAG(DAG_ID+'_full', schedule_interval=None, default_args=default_args)
 
 compute_resource = {'request_cpu': '1', 'request_memory': '2Gi', 'limit_cpu': '2', 'limit_memory': '4Gi'}

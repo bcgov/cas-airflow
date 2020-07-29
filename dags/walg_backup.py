@@ -9,7 +9,7 @@ from dags.exec_in_pod import exec_in_pod
 
 import os
 
-YESTERDAY = datetime.now() - timedelta(days=1)
+START_DATE = datetime.now() - timedelta(days=2)
 
 namespace = os.getenv('NAMESPACE')
 in_cluster = os.getenv('LOCAL_AIRFLOW', False) == 'False'
@@ -17,7 +17,7 @@ in_cluster = os.getenv('LOCAL_AIRFLOW', False) == 'False'
 default_args = {
     'owner': 'airflow',
     'depends_on_past': False,
-    'start_date': YESTERDAY,
+    'start_date': START_DATE,
     'email_on_failure': False,
     'email_on_retry': False,
     'retries': 1,
@@ -75,10 +75,10 @@ incremental_exec_command = [
 DAG_ID = os.path.basename(__file__).replace(".pyc", "").replace(".py", "")
 
 ciip_incremental_backup = DAG(DAG_ID + '_ciip_incremental', default_args=default_args, schedule_interval='@hourly')
-ciip_full_backup = DAG(DAG_ID + '_ciip_full', default_args=default_args, schedule_interval=None)
+ciip_full_backup = DAG(DAG_ID + '_ciip_full', default_args=default_args, schedule_interval='@daily', start_date=START_DATE)
 
 ggircs_incremental_backup = DAG(DAG_ID + '_ggircs_incremental', default_args=default_args, schedule_interval='@daily')
-ggircs_full_backup = DAG(DAG_ID + '_ggircs_full', default_args=default_args, schedule_interval=None)
+ggircs_full_backup = DAG(DAG_ID + '_ggircs_full', default_args=default_args, schedule_interval='@daily', start_date=START_DATE)
 
 def exec_backup_in_pod(dag):
     exec_command = full_exec_command

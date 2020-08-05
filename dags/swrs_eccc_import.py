@@ -19,7 +19,7 @@ from airflow import DAG
 from datetime import datetime, timedelta
 from airflow.contrib.operators.kubernetes_pod_operator import KubernetesPodOperator
 from airflow.operators.python_operator import ShortCircuitOperator, PythonOperator
-from airflow.contrib.kubernetes.secret import Secret
+from airflow.operators.dagrun_operator import TriggerDagRunOperator
 from airflow.hooks.base_hook import BaseHook
 from dags.trigger_k8s_cronjob import trigger_k8s_cronjob
 
@@ -139,19 +139,6 @@ def load_ggircs(dag):
         op_args=['cas-ggircs-etl-deploy', namespace],
         dag=dag)
 
-def import_swrs_in_ciip(dag):
-    return PythonOperator(
-        python_callable=trigger_k8s_cronjob,
-        task_id='import_swrs_in_ciip',
-        op_args=['cas-ciip-portal-swrs-import', namespace],
-        dag=dag)
-
-def load_ciip_facilities(dag):
-    return PythonOperator(
-        python_callable=trigger_k8s_cronjob,
-        task_id='load_ciip_facilities',
-        op_args=['cas-ciip-portal-schema-deploy-data', namespace],
-        dag=dag)
 
 def ggircs_read_only_user(dag):
     return PythonOperator(
@@ -160,6 +147,12 @@ def ggircs_read_only_user(dag):
         op_args=['cas-ggircs-db-create-readonly-user', namespace],
         dag=dag)
 
+def trigger_ciip_deploy_db_dag(dag):
+    return TriggerDagRunOperator(
+        task_id='trigger_ciip_deploy_db_dag',
+        trigger_dag_id="ciip_deploy_db",
+        dag=dag)
+
 download_eccc_files >> should_extract_zips_op >> extract_zips_to_ggircs
-extract_zips_to_ggircs >> load_ggircs(dag_incremental) >> ggircs_read_only_user(dag_incremental) >> import_swrs_in_ciip(dag_incremental) >> load_ciip_facilities(dag_incremental)
-extract_zips_to_ggircs_full >> load_ggircs(dag_full) >> ggircs_read_only_user(dag_full) >> import_swrs_in_ciip(dag_full) >> load_ciip_facilities(dag_full)
+extract_zips_to_ggircs >> load_ggircs(dag_incremental) >> ggircs_read_only_user(dag_incremental) >> trigger_ciip_deploy_db_dag(dag_incremental)
+extract_zips_to_ggircs_full >> load_ggircs(dag_full) >> ggircs_read_only_user(dag_full) >> trigger_ciip_deploy_db_dag(dag_full)

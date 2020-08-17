@@ -41,6 +41,7 @@ airflow:
       AIRFLOW__CORE__REMOTE_LOGGING: True
       AIRFLOW__CORE__REMOTE_BASE_LOG_FOLDER: *gcs-folder
       AIRFLOW__CORE__REMOTE_LOG_CONN_ID: gcs_logs
+      AIRFLOW__CORE__DAG_CONCURRENCY: 1
       AIRFLOW__KUBERNETES__NAMESPACE: *namespace
       # AIRFLOW__KUBERNETES__KUBE_CLIENT_REQUEST_ARGS: '{\"_request_timeout\":[300,300]}'
       # see https://github.com/puckel/docker-airflow/issues/521

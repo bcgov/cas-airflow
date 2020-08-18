@@ -9,7 +9,7 @@ from dags.exec_in_pod import exec_in_pod
 
 import os
 
-START_DATE = datetime.now() - timedelta(days=2)
+START_DATE = datetime.now() - timedelta(weeks=2)
 
 namespace = os.getenv('NAMESPACE')
 deployment_name = 'cas-airflow-web'

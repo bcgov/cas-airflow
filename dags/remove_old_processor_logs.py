@@ -12,7 +12,8 @@ import os
 START_DATE = datetime.now() - timedelta(weeks=2)
 
 namespace = os.getenv('NAMESPACE')
-deployment_name = 'cas-airflow-web'
+deployment_name = 'airflow'
+selector = 'component=web'
 in_cluster = os.getenv('LOCAL_AIRFLOW', False) == 'False'
 
 default_args = {
@@ -39,7 +40,7 @@ def remove_logs(dag):
   return PythonOperator(
       python_callable=exec_in_pod,
       task_id='remove_processor_logs',
-      op_args=[deployment_name, namespace, exec_command],
+      op_args=[deployment_name, namespace, exec_command, selector],
       dag=dag
   )
 

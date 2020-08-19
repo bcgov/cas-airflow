@@ -6,7 +6,7 @@ from kubernetes.stream import stream
 from kubernetes.client.rest import ApiException
 from pprint import pprint
 
-def get_pod_name(deployment_name, namespace):
+def get_pod_name(deployment_name, namespace, selector):
   try:
       kubernetes.config.load_incluster_config()
   except:
@@ -16,7 +16,7 @@ def get_pod_name(deployment_name, namespace):
   api_instance = kubernetes.client.CoreV1Api(kubernetes.client.ApiClient(configuration))
 
   try:
-      pod_label_selector="app=" + deployment_name + ", spilo-role=master"
+      pod_label_selector="app=" + deployment_name + ", " + selector
       api_response = api_instance.list_namespaced_pod(namespace, label_selector=pod_label_selector, pretty='true')
       for x in api_response.items:
         if deployment_name in x.metadata.name:
@@ -24,7 +24,7 @@ def get_pod_name(deployment_name, namespace):
   except ApiException as e:
       print("Exception when calling CoreV1Api->list_namespaced_pod: %s\n" % e)
 
-def exec_in_pod(deployment_name, namespace, command):
+def exec_in_pod(deployment_name, namespace, command, selector):
   try:
       kubernetes.config.load_incluster_config()
   except:

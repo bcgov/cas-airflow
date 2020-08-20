@@ -83,6 +83,7 @@ ggircs_full_backup = DAG(DAG_ID + '_ggircs_full', default_args=default_args, sch
 def exec_backup_in_pod(dag):
     exec_command = full_exec_command
     deployment_name = 'cas-ciip-portal-patroni'
+    selector = 'spilo-role=master'
 
     if dag.dag_id.find('incremental') != -1:
       exec_command = incremental_exec_command
@@ -93,7 +94,7 @@ def exec_backup_in_pod(dag):
     return PythonOperator(
         python_callable=exec_in_pod,
         task_id='make_postgres_backup',
-        op_args=[deployment_name, namespace, exec_command],
+        op_args=[deployment_name, namespace, exec_command, selector],
         dag=dag
     )
 

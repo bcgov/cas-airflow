@@ -9,12 +9,19 @@ jobs:
         type: integer
         default: 1
     docker:
-      - image: docker:19.03-git
+      - image: docker:17.05.0-ce-git
     working_directory: ~/cas-airflow/docker/<< parameters.image_name >>
     steps:
       - checkout:
           path: ~/cas-airflow
       - setup_remote_docker
+      - run:
+          name: Install docker compose
+          command: |
+            apk add --no-cache \
+              py-pip=9.0.0-r1
+            pip install \
+              docker-compose==1.12.0
       - restore_cache:
           keys:
             - v<< parameters.cache_version>>-<< parameters.image_name >>-{{ .Branch }}
@@ -25,9 +32,6 @@ jobs:
           command: |
             set +o pipefail
             docker load -i /caches/<< parameters.image_name >>.tar | true
-      - run:
-          name: Log in to DockerHub
-          command: echo $DOCKERHUB_PASSWORD | docker login -u $DOCKERHUB_USER --password-stdin registry.hub.docker.com
       - run:
           name: Build image
           command: |
@@ -74,7 +78,7 @@ jobs:
       image_tag:
         type: string
     docker:
-      - image: docker:19.03-git
+      - image: docker:17.05.0-ce-git
     steps:
       - attach_workspace:
           at: /tmp/workspace
@@ -98,7 +102,6 @@ workflows:
     jobs:
       - build_docker_image:
           name: build_docker_<< matrix.image_name >>
-          context: cas-pipeline
           matrix:
             parameters:
               image_name: ["cas-airflow", "extract-zips-to-ggircs"]
@@ -134,7 +137,6 @@ workflows:
       # TODO: add generic test job to avoid code duplication below
       - build_docker_image:
           name: build_docker_stream-minio
-          context: cas-pipeline
           image_name: stream-minio
           filters:
             tags:

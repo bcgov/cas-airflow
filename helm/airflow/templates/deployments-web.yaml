@@ -167,6 +167,16 @@ spec:
               subPath: {{ .subPath }}
               {{ end }}
           {{- end }}
+        - name: caddy-server
+          image: docker.pkg.github.com/bcgov/cas-airflow/caddy:latest
+          imagePullPolicy: always
+          command:
+            - caddy start
+          volumeMounts:
+            - name: caddy_data
+              mountPath: /usr/local/caddy/data
+            - name: caddy_config
+              mountPath: /usr/local/caddy/config
 {{- if .Values.airflow.extraVolumeMounts }}
 {{ toYaml .Values.airflow.extraVolumeMounts | indent 12 }}
 {{- end }}

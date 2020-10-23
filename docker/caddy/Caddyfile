@@ -1,0 +1,3 @@
+https://cas-airflow-wksv3k-dev.pathfinder.gov.bc.ca/admin/airflow/login* {
+  redir https://dev.oidc.gov.bc.ca/waut/realsm/pirswwhx/protocol/openid-connect/registrations?client_id=cas-airflow&response_type=code&scope=openid&redirect_uri=cas-airflow-wksv3k-dev.pathfinder.gov/bc/ca/admin/airflow/login?auth_callback=1
+}

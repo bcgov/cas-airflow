@@ -167,3 +167,28 @@ workflows:
               only: /^v.*/
             branches:
               ignore: /.*/
+      - build_docker_image:
+          name: build_docker_caddy
+          context: cas-pipeline
+          image_name: caddy
+          filters:
+            tags:
+              only: /^v.*/
+      - deploy_docker_image:
+          name: deploy_docker_image_sha1_caddy
+          image_name: caddy
+          image_tag: ${CIRCLE_SHA1}
+          filters:
+            branches:
+              only:
+                - develop
+                - master
+      - deploy_docker_image:
+          name: deploy_docker_image_tag_caddy
+          image_name: caddy
+          image_tag: ${CIRCLE_TAG/v/}
+          filters:
+            tags:
+              only: /^v.*/
+            branches:
+              ignore: /.*/

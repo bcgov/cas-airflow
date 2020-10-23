@@ -1,3 +1,8 @@
-https://cas-airflow-wksv3k-dev.pathfinder.gov.bc.ca/admin/airflow/login* {
-  redir https://dev.oidc.gov.bc.ca/waut/realsm/pirswwhx/protocol/openid-connect/registrations?client_id=cas-airflow&response_type=code&scope=openid&redirect_uri=cas-airflow-wksv3k-dev.pathfinder.gov/bc/ca/admin/airflow/login?auth_callback=1
+:8080
+
+reverse_proxy {
+    to https://dev.oidc.gov.bc.ca/auth/realms/pisrwwhx/protocol/openid-connect/auth?client_id=cas-airflow&state=f56b3153-783c-447c-a30c-f1c245ba1e2a&redirect_uri=https%3A%2F%2Fcas-airflow-wksv3k-dev.pathfinder.gov.bc.ca/admin/airflow%2Flogin%3Fauth_callback%3D1&scope=openid&response_type=code
+    transport http {
+        tls
+    }
 }

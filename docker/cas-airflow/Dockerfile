@@ -3,7 +3,7 @@ FROM apache/airflow:1.10.12
 # Airflow
 ENV AIRFLOW_HOME=/usr/local/airflow
 ARG AIRFLOW_HOME=/usr/local/airflow
-ARG AIRFLOW_VERSION= 1.10.12
+ARG AIRFLOW_VERSION="1.10.12"
 ARG ADDITIONAL_PYTHON_DEPS="pytz, pyOpenSSL, ndg-httpsclient, pyasn1, lxml"
 ARG ADDITIONAL_AIRFLOW_EXTRAS="crypto, password, hive, jdbc"
 ARG ADDITIONAL_DEV_APT_DEPS="python-lxml"

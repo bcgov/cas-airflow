@@ -104,7 +104,7 @@ workflows:
           name: build_docker_<< matrix.image_name >>
           matrix:
             parameters:
-              image_name: ["cas-airflow", "extract-zips-to-ggircs"]
+              image_name: ["extract-zips-to-ggircs"]
           filters:
             tags:
               only: /^v.*/
@@ -112,7 +112,7 @@ workflows:
           name: deploy_docker_image_sha1_<< matrix.image_name >>
           matrix:
             parameters:
-              image_name: ["cas-airflow", "extract-zips-to-ggircs"]
+              image_name: ["extract-zips-to-ggircs"]
           image_tag: ${CIRCLE_SHA1}
           requires:
             - build_docker_<< matrix.image_name >>
@@ -125,7 +125,7 @@ workflows:
           name: deploy_docker_image_tag_<< matrix.image_name >>
           matrix:
             parameters:
-              image_name: ["cas-airflow", "extract-zips-to-ggircs"]
+              image_name: ["extract-zips-to-ggircs"]
           image_tag: ${CIRCLE_TAG/v/}
           requires:
             - build_docker_<< matrix.image_name >>

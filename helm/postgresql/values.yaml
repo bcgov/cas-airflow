@@ -64,7 +64,7 @@ persistence:
   ##   set, choosing the default provisioner.  (gp2 on AWS, standard on
   ##   GKE, AWS & OpenStack)
   ##
-  storageClass: gluster-block
+  storageClass: netapp-block-standard
   accessMode: ReadWriteOnce
   size: 8Gi
   subPath: "postgresql-db"

@@ -15,12 +15,34 @@
 # specific language governing permissions and limitations
 # under the License.
 
-# apiVersion v1 is Helm 2
----
+################################
+## Airflow Webserver Service
+#################################
+kind: Service
 apiVersion: v1
-name: airflow
-version: 1.0.0
-description: Helm chart to deploy Apache Airflow
-icon: https://www.astronomer.io/static/airflowNewA.png
-keywords:
-  - airflow
+metadata:
+  name: {{ .Release.Name }}-webserver
+  labels:
+    tier: airflow
+    component: webserver
+    release: {{ .Release.Name }}
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+    heritage: {{ .Release.Service }}
+{{- with .Values.labels }}
+{{ toYaml . | indent 4 }}
+{{- end }}
+  annotations:
+{{- with .Values.webserver.service.annotations }}
+{{- toYaml . | nindent 4 }}
+{{- end }}
+spec:
+  type: {{ .Values.webserver.service.type }}
+  selector:
+    tier: airflow
+    component: webserver
+    release: {{ .Release.Name }}
+  ports:
+    - name: airflow-ui
+      protocol: TCP
+      port: {{ .Values.ports.airflowUI }}
+      targetPort: {{ .Values.ports.airflowUI }}

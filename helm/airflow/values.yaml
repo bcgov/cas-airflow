@@ -158,7 +158,7 @@ env: []
 # Secrets for all airflow containers
 secret:
 - envName: PGPASS
-  secretName: airflow-test-postgresql
+  secretName: airflow-postgresql
   secretKey: postgres-password
 
 # Airflow database config
@@ -570,7 +570,7 @@ postgresql:
   postgresqlPassword: postgres
   postgresqlUsername: postgres
   networkPolicy:
-    enabled: true
+    enabled: false
 
 # Config settings to go into the mounted airflow.cfg
 #
@@ -597,6 +597,8 @@ config:
     enable_proxy_fix: "True"
     expose_config: "True"
     rbac: "True"
+    username: "admin"
+    password: "admin"
 
   celery:
     default_queue: celery
@@ -654,13 +656,13 @@ dags:
     ## the name of an existing PVC to use
     existingClaim: ~
   gitSync:
-    enabled: false
+    enabled: true
     # git repo clone url
     # ssh examples ssh://git@github.com/apache/airflow.git
     # git@github.com:apache/airflow.git
     # https example: https://github.com/apache/airflow.git
-    repo: https://github.com/apache/airflow.git
-    branch: v1-10-stable
+    repo: https://github.com/bcgov/cas-airflow.git
+    branch: develop
     rev: HEAD
     root: "/git"
     dest: "repo"
@@ -669,7 +671,7 @@ dags:
     maxFailures: 0
     # subpath within the repo where dags are located
     # should be "" if dags are at repo root
-    subPath: "tests/dags"
+    subPath: "dags"
     # if your repo needs a user name password
     # you can load them to a k8s secret like the one below
     #   ---
@@ -707,4 +709,4 @@ dags:
     # interval between git sync attempts in seconds
     wait: 60
     containerName: git-sync
-    uid: 65533
+    uid: 1002490000

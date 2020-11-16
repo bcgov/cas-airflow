@@ -14,13 +14,18 @@
 # KIND, either express or implied.  See the License for the
 # specific language governing permissions and limitations
 # under the License.
+ARG STATSD_VERSION="missing_version"
 
-# apiVersion v1 is Helm 2
----
-apiVersion: v1
-name: airflow
-version: 1.0.0
-description: Helm chart to deploy Apache Airflow
-icon: https://www.astronomer.io/static/airflowNewA.png
-keywords:
-  - airflow
+FROM prom/statsd-exporter:${STATSD_VERSION}
+
+ARG STATSD_VERSION
+ARG AIRFLOW_STATSD_EXPORTER_VERSION
+ARG COMMIT_SHA
+
+LABEL org.apache.airflow.component="statsd-exporter"
+LABEL org.apache.airflow.stasd.version="${STATSD_VERSION}"
+LABEL org.apache.airflow.airflow_stasd_exporter.version="${AIRFLOW_STATSD_EXPORTER_VERSION}"
+LABEL org.apache.airflow.commit_sha="${COMMIT_SHA}"
+LABEL maintainer="Apache Airflow Community <dev@airflow.apache.org>"
+
+COPY mappings.yml /etc/statsd-exporter/mappings.yml

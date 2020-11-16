@@ -15,12 +15,24 @@
 # specific language governing permissions and limitations
 # under the License.
 
-# apiVersion v1 is Helm 2
 ---
-apiVersion: v1
-name: airflow
-version: 1.0.0
-description: Helm chart to deploy Apache Airflow
-icon: https://www.astronomer.io/static/airflowNewA.png
-keywords:
-  - airflow
+templates:
+  - workers/worker-deployment.yaml
+tests:
+  - it: should add extraVolume and extraVolumeMount
+    set:
+      executor: CeleryExecutor
+      workers:
+        extraVolumes:
+          - name: test-volume
+            emptyDir: {}
+        extraVolumeMounts:
+          - name: test-volume
+            mountPath: /opt/test
+    asserts:
+      - equal:
+          path: spec.template.spec.volumes[0].name
+          value: test-volume
+      - equal:
+          path: spec.template.spec.containers[0].volumeMounts[0].name
+          value: test-volume

@@ -14,13 +14,3 @@
 # KIND, either express or implied.  See the License for the
 # specific language governing permissions and limitations
 # under the License.
-
-# apiVersion v1 is Helm 2
----
-apiVersion: v1
-name: airflow
-version: 1.0.0
-description: Helm chart to deploy Apache Airflow
-icon: https://www.astronomer.io/static/airflowNewA.png
-keywords:
-  - airflow

@@ -9,10 +9,10 @@ metadata:
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 spec:
-  podSelector:
-    matchLabels:
-      app: {{ template "postgresql.name" . }}
-      release: {{ .Release.Name }}
+  podSelector: {}
+    # matchLabels:
+    #   # app: {{ template "postgresql.name" . }}
+    #   release: {{ .Release.Name }}
   ingress:
     # Allow inbound connections
     - ports:

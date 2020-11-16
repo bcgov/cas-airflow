@@ -15,12 +15,24 @@
 # specific language governing permissions and limitations
 # under the License.
 
-# apiVersion v1 is Helm 2
----
+################################
+## Airflow Namespace LimitRange
+#################################
+{{- if .Values.limits }}
 apiVersion: v1
-name: airflow
-version: 1.0.0
-description: Helm chart to deploy Apache Airflow
-icon: https://www.astronomer.io/static/airflowNewA.png
-keywords:
-  - airflow
+kind: LimitRange
+metadata:
+  name: {{ .Release.Name }}-limit-range
+  labels:
+    tier: resources
+    component: limitrange
+    release: {{ .Release.Name }}
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+    heritage: {{ .Release.Service }}
+{{- with .Values.labels }}
+{{ toYaml . | indent 4 }}
+{{- end }}
+spec:
+  limits:
+{{ toYaml .Values.limits | indent 4 }}
+{{- end }}

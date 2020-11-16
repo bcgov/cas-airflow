@@ -15,12 +15,22 @@
 # specific language governing permissions and limitations
 # under the License.
 
-# apiVersion v1 is Helm 2
----
-apiVersion: v1
-name: airflow
-version: 1.0.0
-description: Helm chart to deploy Apache Airflow
-icon: https://www.astronomer.io/static/airflowNewA.png
-keywords:
-  - airflow
+import os
+import subprocess
+import sys
+import pytest
+
+# We should set these before loading _any_ of the rest of airflow so that the
+# unit test mode config is set as early as possible.
+tests_directory = os.path.dirname(os.path.realpath(__file__))
+
+
+@pytest.fixture(autouse=True, scope="session")
+def upgrade_helm():
+    """
+    Upgrade Helm repo
+    """
+    subprocess.check_output(
+        ["helm", "repo", "add", "stable", "https://kubernetes-charts.storage.googleapis.com/"]
+    )
+    subprocess.check_output(["helm", "dep", "update", sys.path[0]])

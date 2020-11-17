@@ -590,7 +590,7 @@ config:
     remote_logging: '{{- ternary "True" "False" .Values.elasticsearch.enabled }}'
   # Authentication backend used for the experimental API
   api:
-    # auth_backend: airflow.api.auth.backend.deny_all
+    auth_backend: airflow.api.auth.backend.default
   logging:
     logging_level: DEBUG
   webserver:
@@ -662,7 +662,7 @@ dags:
     # git@github.com:apache/airflow.git
     # https example: https://github.com/apache/airflow.git
     repo: https://github.com/bcgov/cas-airflow.git
-    branch: develop
+    branch: fix/dags-path
     rev: HEAD
     root: "/git"
     dest: "repo"

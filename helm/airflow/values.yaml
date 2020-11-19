@@ -28,10 +28,10 @@ gid: 1002490000
 airflowHome: "/opt/airflow"
 
 # Default airflow repository -- overrides all the specific images below
-defaultAirflowRepository: apache/airflow
+defaultAirflowRepository: gcr.io/ggl-cas-storage/cas-airflow-ocp4
 
 # Default airflow tag to deploy
-defaultAirflowTag: 1.10.12
+defaultAirflowTag: 2.0.0b3-uid_1002490000
 
 # Select certain nodes for airflow pods.
 nodeSelector: {}

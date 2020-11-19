@@ -31,7 +31,7 @@ airflowHome: "/opt/airflow"
 defaultAirflowRepository: gcr.io/ggl-cas-storage/cas-airflow-ocp4
 
 # Default airflow tag to deploy
-defaultAirflowTag: 2.0.0b3-uid_1002490000
+defaultAirflowTag: v2-0-stable_uid_1002490000
 
 # Select certain nodes for airflow pods.
 nodeSelector: {}
@@ -161,7 +161,7 @@ secret:
   secretName: airflow-postgresql
   secretKey: postgres-password
 - envName: DEFAULT_USER_PASS
-  secretName: {{ .Release.Name }}-default-user-password
+  secretName: airflow-default-user-password
   secretKey: default-user-pass
 
 # Airflow database config
@@ -370,7 +370,7 @@ webserver:
     email: admin@example.com
     firstName: admin
     lastName: user
-    password: $DEFAULT_USER_PASS
+    password: "$(DEFAULT_USER_PASS)"
 
   # Mount additional volumes into webserver.
   extraVolumes: []
@@ -601,7 +601,7 @@ config:
     expose_config: "True"
     rbac: "True"
     username: "cas-airflow-admin"
-    password: $DEFAULT_USER_PASS
+    password: "$(DEFAULT_USER_PASS)"
 
   celery:
     default_queue: celery
@@ -665,7 +665,7 @@ dags:
     # git@github.com:apache/airflow.git
     # https example: https://github.com/apache/airflow.git
     repo: https://github.com/bcgov/cas-airflow.git
-    branch: fix/dags-path
+    branch: develop
     rev: HEAD
     root: "/git"
     dest: "repo"

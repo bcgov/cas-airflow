@@ -366,7 +366,7 @@ webserver:
   defaultUser:
     enabled: true
     role: Admin
-    username: admin
+    username: cas-airflow-admin
     email: admin@example.com
     firstName: admin
     lastName: user
@@ -600,7 +600,7 @@ config:
     enable_proxy_fix: "True"
     expose_config: "True"
     rbac: "True"
-    username: "admin"
+    username: "cas-airflow-admin"
     password: $DEFAULT_USER_PASS
 
   celery:

@@ -160,6 +160,9 @@ secret:
 - envName: PGPASS
   secretName: airflow-postgresql
   secretKey: postgres-password
+- envName: DEFAULT_USER_PASS
+  secretName: {{ .Release.Name }}-default-user-password
+  secretKey: default-user-pass
 
 # Airflow database config
 data:
@@ -367,7 +370,7 @@ webserver:
     email: admin@example.com
     firstName: admin
     lastName: user
-    password: admin
+    password: $DEFAULT_USER_PASS
 
   # Mount additional volumes into webserver.
   extraVolumes: []
@@ -598,7 +601,7 @@ config:
     expose_config: "True"
     rbac: "True"
     username: "admin"
-    password: "admin"
+    password: $DEFAULT_USER_PASS
 
   celery:
     default_queue: celery

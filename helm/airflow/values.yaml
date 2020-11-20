@@ -672,7 +672,7 @@ dags:
     # git@github.com:apache/airflow.git
     # https example: https://github.com/apache/airflow.git
     repo: https://github.com/bcgov/cas-airflow.git
-    branch: develop
+    branch: "fix/local-dir-in-path"
     rev: HEAD
     root: "/git"
     dest: "repo"

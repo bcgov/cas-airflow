@@ -21,7 +21,7 @@ from airflow.contrib.operators.kubernetes_pod_operator import KubernetesPodOpera
 from airflow.operators.python_operator import ShortCircuitOperator, PythonOperator
 from airflow.operators.dagrun_operator import TriggerDagRunOperator
 from airflow.hooks.base_hook import BaseHook
-from dags.trigger_k8s_cronjob import trigger_k8s_cronjob
+from trigger_k8s_cronjob import trigger_k8s_cronjob
 
 import os
 import json

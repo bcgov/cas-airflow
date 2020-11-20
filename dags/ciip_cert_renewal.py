@@ -6,7 +6,7 @@
 from airflow import DAG
 from datetime import datetime, timedelta
 from airflow.operators.python_operator import PythonOperator
-from dags.trigger_k8s_cronjob import trigger_k8s_cronjob
+from trigger_k8s_cronjob import trigger_k8s_cronjob
 
 import os
 

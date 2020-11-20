@@ -28,10 +28,10 @@ gid: 1002490000
 airflowHome: "/opt/airflow"
 
 # Default airflow repository -- overrides all the specific images below
-defaultAirflowRepository: apache/airflow
+defaultAirflowRepository: gcr.io/ggl-cas-storage/cas-airflow-ocp4
 
 # Default airflow tag to deploy
-defaultAirflowTag: 1.10.12
+defaultAirflowTag: v2-0-stable_uid_1002490000
 
 # Select certain nodes for airflow pods.
 nodeSelector: {}
@@ -160,6 +160,9 @@ secret:
 - envName: PGPASS
   secretName: airflow-postgresql
   secretKey: postgres-password
+- envName: DEFAULT_USER_PASS
+  secretName: airflow-default-user-password
+  secretKey: default-user-pass
 
 # Airflow database config
 data:
@@ -297,6 +300,12 @@ workers:
 
 # Airflow scheduler settings
 scheduler:
+
+  livenessProbe:
+    initialDelaySeconds: 15
+    timeoutSeconds: 30
+    failureThreshold: 20
+    periodSeconds: 5
   # Airflow 2.0 allows users to run multiple schedulers,
   # However this feature is only recommended for MySQL 8+ and Postgres
   replicas: 1
@@ -363,11 +372,11 @@ webserver:
   defaultUser:
     enabled: true
     role: Admin
-    username: admin
+    username: cas-airflow-admin
     email: admin@example.com
     firstName: admin
     lastName: user
-    password: admin
+    password: "$(DEFAULT_USER_PASS)"
 
   # Mount additional volumes into webserver.
   extraVolumes: []
@@ -590,15 +599,15 @@ config:
     remote_logging: '{{- ternary "True" "False" .Values.elasticsearch.enabled }}'
   # Authentication backend used for the experimental API
   api:
-    auth_backend: airflow.api.auth.backend.deny_all
+    auth_backend: airflow.api.auth.backend.default
   logging:
     logging_level: DEBUG
   webserver:
     enable_proxy_fix: "True"
     expose_config: "True"
     rbac: "True"
-    username: "admin"
-    password: "admin"
+    username: "cas-airflow-admin"
+    password: "$(DEFAULT_USER_PASS)"
 
   celery:
     default_queue: celery
@@ -609,6 +618,7 @@ config:
     statsd_port: 9125
     statsd_prefix: airflow
     statsd_host: '{{ printf "%s-statsd" .Release.Name }}'
+    min_file_process_interval: 30
 
     # Restart Scheduler every 41460 seconds (11 hours 31 minutes)
     # The odd time is chosen so it is not always restarting on the same "hour" boundary

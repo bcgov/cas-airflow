@@ -6,4 +6,5 @@ gid: 1002490000
 
 # Git sync
 dags:
-  uid: 1002490000
+  gitSync:
+    uid: 1002490000

@@ -12,6 +12,9 @@ from trigger_k8s_cronjob import trigger_k8s_cronjob
 
 import os
 import json
+import sys
+
+sys.path.insert(0,os.path.abspath(os.path.dirname(__file__)))
 
 YESTERDAY = datetime.now() - timedelta(days=1)
 

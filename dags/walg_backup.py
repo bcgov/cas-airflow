@@ -2,12 +2,15 @@
 """
 # DAG to make a full backup of a postgres database to a gcs bucket.
 """
+import os
+import sys
+sys.path.insert(0,os.path.abspath(os.path.dirname(__file__)))
+
 from airflow import DAG
 from datetime import datetime, timedelta
 from airflow.operators.python_operator import PythonOperator
 from exec_in_pod import exec_in_pod
 
-import os
 
 START_DATE = datetime.now() - timedelta(days=2)
 

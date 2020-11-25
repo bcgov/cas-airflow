@@ -2,12 +2,14 @@
 """
 # DAG to remove dag_processor_log files older than 10 days.
 """
+import os
+import sys
+sys.path.insert(0,os.path.abspath(os.path.dirname(__file__)))
+
 from airflow import DAG
 from datetime import datetime, timedelta
 from airflow.operators.python_operator import PythonOperator
 from exec_in_pod import exec_in_pod
-
-import os
 
 START_DATE = datetime.now() - timedelta(weeks=2)
 

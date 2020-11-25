@@ -4,13 +4,16 @@
 ciip_deploy_db will initialize the portal database and import the swrs data
 cron_acme_issue will issue a certificate for the CIIP portal
 """
+import os
+import sys
+sys.path.insert(0,os.path.abspath(os.path.dirname(__file__)))
+
 from airflow import DAG
 from datetime import datetime, timedelta
 from airflow.contrib.operators.kubernetes_pod_operator import KubernetesPodOperator
 from airflow.operators.python_operator import PythonOperator
 from trigger_k8s_cronjob import trigger_k8s_cronjob
 
-import os
 import json
 
 YESTERDAY = datetime.now() - timedelta(days=1)

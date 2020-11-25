@@ -4,14 +4,18 @@
 swrs_eccc_import_full will download and extract all zip files in the GCS bucket
 swrs_eccc_import_incremental will only download and extract files that were uploaded in the first task of the DAG
 """
+import os
+import sys
+sys.path.insert(0,os.path.abspath(os.path.dirname(__file__)))
+
 from airflow import DAG
 from datetime import datetime, timedelta
 from airflow.contrib.operators.kubernetes_pod_operator import KubernetesPodOperator
 from airflow.operators.python_operator import PythonOperator
 from trigger_k8s_cronjob import trigger_k8s_cronjob
 
-import os
 import json
+
 
 YESTERDAY = datetime.now() - timedelta(days=1)
 

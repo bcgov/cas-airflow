@@ -569,13 +569,13 @@ cleanup:
   schedule: "*/15 * * * *"
 
 # Configuration for postgresql subchart
-# Not recommended for production
 postgresql:
   enabled: true
   image: "registry.access.redhat.com/rhscl/postgresql-96-rhel7"
   imageTag: "1-51.1575996559"
-  postgresqlPassword: postgres
-  postgresqlUsername: postgres
+  # postgres username and password are overridden in the metadata
+  # postgresqlPassword: postgres
+  # postgresqlUsername: postgres
   networkPolicy:
     enabled: false
 

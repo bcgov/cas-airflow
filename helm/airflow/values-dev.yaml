@@ -3,12 +3,3 @@
 
 uid: 1002490000
 gid: 1002490000
-
-env: 
-  - name: "NAMESPACE"
-    value: "0fad32-dev"
-
-# Git sync
-dags:
-  gitSync:
-    uid: 1002490000

@@ -151,7 +151,12 @@ images:
     pullPolicy: IfNotPresent
 
 # Environment variables for all airflow containers
-env: []
+env: 
+  - name: "NAMESPACE"
+    valueFrom:
+      fieldRef:
+        apiVersion: v1
+        fieldPath: metadata.namespace
 
 # Secrets for all airflow containers
 secret:
@@ -668,56 +673,4 @@ dags:
     existingClaim: ~
   gitSync:
     enabled: false
-    # git repo clone url
-    # ssh examples ssh://git@github.com/apache/airflow.git
-    # git@github.com:apache/airflow.git
-    # https example: https://github.com/apache/airflow.git
-    repo: https://github.com/bcgov/cas-airflow.git
-    branch: master
-    rev: HEAD
-    root: "/git"
-    dest: "repo"
-    depth: 1
-    # the number of consecutive failures allowed before aborting
-    maxFailures: 0
-    # subpath within the repo where dags are located
-    # should be "" if dags are at repo root
-    subPath: "dags"
-    # if your repo needs a user name password
-    # you can load them to a k8s secret like the one below
-    #   ---
-    #   apiVersion: v1
-    #   kind: Secret
-    #   metadata:
-    #     name: git-credentials
-    #   data:
-    #     GIT_SYNC_USERNAME: <base64_encoded_git_username>
-    #     GIT_SYNC_PASSWORD: <base64_encoded_git_password>
-    # and specify the name of the secret below
-    #
-    # credentialsSecret: git-credentials
-    #
-    #
-    # If you are using an ssh clone url, you can load
-    # the ssh private key to a k8s secret like the one below
-    #   ---
-    #   apiVersion: v1
-    #   kind: Secret
-    #   metadata:
-    #     name: airflow-ssh-secret
-    #   data:
-    #     # key needs to be gitSshKey
-    #     gitSshKey: <base64_encoded_data>
-    # and specify the name of the secret below
-    # sshKeySecret: airflow-ssh-secret
-    #
-    # If you are using an ssh private key, you can additionally
-    # specify the content of your known_hosts file, example:
-    #
-    # knownHosts: |
-    #    <host1>,<ip1> <key1>
-    #    <host2>,<ip2> <key2>
-    # interval between git sync attempts in seconds
-    wait: 60
-    containerName: git-sync
-    uid: 1002490000
+    

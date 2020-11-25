@@ -15,6 +15,10 @@ These DAGs the following connections:
  - Postgres connection named `ggircs_postgres` with the correct host, port, login, password,
    and schema (named "schema" in airflow, but refers to the postgres database)
 """
+import os
+import sys
+sys.path.insert(0,os.path.abspath(os.path.dirname(__file__)))
+
 from airflow import DAG
 from datetime import datetime, timedelta
 from airflow.contrib.operators.kubernetes_pod_operator import KubernetesPodOperator
@@ -23,7 +27,6 @@ from airflow.operators.dagrun_operator import TriggerDagRunOperator
 from airflow.hooks.base_hook import BaseHook
 from trigger_k8s_cronjob import trigger_k8s_cronjob
 
-import os
 import json
 
 START_DATE = datetime.now() - timedelta(days=2)

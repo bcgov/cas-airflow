@@ -31,7 +31,7 @@ airflowHome: "/opt/airflow"
 defaultAirflowRepository: gcr.io/ggl-cas-storage/cas-airflow-ocp4
 
 # Default airflow tag to deploy
-defaultAirflowTag: v2-0-stable_uid_1002490000
+defaultAirflowTag: cas-airflow-WIP
 
 # Select certain nodes for airflow pods.
 nodeSelector: {}
@@ -152,8 +152,6 @@ images:
 
 # Environment variables for all airflow containers
 env: []
-# - name: ""
-#   value: ""
 
 # Secrets for all airflow containers
 secret:
@@ -355,7 +353,7 @@ webserver:
     periodSeconds: 5
 
   # Number of webservers
-  replicas: 1
+  replicas: 2
 
   # Additional network policies as needed
   extraNetworkPolicies: []
@@ -597,6 +595,7 @@ config:
     colored_console_log: "False"
     executor: "{{ .Values.executor }}"
     remote_logging: '{{- ternary "True" "False" .Values.elasticsearch.enabled }}'
+    dag_concurrency: 1
   # Authentication backend used for the experimental API
   api:
     auth_backend: airflow.api.auth.backend.default
@@ -644,8 +643,10 @@ config:
     pod_template_file: '{{ include "airflow_pod_template_file" . }}/pod_template_file.yaml'
     worker_container_repository: "{{ .Values.images.airflow.repository | default .Values.defaultAirflowRepository }}"
     worker_container_tag: "{{ .Values.images.airflow.tag | default .Values.defaultAirflowTag }}"
-    delete_worker_pods: "True"
+    delete_worker_pods: "False"
     multi_namespace_mode: "{{ .Values.multiNamespaceMode }}"
+    run_as_user: "{{ .Values.uid }}"
+
 # yamllint enable rule:line-length
 
 multiNamespaceMode: False
@@ -666,13 +667,13 @@ dags:
     ## the name of an existing PVC to use
     existingClaim: ~
   gitSync:
-    enabled: true
+    enabled: false
     # git repo clone url
     # ssh examples ssh://git@github.com/apache/airflow.git
     # git@github.com:apache/airflow.git
     # https example: https://github.com/apache/airflow.git
     repo: https://github.com/bcgov/cas-airflow.git
-    branch: "fix/local-dir-in-path"
+    branch: master
     rev: HEAD
     root: "/git"
     dest: "repo"

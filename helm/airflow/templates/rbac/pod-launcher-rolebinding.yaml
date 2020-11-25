@@ -49,6 +49,9 @@ roleRef:
 {{- end }}
   name: {{ .Release.Name }}-pod-launcher-role
 subjects:
+  - kind: ServiceAccount
+    name: {{ .Release.Name }}-webserver
+    namespace: {{ .Release.Namespace }}
 {{- if $grantScheduler }}
   - kind: ServiceAccount
     name: {{ .Release.Name }}-scheduler

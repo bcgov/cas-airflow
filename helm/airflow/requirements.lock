@@ -1,6 +1,6 @@
 dependencies:
 - name: postgresql
-  repository: file://../postgresql-chart
+  repository: file://../postgresql
   version: 0.13.1-p4
-digest: sha256:6175c580e4bfa527d5b9931f52e43ff5dca6c8f2ade8a61ae073ecdd892b3e72
-generated: "2020-10-29T12:08:00.761456588-07:00"
+digest: sha256:4d1ecb933ebf071efef7916ec0e6a37f36e82b3fd46d8dd073241c14e6ab23ab
+generated: "2020-11-23T15:57:27.243855-08:00"

@@ -31,7 +31,7 @@ airflowHome: "/opt/airflow"
 defaultAirflowRepository: gcr.io/ggl-cas-storage/cas-airflow-ocp4
 
 # Default airflow tag to deploy
-defaultAirflowTag: cas-airflow-temp-entrypoint-fix
+defaultAirflowTag: cas-airflow-v2-0-0rc1
 
 # Select certain nodes for airflow pods.
 nodeSelector: {}
@@ -152,6 +152,7 @@ images:
 
 # Environment variables for all airflow containers
 env: []
+
 
 # Secrets for all airflow containers
 secret:

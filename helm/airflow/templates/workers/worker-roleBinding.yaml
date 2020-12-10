@@ -1,20 +1,20 @@
 {{- range (list .Values.namespaces.airflow .Values.namespaces.ggircs) }}
-
-kind: RoleBinding
+---
 apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
 metadata:
-  name: "{{ $.Release.Name }}-airflow-worker-rolebinding"
+  namespace: {{ . }}
+  name: {{ $.Release.Name }}-airflow-worker-rolebinding
   labels:
     release: {{ $.Release.Name }}
     chart: "{{ $.Chart.Name }}-{{ $.Chart.Version }}"
-  namespace: {{ . }}
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: Role
-  name: {{ . }}-deployer
+  name: cas-provision-job-runner
 subjects:
   - kind: ServiceAccount
-    name: "{{ $.Release.Name }}-worker"
+    name: {{ $.Release.Name }}-worker
     namespace: {{ $.Release.Namespace }}
 
-{{ end }}
+{{- end }}

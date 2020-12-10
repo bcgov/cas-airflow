@@ -7,9 +7,9 @@ metadata:
 spec:
   description: allow webserver to communicate externally
   source:
-    - - $namespace={{.Values.namespaces.airflow}}
+    - - $namespace={{ .Values.namespaces.airflow }}
       - release={{ .Release.Name }}
 
   destination:
-    - - $namespace={{.Values.namespaces.airflow}}
+    - - $namespace={{ .Values.namespaces.airflow }}
       - release={{ .Release.Name }}

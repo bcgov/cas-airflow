@@ -7,3 +7,8 @@ gid: 1002490000
 env: 
   - name: "NAMESPACE"
     value: "0fad32-dev"
+
+namespaces:
+  airflow: "0fad32-dev"
+  ggircs: "9212c9-dev"
+  ciip: "09269b-dev"

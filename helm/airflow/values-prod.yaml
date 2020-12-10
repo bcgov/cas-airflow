@@ -4,6 +4,7 @@
 uid: 1002490002
 gid: 1002490002
 
-# Git sync
-dags:
-  uid: 1002490002
+namespaces:
+  airflow: "0fad32-prod"
+  ggircs: "9212c9-prod"
+  ciip: "09269b-prod"

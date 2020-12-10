@@ -7,7 +7,8 @@ metadata:
 spec:
   description: allow service account to run builds/deployments
   source:
-    - - $namespace={{.Values.namespaces.airflow}}
+    - - $namespace={{ .Values.namespaces.airflow }}
       - "@app:k8s:serviceaccountname={{ .Release.Name }}-worker"
+      - "@app:k8s:serviceaccountname={{ .Release.Name }}-scheduler"
   destination:
     - - int:network=internal-cluster-api-endpoint

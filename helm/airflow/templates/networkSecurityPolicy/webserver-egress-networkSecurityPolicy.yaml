@@ -1,0 +1,13 @@
+apiVersion: security.devops.gov.bc.ca/v1alpha1
+kind: NetworkSecurityPolicy
+metadata:
+  name: custom-airflow-webserver-egress
+  labels:
+    created-by: {{ .Release.Name }}
+spec:
+  description: allow webserver to communicate externally
+  source:
+    - - $namespace={{.Values.namespaces.airflow}}
+      - "@app:k8s:serviceaccountname={{ .Release.Name }}-webserver"
+  destination:
+    - - ext:network=any

@@ -1,0 +1,100 @@
+# Only the values we need to override from the airflow defaults
+
+airflow:
+  uid: 1002490000
+  gid: 1002490000
+
+  defaultAirflowRepository: gcr.io/ggl-cas-storage/cas-airflow-ocp4
+  defaultAirflowTag: cas-airflow-v2-0-0rc1
+
+
+  # Enable RBAC (default on most clusters these days)
+  rbacEnabled: true
+
+  # Environment variables for all airflow containers
+  env: []
+  # - name: ""
+  #   value: ""
+
+  # Secrets for all airflow containers
+  secret: 
+  - envName: PGPASS
+    secretName: airflow-postgresql
+    secretKey: postgres-password
+  - envName: DEFAULT_USER_PASS
+    secretName: airflow-default-user-password
+    secretKey: default-user-pass
+
+  # Airflow database config
+  data:
+    metadataConnection:
+      user: postgres
+      pass: $PGPASS
+      host: ~
+      port: 5432
+      db: postgres
+      sslmode: disable
+    resultBackendConnection:
+      user: postgres
+      pass: $PGPASS
+      host: ~
+      port: 5432
+      db: postgres
+      sslmode: disable
+
+  # Airflow webserver settings
+  webserver:
+    replicas: 2
+    defaultUser:
+      enabled: true
+      role: Admin
+      username: cas-airflow-admin
+      email: admin@example.com
+      firstName: admin
+      lastName: user
+      password: "$(DEFAULT_USER_PASS)"
+
+  # Configuration for postgresql subchart
+  postgresql:
+    enabled: true
+    image: "registry.access.redhat.com/rhscl/postgresql-96-rhel7"
+    imageTag: "1-51.1575996559"
+    # postgres username and password are overridden in the metadata
+    # postgresqlPassword: postgres
+    # postgresqlUsername: postgres
+    networkPolicy:
+      enabled: false
+
+
+  config:
+    core:
+      dag_concurrency: 1
+    api:
+      auth_backend: airflow.api.auth.backend.default
+    webserver:
+      username: "cas-airflow-admin"
+      password: "$(DEFAULT_USER_PASS)"
+
+    celery:
+      default_queue: celery
+
+    scheduler:
+      min_file_process_interval: 30
+    
+    kubernetes:
+      delete_worker_pods: 'False'
+      run_as_user: "{{ .Values.uid }}"
+
+  # Git sync
+  dags:
+    persistence:
+      enabled: false
+    gitSync:
+      enabled: false
+      repo: https://github.com/bcgov/cas-airflow.git
+      branch: master
+      rev: HEAD
+      root: "/git"
+      dest: "repo"
+      subPath: "dags"
+      uid: 1002490000

@@ -1,0 +1,33 @@
+# Values override for dev namespace
+# override example: helm install -f values-dev.yaml -f values.yaml airflow .
+
+uid: 1002490000
+gid: 1002490000
+
+env: 
+  - name: "NAMESPACE"
+    value: "0fad32-dev"
+
+namespaces:
+  airflow: "0fad32-dev"
+  ggircs: "9212c9-dev"
+  ciip: "09269b-dev"
+
+airflow:
+  scheduler:
+    extraVolumes:
+      - name: cas-namespaces
+        projected:
+          sources:
+          - secret:
+              name: cas-namespaces
+              items:
+                - key: airflow-namespace
+                  path: airflow-namespace
+                - key: ggircs-namespace
+                  path: ggircs-namespace
+                - key: ciip-namespace
+                  path: ciip-namespace
+    extraVolumeMounts:
+      - name: cas-namespaces
+        mountPath: "/etc/cas-namespaces"

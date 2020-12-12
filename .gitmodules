@@ -1,0 +1,3 @@
+[submodule "airflow"]
+	path = airflow
+	url = git@github.com:bcgov/cas-airflow-upstream

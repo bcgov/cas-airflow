@@ -1,0 +1,11 @@
+---
+apiVersion: v1
+name: cas-airflow
+version: 1.0.0
+description: Helm chart to deploy cas' flavour of airflow. This chart uses the vanilla chart in the airflow submodule and add cas' own templates and values.
+icon: https://www.astronomer.io/static/airflowNewA.png
+keywords:
+  - airflow
+  - cas
+  - ggircs
+  - bcgov

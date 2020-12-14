@@ -30,4 +30,4 @@ airflow:
                   path: ciip-namespace
     extraVolumeMounts:
       - name: cas-namespaces
-        mountPath: "/etc/cas-namespaces"
+        mountPath: "/opt/airflow/dags/cas-namespaces"

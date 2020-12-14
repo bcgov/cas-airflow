@@ -19,7 +19,7 @@ airflow:
   # Secrets for all airflow containers
   secret: 
   - envName: PGPASS
-    secretName: airflow-postgresql
+    secretName: cas-airflow-postgresql
     secretKey: postgres-password
   - envName: DEFAULT_USER_PASS
     secretName: airflow-default-user-password

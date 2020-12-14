@@ -18,7 +18,7 @@
 dependencies:
   - name: airflow
     version: 1.0.0
-    repository: "file://../../airflow/chart"
+    repository: "file://../../cas-airflow-upstream/chart"
   - name: postgresql
     version: 0.13.1-p4
     repository: "file://../postgresql"

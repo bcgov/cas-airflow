@@ -5,7 +5,7 @@ metadata:
   labels:
     created-by: {{ .Release.Name }}
 spec:
-  description: allow webserver to communicate externally
+  description: allow everything within this release to communicate
   source:
     - - $namespace={{ .Values.namespaces.airflow }}
       - release={{ .Release.Name }}

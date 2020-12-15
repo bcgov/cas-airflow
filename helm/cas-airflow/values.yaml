@@ -5,7 +5,7 @@ airflow:
   gid: 1002490000
 
   defaultAirflowRepository: gcr.io/ggl-cas-storage/cas-airflow-ocp4
-  defaultAirflowTag: cas-airflow-v2-0-0rc1
+  defaultAirflowTag: cas-airflow-latest
 
 
   # Enable RBAC (default on most clusters these days)
@@ -15,6 +15,13 @@ airflow:
   env: []
   # - name: ""
   #   value: ""
+
+  # Images
+  images:
+    airflow:
+      pullPolicy: Always
+    pod_template:
+      pullPolicy: Always
 
   # Secrets for all airflow containers
   secret: 
@@ -41,6 +48,26 @@ airflow:
       port: 5432
       db: postgres
       sslmode: disable
+
+  # Mounting secrets on the scheduler
+  scheduler:
+    extraVolumes:
+      - name: cas-namespaces
+        projected:
+          sources:
+          - secret:
+              name: cas-namespaces
+              items:
+                - key: airflow-namespace
+                  path: airflow-namespace
+                - key: ggircs-namespace
+                  path: ggircs-namespace
+                - key: ciip-namespace
+                  path: ciip-namespace
+    extraVolumeMounts:
+      - name: cas-namespaces
+        mountPath: "/opt/airflow/dags/cas-namespaces"
+
 
   # Airflow webserver settings
   webserver:

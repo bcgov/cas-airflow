@@ -1,0 +1,13 @@
+apiVersion: security.devops.gov.bc.ca/v1alpha1
+kind: NetworkSecurityPolicy
+metadata:
+  name: custom-airflow-webserver-to-k8s
+  labels:
+    created-by: {{ .Release.Name }}
+spec:
+  description: allow service account to run builds/deployments
+  source:
+    - - $namespace={{ .Values.namespaces.airflow }}
+      - "@app:k8s:serviceaccountname={{ .Release.Name }}-webserver"
+  destination:
+    - - int:network=internal-cluster-api-endpoint

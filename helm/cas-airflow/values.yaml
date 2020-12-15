@@ -68,6 +68,24 @@ airflow:
       - name: cas-namespaces
         mountPath: "/opt/airflow/dags/cas-namespaces"
 
+  workers:
+    extraVolumes:
+      - name: cas-namespaces
+        projected:
+          sources:
+          - secret:
+              name: cas-namespaces
+              items:
+                - key: airflow-namespace
+                  path: airflow-namespace
+                - key: ggircs-namespace
+                  path: ggircs-namespace
+                - key: ciip-namespace
+                  path: ciip-namespace
+    extraVolumeMounts:
+      - name: cas-namespaces
+        mountPath: "/opt/airflow/dags/cas-namespaces"
+
 
   # Airflow webserver settings
   webserver:

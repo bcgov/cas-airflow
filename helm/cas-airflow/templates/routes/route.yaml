@@ -1,0 +1,22 @@
+kind: Route
+apiVersion: route.openshift.io/v1
+metadata:
+  name: {{ .Release.Name }}-web
+spec:
+  host: {{ .Release.Name }}-web-{{ .Release.Namespace }}.apps.silver.devops.gov.bc.ca
+  to:
+    kind: Service
+    name: {{ .Release.Name }}-webserver
+    weight: 100
+  port:
+    targetPort: airflow-ui
+  tls:
+    termination: edge
+    insecureEdgeTerminationPolicy: Allow
+  wildcardPolicy: None
+status:
+  ingress:
+    - host: {{ .Release.Name }}-web-{{ .Release.Namespace }}.apps.silver.devops.gov.bc.ca
+      routerName: default
+      wildcardPolicy: None
+      routerCanonicalHostname: apps.silver.devops.gov.bc.ca

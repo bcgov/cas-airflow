@@ -13,14 +13,13 @@ from datetime import datetime, timedelta
 from airflow.contrib.operators.kubernetes_pod_operator import KubernetesPodOperator
 from airflow.operators.python_operator import PythonOperator
 from trigger_k8s_cronjob import trigger_k8s_cronjob
-from helpers import namespace_reader
 
 import json
 
 
 YESTERDAY = datetime.now() - timedelta(days=1)
-namespace = namespace_reader.get_namespace('ggircs')
 
+namespace = os.getenv('GGIRCS_NAMESPACE')
 in_cluster = os.getenv('LOCAL_AIRFLOW', False) == False
 
 default_args = {

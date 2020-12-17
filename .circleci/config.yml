@@ -1,65 +1,29 @@
 version: 2.1
 
+orbs:
+  gcp-gcr: circleci/gcp-gcr@0.11.0
+
 jobs:
-  build_docker_image:
+  test_stream_minio:
     parameters:
-      image_name:
-        type: string
       cache_version:
         type: integer
         default: 1
     docker:
       - image: docker:17.05.0-ce-git
-    working_directory: ~/cas-airflow/docker/<< parameters.image_name >>
+    working_directory: ~/cas-airflow/docker/stream-minio
     steps:
-      - checkout:
-          path: ~/cas-airflow
-      - setup_remote_docker
-      - run:
-          name: Install docker compose
-          command: |
-            apk add --no-cache \
-              py-pip=9.0.0-r1
-            pip install \
-              docker-compose==1.12.0
       - restore_cache:
           keys:
-            - v<< parameters.cache_version>>-<< parameters.image_name >>-{{ .Branch }}
+            - v<< parameters.cache_version>>-stream-minio-{{ .Branch }}
           paths:
-            - /caches/<< parameters.image_name >>.tar
+            - /caches/stream-minio.tar
+      - setup_remote_docker
       - run:
           name: Load cache
           command: |
             set +o pipefail
-            docker load -i /caches/<< parameters.image_name >>.tar | true
-      - run:
-          name: Build image
-          command: |
-            docker build --cache-from=<< parameters.image_name >> -t << parameters.image_name >> .
-      - run:
-          name: Save Docker image layer cache
-          command: |
-            mkdir -p /caches
-            docker save -o /caches/<< parameters.image_name >>.tar << parameters.image_name >>
-      - save_cache:
-          key: v<< parameters.cache_version>>-<< parameters.image_name >>-{{ .Branch }}
-          paths:
-            - /caches/<< parameters.image_name >>.tar
-      - persist_to_workspace:
-          root: /caches
-          paths:
-            - ./<< parameters.image_name >>.tar
-
-  test_stream_minio:
-    docker:
-      - image: docker:17.05.0-ce-git
-    steps:
-      - attach_workspace:
-          at: /tmp/workspace
-      - setup_remote_docker
-      - run:
-          name: Load archived Docker image
-          command: docker load -i /tmp/workspace/stream-minio.tar
+            docker load -i /caches/stream-minio.tar | true
       - run:
           name: Test Docker image
           environment:
@@ -71,99 +35,140 @@ jobs:
             CONTAINER_ID=$(docker run -itd $CONTEXT stream-minio /bin/bash)
             docker exec -it $CONTAINER_ID ./test.sh veryuniquebucket$CIRCLE_WORKFLOW_ID
 
-  deploy_docker_image:
+
+  build_cache_and_push:
+    executor: gcp-gcr/default
     parameters:
       image_name:
         type: string
       image_tag:
         type: string
-    docker:
-      - image: docker:17.05.0-ce-git
+      cache_version:
+        type: integer
+        default: 2
+      should_push:
+        type: boolean
+        default: true
+    working_directory: ~/cas-airflow/docker/<< parameters.image_name >>
     steps:
-      - attach_workspace:
-          at: /tmp/workspace
-      - setup_remote_docker
+      - checkout
+      - gcp-gcr/gcr-auth
+      - restore_cache:
+          keys:
+            - v<< parameters.cache_version>>-<< parameters.image_name >>-{{ .Branch }}
+          paths:
+            - /tmp/<< parameters.image_name >>.tar
       - run:
-          name: Load archived Docker image
-          command: docker load -i /tmp/workspace/<< parameters.image_name >>.tar
-      - deploy:
-          name: Push application Docker image
+          name: Load cache
           command: |
-            docker login docker.pkg.github.com -u $GITHUB_USERNAME -p $GITHUB_TOKEN
-            IMAGE_TAG=${CIRCLE_TAG/v/''}
-            TARGET="docker.pkg.github.com/bcgov/cas-airflow/<< parameters.image_name >>:<< parameters.image_tag >>"
-            docker tag << parameters.image_name >> "$TARGET"
-            docker push "$TARGET"
-          working_directory: ~/cas-airflow/docker/<< parameters.image_name >>
+            set +o pipefail
+            docker load -i /tmp/<< parameters.image_name >>.tar | true
+      - run:
+          name: Log in to DockerHub
+          command: echo $DOCKERHUB_PASSWORD | docker login -u $DOCKERHUB_USER --password-stdin registry.hub.docker.com
+      - when: 
+          condition: << parameters.should_push >>
+          steps:
+            - run:
+                name: Build application Docker image
+                command: |
+                  docker build --cache-from=<< parameters.image_name >> -t << parameters.image_name >>:latest -t gcr.io/${GOOGLE_PROJECT_ID}/cas-airflow-<< parameters.image_name >>:<< parameters.image_tag >> .
+      - when:
+          condition:
+            not: << parameters.should_push >>
+          steps:
+            - run:
+                name: Build application test docker image
+                command: |
+                  docker build --cache-from=<< parameters.image_name >> -t << parameters.image_name >>:latest .
+      - run:
+          name: Save Docker image layer cache
+          command: |
+            docker save -o /tmp/<< parameters.image_name >>.tar << parameters.image_name >>:latest
+      - save_cache:
+          key: v<< parameters.cache_version>>-<< parameters.image_name >>-{{ .Branch }}-{{ epoch }}
+          paths:
+            - /tmp/<< parameters.image_name >>.tar
+      - when:
+          condition:
+            equal: [true, << parameters.should_push >>]
+          steps:
+            - gcp-gcr/push-image:
+                image: cas-airflow-<< parameters.image_name >>
+                tag: << parameters.image_tag >>
+                digest-path: /tmp/digest.txt
+            - run:
+                command: |
+                  echo "Digest is: $(</tmp/digest.txt)"
 
 workflows:
   version: 2
   cas-airflow:
     jobs:
-      - build_docker_image:
-          name: build_docker_<< matrix.image_name >>
+      - build_cache_and_push:
+          name: build_and_push_sha1_<< matrix.image_name >>
           matrix:
             parameters:
               image_name: ["extract-zips-to-ggircs"]
-          filters:
-            tags:
-              only: /^v.*/
-      - deploy_docker_image:
-          name: deploy_docker_image_sha1_<< matrix.image_name >>
-          matrix:
-            parameters:
-              image_name: ["extract-zips-to-ggircs"]
+          image_name: << matrix.image_name >>
           image_tag: ${CIRCLE_SHA1}
-          requires:
-            - build_docker_<< matrix.image_name >>
+          context: cas-pipeline          
           filters:
             branches:
               only:
                 - develop
                 - master
-      - deploy_docker_image:
-          name: deploy_docker_image_tag_<< matrix.image_name >>
+      - build_cache_and_push:
+          name: build_and_push_tag_<< matrix.image_name >>
           matrix:
             parameters:
               image_name: ["extract-zips-to-ggircs"]
+          image_name: << matrix.image_name >>
           image_tag: ${CIRCLE_TAG/v/}
-          requires:
-            - build_docker_<< matrix.image_name >>
+          context: cas-pipeline          
           filters:
             tags:
               only: /^v.*/
             branches:
               ignore: /.*/
-      # TODO: add generic test job to avoid code duplication below
-      - build_docker_image:
-          name: build_docker_stream-minio
+      # TODO: add generic test job to avoid code duplication below (between build scripts)
+      - build_cache_and_push:
+          name: build_stream_minio_for_testing
           image_name: stream-minio
+          image_tag: ""
+          should_push: false
+          context: cas-pipeline
           filters:
             tags:
               only: /^v.*/
       - test_stream_minio:
-          requires:
-            - build_docker_stream-minio
+          requires:          
+            - build_stream_minio_for_testing
+          name: test_stream_minio
           filters:
             tags:
               only: /^v.*/
-      - deploy_docker_image:
-          name: deploy_docker_image_sha1_stream
-          image_name: stream-minio
+      - build_cache_and_push:
+          name: build_and_push_sha1_<< matrix.image_name >>
+          matrix:
+            parameters:
+              image_name: ["stream-minio"]
+          image_name: << matrix.image_name >>
           image_tag: ${CIRCLE_SHA1}
-          requires:
-            - test_stream_minio
+          context: cas-pipeline          
           filters:
             branches:
               only:
                 - develop
-                - master
-      - deploy_docker_image:
-          name: deploy_docker_image_tag_stream-minio
-          image_name: stream-minio
+                - master      
+      - build_cache_and_push:
+          name: build_and_push_tag_<< matrix.image_name >>
+          matrix:
+            parameters:
+              image_name: ["stream-minio"]
+          image_name: << matrix.image_name >>
           image_tag: ${CIRCLE_TAG/v/}
-          requires:
-            - test_stream_minio
+          context: cas-pipeline          
           filters:
             tags:
               only: /^v.*/

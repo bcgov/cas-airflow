@@ -31,7 +31,7 @@ import json
 
 START_DATE = datetime.now() - timedelta(days=2)
 
-namespace = os.getenv('NAMESPACE')
+namespace = os.getenv('GGIRCS_NAMESPACE')
 in_cluster = os.getenv('LOCAL_AIRFLOW', False) == False
 
 default_args = {
@@ -65,8 +65,8 @@ env_vars = {
     'MINIO_HOST': cas_minio_connection.host
 }
 
-stream_minio_image = "docker.pkg.github.com/bcgov/cas-airflow/stream-minio:" + os.getenv('AIRFLOW_IMAGE_TAG')
-extract_zips_image = "docker.pkg.github.com/bcgov/cas-airflow/extract-zips-to-ggircs:" + os.getenv('AIRFLOW_IMAGE_TAG')
+stream_minio_image = "gcr.io/ggl-cas-storage/cas-airflow-stream-minio:" + os.getenv('AIRFLOW_IMAGE_TAG')
+extract_zips_image = "gcr.io/ggl-cas-storage/cas-airflow-extract-zips-to-ggircs:" + os.getenv('AIRFLOW_IMAGE_TAG')
 
 def should_extract_zips(**context):
     download_return = context['task_instance'].xcom_pull(task_ids = 'download_eccc_files')

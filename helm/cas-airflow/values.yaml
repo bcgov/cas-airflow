@@ -106,10 +106,3 @@ airflow:
       enabled: false
     gitSync:
       enabled: false
-      repo: https://github.com/bcgov/cas-airflow.git
-      branch: master
-      rev: HEAD
-      root: "/git"
-      dest: "repo"
-      subPath: "dags"
-      uid: 1002490000

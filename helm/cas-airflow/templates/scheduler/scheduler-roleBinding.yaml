@@ -3,11 +3,12 @@
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
+  namespace: {{ . }}
   name: {{ $.Release.Name }}-airflow-scheduler-rolebinding
   labels:
     release: {{ $.Release.Name }}
     chart: "{{ $.Chart.Name }}-{{ $.Chart.Version }}"
-  namespace: {{ . }}
+labels: {{ include "cas-airflow.labels" . | nindent 4 }}  
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: Role

@@ -2,6 +2,7 @@ kind: Route
 apiVersion: route.openshift.io/v1
 metadata:
   name: {{ .Release.Name }}-web
+labels: {{ include "cas-airflow.labels" . | nindent 4 }}
 spec:
   host: {{ .Release.Name }}-web-{{ .Release.Namespace }}.apps.silver.devops.gov.bc.ca
   to:

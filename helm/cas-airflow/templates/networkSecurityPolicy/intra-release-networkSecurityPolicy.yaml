@@ -3,13 +3,12 @@ apiVersion: security.devops.gov.bc.ca/v1alpha1
 metadata:
   name: custom-airflow-intra-release
   labels:
-    created-by: {{ .Release.Name }}
+labels: {{ include "cas-airflow.labels" . | nindent 4 }}
 spec:
   description: allow everything within this release to communicate
   source:
-    - - $namespace={{ .Values.namespaces.airflow }}
+    - - $namespace={{ .Release.Namespace }}
       - release={{ .Release.Name }}
-
   destination:
-    - - $namespace={{ .Values.namespaces.airflow }}
+    - - $namespace={{ .Release.Namespace }}
       - release={{ .Release.Name }}

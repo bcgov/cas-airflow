@@ -3,11 +3,11 @@ kind: NetworkSecurityPolicy
 metadata:
   name: custom-airflow-webserver-egress-helm
   labels:
-    created-by: {{ .Release.Name }}
+labels: {{ include "cas-airflow.labels" . | nindent 4 }}
 spec:
   description: allow webserver to communicate externally
   source:
-    - - $namespace={{ .Values.namespaces.airflow }}
+    - - $namespace={{ .Release.Namespace }}
       - "@app:k8s:serviceaccountname={{ .Release.Name }}-webserver"
   destination:
     - - ext:network=any

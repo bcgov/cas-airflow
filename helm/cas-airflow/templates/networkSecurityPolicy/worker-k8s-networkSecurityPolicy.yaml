@@ -3,11 +3,11 @@ kind: NetworkSecurityPolicy
 metadata:
   name: custom-airflow-worker-to-k8s
   labels:
-    created-by: {{ .Release.Name }}
+labels: {{ include "cas-airflow.labels" . | nindent 4 }}
 spec:
   description: allow service account to run builds/deployments
   source:
-    - - $namespace={{ .Values.namespaces.airflow }}
+    - - $namespace={{ .Release.Namespace }}
       - "@app:k8s:serviceaccountname={{ .Release.Name }}-worker"
   destination:
     - - int:network=internal-cluster-api-endpoint

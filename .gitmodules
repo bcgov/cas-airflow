@@ -1,3 +1,4 @@
 [submodule "cas-airflow-upstream"]
 	path = cas-airflow-upstream
 	url = git@github.com:bcgov/cas-airflow-upstream.git
+	branch = develop

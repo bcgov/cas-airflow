@@ -1,5 +1,8 @@
-# Only the values we need to override from the airflow defaults
 
+route:
+  clusterDomain: apps.silver.devops.gov.bc.ca
+
+# The values we need to override from the airflow defaults
 airflow:
   uid: 1002490000
   gid: 1002490000

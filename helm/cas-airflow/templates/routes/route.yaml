@@ -4,7 +4,7 @@ metadata:
   name: {{ .Release.Name }}-web
 labels: {{ include "cas-airflow.labels" . | nindent 4 }}
 spec:
-  host: {{ .Release.Name }}-web-{{ .Release.Namespace }}.apps.silver.devops.gov.bc.ca
+  host: {{ .Release.Name }}-{{ include "cas-airflow.namespaceSuffix" . }}.{{ .Values.route.clusterDomain }}
   to:
     kind: Service
     name: {{ .Release.Name }}-webserver
@@ -17,7 +17,7 @@ spec:
   wildcardPolicy: None
 status:
   ingress:
-    - host: {{ .Release.Name }}-web-{{ .Release.Namespace }}.apps.silver.devops.gov.bc.ca
+    - host: {{ .Release.Name }}-{{ include "cas-airflow.namespaceSuffix" . }}.{{ .Values.route.clusterDomain }}
       routerName: default
       wildcardPolicy: None
       routerCanonicalHostname: apps.silver.devops.gov.bc.ca

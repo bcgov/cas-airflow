@@ -1,7 +1,9 @@
 
 apiVersion: v2
 name: cas-airflow
+type: application
 version: 1.0.0
+appVersion: 0.1.0
 description: Helm chart to deploy cas' flavour of airflow. This chart uses the vanilla chart in the airflow submodule and add cas' own templates and values.
 icon: https://www.astronomer.io/static/airflowNewA.png
 keywords:
@@ -11,5 +13,9 @@ keywords:
   - bcgov
 dependencies:
   - name: airflow
-    version: 1.0.0
+    version: "1.0.0"
     repository: "file://../../cas-airflow-upstream/chart"
+  - name: postgresql
+    version: 0.13.1-p4
+    repository: "file://../postgresql"
+    condition: postgresql.enabled

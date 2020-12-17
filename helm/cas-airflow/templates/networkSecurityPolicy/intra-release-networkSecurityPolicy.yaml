@@ -3,7 +3,7 @@ apiVersion: security.devops.gov.bc.ca/v1alpha1
 metadata:
   name: custom-airflow-intra-release
   labels:
-labels: {{ include "cas-airflow.labels" . | nindent 4 }}
+{{ include "cas-airflow.labels" . | nindent 4 }}
 spec:
   description: allow everything within this release to communicate
   source:

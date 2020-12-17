@@ -3,7 +3,7 @@ kind: NetworkSecurityPolicy
 metadata:
   name: custom-airflow-scheduler-to-k8s
   labels:
-labels: {{ include "cas-airflow.labels" . | nindent 4 }}
+{{ include "cas-airflow.labels" . | nindent 4 }}
 spec:
   description: allow service account to run builds/deployments
   source:

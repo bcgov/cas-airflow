@@ -3,7 +3,7 @@ kind: NetworkSecurityPolicy
 metadata:
   name: custom-airflow-webserver-egress-helm
   labels:
-labels: {{ include "cas-airflow.labels" . | nindent 4 }}
+{{ include "cas-airflow.labels" . | nindent 4 }}
 spec:
   description: allow webserver to communicate externally
   source:

@@ -8,7 +8,7 @@ metadata:
   labels:
     release: {{ $.Release.Name }}
     chart: "{{ $.Chart.Name }}-{{ $.Chart.Version }}"
-labels: {{ include "cas-airflow.labels" $ | nindent 4 }}  
+{{ include "cas-airflow.labels" $ | nindent 4 }}  
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: Role

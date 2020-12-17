@@ -1,6 +1,9 @@
 dependencies:
+- name: airflow
+  repository: file://../../cas-airflow-upstream/chart
+  version: 1.0.0
 - name: postgresql
   repository: file://../postgresql
   version: 0.13.1-p4
-digest: sha256:4d1ecb933ebf071efef7916ec0e6a37f36e82b3fd46d8dd073241c14e6ab23ab
-generated: "2020-12-17T11:05:39.4718-08:00"
+digest: sha256:68998f26556eeeb68f35c8ac414f4d80c95113fc75c4555647da1c2c31b13711
+generated: "2020-12-17T12:26:55.407027-08:00"

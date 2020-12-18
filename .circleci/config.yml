@@ -43,13 +43,15 @@ jobs:
         type: string
       image_tag:
         type: string
+      dockerfile_directory:
+        type: string
       cache_version:
         type: integer
         default: 2
       should_push:
         type: boolean
         default: true
-    working_directory: ~/cas-airflow/docker/<< parameters.image_name >>
+    working_directory: ~/<< parameters.dockerfile_directory >>
     steps:
       - checkout
       - gcp-gcr/gcr-auth
@@ -72,7 +74,7 @@ jobs:
             - run:
                 name: Build application Docker image
                 command: |
-                  docker build --cache-from=<< parameters.image_name >> -t << parameters.image_name >>:latest -t gcr.io/${GOOGLE_PROJECT_ID}/cas-airflow-<< parameters.image_name >>:<< parameters.image_tag >> .
+                  docker build --cache-from=<< parameters.image_name >> -t << parameters.image_name >>:latest -t gcr.io/${GOOGLE_PROJECT_ID}/<< parameters.image_name >>:<< parameters.image_tag >> .
       - when:
           condition:
             not: << parameters.should_push >>
@@ -106,12 +108,10 @@ workflows:
   cas-airflow:
     jobs:
       - build_cache_and_push:
-          name: build_and_push_sha1_<< matrix.image_name >>
-          matrix:
-            parameters:
-              image_name: ["extract-zips-to-ggircs"]
-          image_name: << matrix.image_name >>
+          name: airflow__sha1_build_and_push
+          image_name: cas-airflow
           image_tag: ${CIRCLE_SHA1}
+          dockerfile_directory: cas-airflow
           context: cas-pipeline          
           filters:
             branches:
@@ -119,13 +119,33 @@ workflows:
                 - develop
                 - master
       - build_cache_and_push:
-          name: build_and_push_tag_<< matrix.image_name >>
-          matrix:
-            parameters:
-              image_name: ["extract-zips-to-ggircs"]
-          image_name: << matrix.image_name >>
+          name: airflow__tag_build_and_push
+          image_name: cas-airflow
           image_tag: ${CIRCLE_TAG/v/}
+          dockerfile_directory: cas-airflow
           context: cas-pipeline          
+          filters:
+            tags:
+              only: /^v.*/
+            branches:
+              ignore: /.*/
+      - build_cache_and_push:
+          name: extract-zips-to-ggircs__sha1_build_and_push
+          image_name: cas-airflow-extract-zips-to-ggircs
+          image_tag: ${CIRCLE_SHA1}
+          dockerfile_directory: cas-airflow/docker/extract-zips-to-ggircs
+          context: cas-pipeline          
+          filters:
+            branches:
+              only:
+                - develop
+                - master
+        - build_cache_and_push:
+          name: extract-zips-to-ggircs__tag_build_and_push
+          image_name: cas-airflow-extract-zips-to-ggircs
+          image_tag: ${CIRCLE_TAG/v/}
+          context: cas-pipeline  
+          dockerfile_directory: cas-airflow/docker/extract-zips-to-ggircs        
           filters:
             tags:
               only: /^v.*/
@@ -134,8 +154,9 @@ workflows:
       # TODO: add generic test job to avoid code duplication below (between build scripts)
       - build_cache_and_push:
           name: build_stream_minio_for_testing
-          image_name: stream-minio
+          image_name: cas-airflow-stream-minio
           image_tag: ""
+          dockerfile_directory: cas-airflow/docker/stream-minio
           should_push: false
           context: cas-pipeline
           filters:
@@ -149,12 +170,10 @@ workflows:
             tags:
               only: /^v.*/
       - build_cache_and_push:
-          name: build_and_push_sha1_<< matrix.image_name >>
-          matrix:
-            parameters:
-              image_name: ["stream-minio"]
-          image_name: << matrix.image_name >>
+          name: stream-minio__sha1_build_and_push
+          image_name: cas-airflow-stream-minio
           image_tag: ${CIRCLE_SHA1}
+          dockerfile_directory: cas-airflow/docker/stream-minio
           context: cas-pipeline          
           filters:
             branches:
@@ -162,12 +181,10 @@ workflows:
                 - develop
                 - master      
       - build_cache_and_push:
-          name: build_and_push_tag_<< matrix.image_name >>
-          matrix:
-            parameters:
-              image_name: ["stream-minio"]
-          image_name: << matrix.image_name >>
+          name: stream-minio__tag_build_and_push
+          image_name: cas-airflow-stream-minio
           image_tag: ${CIRCLE_TAG/v/}
+          dockerfile_directory: cas-airflow/docker/stream-minio
           context: cas-pipeline          
           filters:
             tags:

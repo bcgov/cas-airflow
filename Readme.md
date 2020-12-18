@@ -74,12 +74,12 @@ Then reshim asdf to ensure the correct version of airflow is in your path.
 asdf reshim
 ```
 
-Be sure to set the `$AIRFLOW_HOME` environment variable.
-The airflow repository is in the submodule at `./cas-airflow-upstream`
+Be sure to set the `$AIRFLOW_HOME` environment variable if this repository was cloned to a path other than `~/airflow`.
 
 
 ```bash
-airflow initdb
+airflow db init
+airflow users create -r Admin -u <<username>> -e <<email>> -f <<first name>> -l <<last name>> -p <<password>>
 ```
 
 Start airflow locally (optional).

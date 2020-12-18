@@ -145,5 +145,11 @@ unittests.cfg
 # Helm
 helm/**/charts/**/*
 
+# Airflow
+webserver_config.py
+
 .vscode/settings.json
 .scratch
+
+
+

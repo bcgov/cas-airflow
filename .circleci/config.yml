@@ -45,6 +45,7 @@ jobs:
         type: string
       dockerfile_directory:
         type: string
+        default: "cas-airflow"
       cache_version:
         type: integer
         default: 2
@@ -105,7 +106,6 @@ jobs:
 
 
 workflows:
-  version: 2
   cas-airflow:
     jobs:
       - build_cache_and_push:
@@ -120,38 +120,38 @@ workflows:
                 - develop
                 - master
       - build_cache_and_push:
-        name: airflow__tag_build_and_push
-        image_name: cas-airflow
-        image_tag: ${CIRCLE_TAG/v/}
-        dockerfile_directory: cas-airflow
-        context: cas-pipeline
-        filters:
-          tags:
-            only: /^v.*/
-          branches:
-            ignore: /.*/
+          name: airflow__tag_build_and_push
+          image_name: cas-airflow
+          image_tag: ${CIRCLE_TAG/v/}
+          dockerfile_directory: cas-airflow
+          context: cas-pipeline
+          filters:
+            tags:
+              only: /^v.*/
+            branches:
+              ignore: /.*/
       - build_cache_and_push:
-        name: extract-zips-to-ggircs__sha1_build_and_push
-        image_name: cas-airflow-extract-zips-to-ggircs
-        image_tag: ${CIRCLE_SHA1}
-        dockerfile_directory: cas-airflow/docker/extract-zips-to-ggircs
-        context: cas-pipeline
-        filters:
-          branches:
-            only:
-              - develop
-              - master
+          name: extract-zips-to-ggircs__sha1_build_and_push
+          image_name: cas-airflow-extract-zips-to-ggircs
+          image_tag: ${CIRCLE_SHA1}
+          dockerfile_directory: cas-airflow/docker/extract-zips-to-ggircs
+          context: cas-pipeline
+          filters:
+            branches:
+              only:
+                - develop
+                - master
       - build_cache_and_push:
-        name: extract-zips-to-ggircs__tag_build_and_push
-        image_name: cas-airflow-extract-zips-to-ggircs
-        image_tag: ${CIRCLE_TAG/v/}
-        context: cas-pipeline
-        dockerfile_directory: cas-airflow/docker/extract-zips-to-ggircs        
-        filters:
-          tags:
-            only: /^v.*/
-          branches:
-            ignore: /.*/
+          name: extract-zips-to-ggircs__tag_build_and_push
+          image_name: cas-airflow-extract-zips-to-ggircs
+          image_tag: ${CIRCLE_TAG/v/}
+          context: cas-pipeline
+          dockerfile_directory: cas-airflow/docker/extract-zips-to-ggircs        
+          filters:
+            tags:
+              only: /^v.*/
+            branches:
+              ignore: /.*/
       # TODO: add generic test job to avoid code duplication below (between build scripts)
       - build_cache_and_push:
           name: stream-minio__test_build

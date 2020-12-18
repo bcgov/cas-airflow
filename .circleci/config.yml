@@ -97,7 +97,7 @@ jobs:
             equal: [true, << parameters.should_push >>]
           steps:
             - gcp-gcr/push-image:
-                image: cas-airflow-<< parameters.image_name >>
+                image: << parameters.image_name >>
                 tag: << parameters.image_tag >>
                 digest-path: /tmp/digest.txt
             - run:

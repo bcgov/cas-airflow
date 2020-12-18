@@ -103,59 +103,60 @@ jobs:
                 command: |
                   echo "Digest is: $(</tmp/digest.txt)"
 
+
 workflows:
   version: 2
   cas-airflow:
     jobs:
       - build_cache_and_push:
           name: airflow__sha1_build_and_push
-          image_name: cas-airflow
+          image_name: "cas-airflow"
           image_tag: ${CIRCLE_SHA1}
           dockerfile_directory: cas-airflow
-          context: cas-pipeline          
+          context: cas-pipeline
           filters:
             branches:
               only:
                 - develop
                 - master
       - build_cache_and_push:
-          name: airflow__tag_build_and_push
-          image_name: cas-airflow
-          image_tag: ${CIRCLE_TAG/v/}
-          dockerfile_directory: cas-airflow
-          context: cas-pipeline          
-          filters:
-            tags:
-              only: /^v.*/
-            branches:
-              ignore: /.*/
+        name: airflow__tag_build_and_push
+        image_name: cas-airflow
+        image_tag: ${CIRCLE_TAG/v/}
+        dockerfile_directory: cas-airflow
+        context: cas-pipeline
+        filters:
+          tags:
+            only: /^v.*/
+          branches:
+            ignore: /.*/
       - build_cache_and_push:
-          name: extract-zips-to-ggircs__sha1_build_and_push
-          image_name: cas-airflow-extract-zips-to-ggircs
-          image_tag: ${CIRCLE_SHA1}
-          dockerfile_directory: cas-airflow/docker/extract-zips-to-ggircs
-          context: cas-pipeline          
-          filters:
-            branches:
-              only:
-                - develop
-                - master
-        - build_cache_and_push:
-          name: extract-zips-to-ggircs__tag_build_and_push
-          image_name: cas-airflow-extract-zips-to-ggircs
-          image_tag: ${CIRCLE_TAG/v/}
-          context: cas-pipeline  
-          dockerfile_directory: cas-airflow/docker/extract-zips-to-ggircs        
-          filters:
-            tags:
-              only: /^v.*/
-            branches:
-              ignore: /.*/
+        name: extract-zips-to-ggircs__sha1_build_and_push
+        image_name: cas-airflow-extract-zips-to-ggircs
+        image_tag: ${CIRCLE_SHA1}
+        dockerfile_directory: cas-airflow/docker/extract-zips-to-ggircs
+        context: cas-pipeline
+        filters:
+          branches:
+            only:
+              - develop
+              - master
+      - build_cache_and_push:
+        name: extract-zips-to-ggircs__tag_build_and_push
+        image_name: cas-airflow-extract-zips-to-ggircs
+        image_tag: ${CIRCLE_TAG/v/}
+        context: cas-pipeline
+        dockerfile_directory: cas-airflow/docker/extract-zips-to-ggircs        
+        filters:
+          tags:
+            only: /^v.*/
+          branches:
+            ignore: /.*/
       # TODO: add generic test job to avoid code duplication below (between build scripts)
       - build_cache_and_push:
-          name: build_stream_minio_for_testing
+          name: stream-minio__test_build
           image_name: cas-airflow-stream-minio
-          image_tag: ""
+          image_tag: "test"
           dockerfile_directory: cas-airflow/docker/stream-minio
           should_push: false
           context: cas-pipeline
@@ -164,8 +165,8 @@ workflows:
               only: /^v.*/
       - test_stream_minio:
           requires:          
-            - build_stream_minio_for_testing
-          name: test_stream_minio
+            - stream-minio__test_build
+          name: stream-minio__test
           filters:
             tags:
               only: /^v.*/
@@ -174,7 +175,7 @@ workflows:
           image_name: cas-airflow-stream-minio
           image_tag: ${CIRCLE_SHA1}
           dockerfile_directory: cas-airflow/docker/stream-minio
-          context: cas-pipeline          
+          context: cas-pipeline
           filters:
             branches:
               only:
@@ -185,7 +186,7 @@ workflows:
           image_name: cas-airflow-stream-minio
           image_tag: ${CIRCLE_TAG/v/}
           dockerfile_directory: cas-airflow/docker/stream-minio
-          context: cas-pipeline          
+          context: cas-pipeline
           filters:
             tags:
               only: /^v.*/

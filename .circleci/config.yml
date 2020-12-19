@@ -172,6 +172,8 @@ workflows:
               only: /^v.*/
       - build_cache_and_push:
           name: stream-minio__sha1_build_and_push
+          requires:
+            - stream-minio__test
           image_name: cas-airflow-stream-minio
           image_tag: ${CIRCLE_SHA1}
           dockerfile_directory: cas-airflow/docker/stream-minio
@@ -183,6 +185,8 @@ workflows:
                 - master      
       - build_cache_and_push:
           name: stream-minio__tag_build_and_push
+          requires:
+            - stream-minio__test
           image_name: cas-airflow-stream-minio
           image_tag: ${CIRCLE_TAG/v/}
           dockerfile_directory: cas-airflow/docker/stream-minio

@@ -7,8 +7,8 @@ airflow:
   uid: 1002490000
   gid: 1002490000
 
-  defaultAirflowRepository: gcr.io/ggl-cas-storage/cas-airflow-ocp4
-  defaultAirflowTag: cas-airflow-latest
+  defaultAirflowRepository: gcr.io/ggl-cas-storage/cas-airflow
+  defaultAirflowTag: v0.1.1.alpha.3
 
 
   # Enable RBAC (default on most clusters these days)

@@ -54,7 +54,7 @@ app.kubernetes.io/instance: {{ .Release.Name }}
 
 
 {{/*
-Gets the suffix of the namespace.
+Gets the suffix of the namespace. (-dev, -tools, ... )
 */}}
 {{- define "cas-airflow.namespaceSuffix" }}
 {{- (split "-" .Release.Namespace)._1 | trim -}}

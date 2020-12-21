@@ -89,7 +89,7 @@ airflow:
     core:
       dag_concurrency: 1
     api:
-      auth_backend: airflow.api.auth.backend.default
+      auth_backend: airflow.api.auth.backend.basic_auth
     webserver:
       username: "cas-airflow-admin"
       password: "$(DEFAULT_USER_PASS)"

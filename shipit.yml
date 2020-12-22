@@ -2,11 +2,7 @@ dependencies:
   override: []
 deploy:
   override:
-    - ./helm/cas-airflow/patch-values.sh
-    - helm dep up ./helm/postgresql
-    - helm dep up ./helm/airflow
-    - helm dep up ./helm/cas-airflow
-    - helm upgrade --install --atomic --timeout 900s --namespace "$ENVIRONMENT" cas-airflow ./helm/cas-airflow:
+    - ./deploy.sh:
         timeout: 900
 review:
   checklist: []

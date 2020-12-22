@@ -1,7 +1,7 @@
 kind: NetworkSecurityPolicy
 apiVersion: security.devops.gov.bc.ca/v1alpha1
 metadata:
-  name: custom-airflow-intra-release
+  name: {{ .Release.Name }}-intra-release 
   labels:
 {{ include "cas-airflow.labels" . | nindent 4 }}
 spec:

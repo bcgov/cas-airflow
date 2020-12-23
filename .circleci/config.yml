@@ -119,6 +119,7 @@ workflows:
               only:
                 - develop
                 - master
+                - feature/airflow-deploys-in-other-namespaces
       - build_cache_and_push:
           name: airflow__tag_build_and_push
           image_name: cas-airflow
@@ -141,6 +142,7 @@ workflows:
               only:
                 - develop
                 - master
+                - feature/airflow-deploys-in-other-namespaces
       - build_cache_and_push:
           name: extract-zips-to-ggircs__tag_build_and_push
           image_name: cas-airflow-extract-zips-to-ggircs
@@ -182,7 +184,8 @@ workflows:
             branches:
               only:
                 - develop
-                - master      
+                - master
+                - feature/airflow-deploys-in-other-namespaces
       - build_cache_and_push:
           name: stream-minio__tag_build_and_push
           requires:

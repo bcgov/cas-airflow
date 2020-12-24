@@ -36,7 +36,7 @@ There are a couple manual steps required for installation (the first deployment)
 
 ## TODO
 
-- [x] stream-minio should be replaced to use gcs client
+- [ ] stream-minio should be replaced to use gcs client
 - [ ] the docker images should be imported in the cluster instead of pulling from GH every time we spin up a pod
 - [ ] authentication should be done with GitHub (allowing members of https://github.com/orgs/bcgov/teams/cas-developers)
 - [ ] automate the creation of connections on installation

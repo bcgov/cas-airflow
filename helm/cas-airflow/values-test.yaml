@@ -4,8 +4,3 @@
 airflow:
   uid: 1002490001
   gid: 1002490001
-
-namespaces:
-  airflow: "0fad32-test"
-  ggircs: "9212c9-test"
-  ciip: "09269b-test"

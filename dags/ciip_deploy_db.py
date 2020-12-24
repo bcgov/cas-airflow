@@ -18,7 +18,7 @@ import json
 
 YESTERDAY = datetime.now() - timedelta(days=1)
 
-namespace = os.getenv('NAMESPACE')
+namespace = os.getenv('CIIP_NAMESPACE')
 
 default_args = {
   'owner': 'airflow',

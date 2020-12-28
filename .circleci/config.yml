@@ -8,22 +8,22 @@ jobs:
     parameters:
       cache_version:
         type: integer
-        default: 1
+        default: 2
     docker:
       - image: docker:17.05.0-ce-git
     working_directory: ~/cas-airflow/docker/stream-minio
     steps:
       - restore_cache:
           keys:
-            - v<< parameters.cache_version>>-stream-minio-{{ .Branch }}
+            - v<< parameters.cache_version>>-cas-airflow-stream-minio-{{ .Branch }}
           paths:
-            - /caches/stream-minio.tar
+            - /tmp/cas-airflow-stream-minio.tar
       - setup_remote_docker
       - run:
           name: Load cache
           command: |
             set +o pipefail
-            docker load -i /caches/stream-minio.tar | true
+            docker load -i /tmp/cas-airflow-stream-minio.tar | true
       - run:
           name: Test Docker image
           environment:
@@ -32,9 +32,8 @@ jobs:
             FILTER: \.png|\.svg
           command: |
             CONTEXT="--env DEPTH=$DEPTH --env WEBSITE=$WEBSITE --env FILTER=$FILTER --env MINIO_HOST=$MINIO_HOST --env MINIO_ACCESS_KEY=$MINIO_ACCESS_KEY --env MINIO_SECRET_KEY=$MINIO_SECRET_KEY"
-            CONTAINER_ID=$(docker run -itd $CONTEXT stream-minio /bin/bash)
+            CONTAINER_ID=$(docker run -itd $CONTEXT cas-airflow-stream-minio /bin/bash)
             docker exec -it $CONTAINER_ID ./test.sh veryuniquebucket$CIRCLE_WORKFLOW_ID
-
 
   build_cache_and_push:
     executor: gcp-gcr/default
@@ -54,7 +53,8 @@ jobs:
         default: true
     working_directory: ~/<< parameters.dockerfile_directory >>
     steps:
-      - checkout
+      - checkout:
+          path: ~/cas-airflow # checkout path defaults to working directory
       - gcp-gcr/gcr-auth
       - restore_cache:
           keys:
@@ -69,7 +69,7 @@ jobs:
       - run:
           name: Log in to DockerHub
           command: echo $DOCKERHUB_PASSWORD | docker login -u $DOCKERHUB_USER --password-stdin registry.hub.docker.com
-      - when: 
+      - when:
           condition: << parameters.should_push >>
           steps:
             - run:
@@ -103,7 +103,6 @@ jobs:
             - run:
                 command: |
                   echo "Digest is: $(</tmp/digest.txt)"
-
 
 workflows:
   cas-airflow:
@@ -146,7 +145,7 @@ workflows:
           image_name: cas-airflow-extract-zips-to-ggircs
           image_tag: ${CIRCLE_TAG/v/}
           context: cas-pipeline
-          dockerfile_directory: cas-airflow/docker/extract-zips-to-ggircs        
+          dockerfile_directory: cas-airflow/docker/extract-zips-to-ggircs
           filters:
             tags:
               only: /^v.*/
@@ -164,7 +163,7 @@ workflows:
             tags:
               only: /^v.*/
       - test_stream_minio:
-          requires:          
+          requires:
             - stream-minio__test_build
           name: stream-minio__test
           filters:

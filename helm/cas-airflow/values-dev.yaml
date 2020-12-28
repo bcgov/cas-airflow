@@ -1,0 +1,8 @@
+# Values override for dev namespace
+# override example: helm install -f values-dev.yaml -f values.yaml airflow .
+
+airflow:
+  uid: 1002490000
+  gid: 1002490000
+
+  

@@ -1,0 +1,6 @@
+# Values override for prod namespace
+# override example: helm install -f values-prod.yaml -f values.yaml airflow .
+
+airflow:
+  uid: 1002490002
+  gid: 1002490002

@@ -1,0 +1,24 @@
+kind: Route
+apiVersion: route.openshift.io/v1
+metadata:
+  name: {{ .Release.Name }}-web
+  labels: 
+{{ include "cas-airflow.labels" . | nindent 4 }}
+spec:
+  host: {{ .Release.Name }}-{{ include "cas-airflow.namespaceSuffix" . }}.{{ .Values.route.clusterDomain }}
+  to:
+    kind: Service
+    name: {{ .Release.Name }}-webserver
+    weight: 100
+  port:
+    targetPort: airflow-ui
+  tls:
+    termination: edge
+    insecureEdgeTerminationPolicy: Allow
+  wildcardPolicy: None
+status:
+  ingress:
+    - host: {{ .Release.Name }}-{{ include "cas-airflow.namespaceSuffix" . }}.{{ .Values.route.clusterDomain }}
+      routerName: default
+      wildcardPolicy: None
+      routerCanonicalHostname: apps.silver.devops.gov.bc.ca

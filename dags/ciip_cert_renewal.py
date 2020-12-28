@@ -14,7 +14,7 @@ from trigger_k8s_cronjob import trigger_k8s_cronjob
 
 START_DATE = datetime.now() - timedelta(days=2)
 
-namespace = os.getenv('NAMESPACE')
+namespace = os.getenv('CIIP_NAMESPACE')
 
 default_args = {
   'owner': 'airflow',

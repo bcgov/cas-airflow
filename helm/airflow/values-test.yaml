@@ -1,9 +1,0 @@
-# Values override for test namespace
-# override example: helm install -f values-test.yaml -f values.yaml airflow .
-
-uid: 1002490001
-gid: 1002490001
-
-# Git sync
-dags:
-  uid: 1002490001

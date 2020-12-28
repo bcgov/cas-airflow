@@ -14,44 +14,25 @@ The dags directory contains the various workflows (Directed Acyclic Graphs)
   - It gives us benefits to run one script inside one container within its own quota, and to schedule to the least-congested node in the cluster.
 - The KubernetesPodOperator allows us to create Pods on Kubernetes.
   - It gives us the freedom to run the command in any arbitrary image, sandboxing the job run inside a docker container.
+  - It allows us to select in which namespace to run the job.
 - [`Airflow Kubernetes`](https://airflow.apache.org/docs/stable/kubernetes.html 'Airflow Kubernetes')
 
 ## CI/CD
 
-The docker images are built on CircleCI for every commit, and pushed to this repository's GitHub registry if the build occurs on the `develop` or `master` branch, or if the commit is tagged.
+The docker images are built on CircleCI for every commit, and pushed to CAS' google cloud registry if the build occurs on the `develop` or `master` branch, or if the commit is tagged.
 
 Deployement is done with Shipit, using the helm charts defined in the `helm` folder
+  - the `helm install` command should specify namespaces for the different cas application: `helm install --set namespaces.airflow=<< >> --set namespaces.ggircs=<< >> --set namespaces.ciip=<< >>`
 
 There are a couple manual steps required for installation (the first deployment) at the moment:
 
-1. Prior to deploying, the namespace where airflow is deployed should have a "github-registry" secret, containing the pull secrets to the docker registry
+1. Prior to deploying, the namespace where airflow is deployed should have:
+  - A "github-registry" secret, containing the pull secrets to the docker registry. This should be taken care of by [cas-pipeline](https://github.com/bcgov/cas-pipeline/)'s `make provision`.
+  - An "airflow-default-user-password" secret. This will have airflow create a 'cas-aiflow-admin' user with this password.
 
-1. Deploy with shipit
+2. Deploy with shipit
 
-1. The admin user should be created manually, by opening a terminal in the cas-airflow-web pod, and running the following commands:
-
-`export AIRFLOW__CORE__SQL_ALCHEMY_CONN="postgresql+psycopg2://$POSTGRES_USER:$POSTGRES_PASSWORD@$POSTGRES_HOST:$POSTGRES_PORT/$POSTGRES_DB"`
-
-In a Python terminal:
-
-```python
-import airflow
-from airflow import models, settings
-from airflow.contrib.auth.backends.password_auth import PasswordUser
-user = PasswordUser(models.User())
-user.username = 'cas-airflow-admin'
-user.email = 'new_user_email@example.com'
-user.password = '<password stored in button vault>'
-user.superuser = True
-session = settings.Session()
-session.add(user)
-session.commit()
-session.close()
-exit()
-
-```
-
-1. The connections required in the various dags need to be manually created
+3. The connections required in the various dags need to be manually created
 
 ## TODO
 
@@ -64,11 +45,14 @@ exit()
 ## Contributing
 ### Cloning
 
-It's important that this repository be cloned to the default airflow home folder of `~/airflow`.
-
 ```bash
-git clone git@github.com:bcgov/cas-airflow.git ~/airflow && cd $_
+git clone git@github.com:bcgov/cas-airflow.git ~/cas-airflow && cd $_
+git submodule update --init
 ```
+This repository contains the DAGs as well as the helm chart.
+It submodules airflow through the cas-airflow-upstream repository, to use its helm chart as a dependency - and will eventually reference the official airflow instead.
+
+
 
 ### Getting started
 
@@ -90,10 +74,12 @@ Then reshim asdf to ensure the correct version of airflow is in your path.
 asdf reshim
 ```
 
-Be sure to set the `$AIRFLOW_HOME` environment variably if you cloned this repo to a path other than `~/airflow`.
+Be sure to set the `$AIRFLOW_HOME` environment variable if this repository was cloned to a path other than `~/airflow`.
+
 
 ```bash
-airflow initdb
+airflow db init
+airflow users create -r Admin -u <<username>> -e <<email>> -f <<first name>> -l <<last name>> -p <<password>>
 ```
 
 Start airflow locally (optional).

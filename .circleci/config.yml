@@ -53,7 +53,8 @@ jobs:
         default: true
     working_directory: ~/<< parameters.dockerfile_directory >>
     steps:
-      - checkout
+      - checkout:
+          path: ~/cas-airflow # checkout path defaults to working directory
       - gcp-gcr/gcr-auth
       - restore_cache:
           keys:

@@ -82,11 +82,6 @@ workflows:
           image_tag: ${CIRCLE_SHA1}
           dockerfile_directory: cas-airflow
           context: cas-pipeline
-          filters:
-            branches:
-              only:
-                - develop
-                - master
       - build_cache_and_push:
           name: airflow__tag_build_and_push
           image_name: cas-airflow

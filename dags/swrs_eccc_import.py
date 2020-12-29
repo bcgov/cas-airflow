@@ -48,7 +48,7 @@ eccc_upload = PythonOperator(
     python_callable=trigger_k8s_cronjob,
     task_id='cas-ggircs-eccc-upload',
     op_args=['cas-ggircs-eccc-upload', namespace],
-    dag=dag
+    dag=dag_incremental
 )
 
 should_extract_zips_op = ShortCircuitOperator(

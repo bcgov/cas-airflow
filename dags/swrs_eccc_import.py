@@ -16,7 +16,6 @@ from datetime import datetime, timedelta
 from airflow.operators.python_operator import ShortCircuitOperator, PythonOperator
 from airflow.operators.dagrun_operator import TriggerDagRunOperator
 from trigger_k8s_cronjob import trigger_k8s_cronjob
-from kubernetes import client, config
 
 import json
 
@@ -41,30 +40,12 @@ SCHEDULE_INTERVAL = '0 0 * * *'
 dag_incremental = DAG(DAG_ID + '_incremental', schedule_interval=SCHEDULE_INTERVAL, default_args=default_args, user_defined_macros={'json': json}, start_date=START_DATE)
 dag_full = DAG(DAG_ID+'_full', schedule_interval=None, default_args=default_args)
 
-def should_extract_zips():
-    try:
-        config.load_incluster_config()
-    except:
-        config.load_kube_config()
-    k8s_config = client.Configuration()
-    api = client.CoreV1Api(client.ApiClient(k8s_config))
-    config_map = api.read_namespaced_config_map(name='cas-ggircs-eccc-uploaded-files', namespace=namespace)
-    upload_output = json.loads(config_map.data['uploadOutput.json'])
-    uploaded_objects = upload_output.get('uploadedObjects')
-    return uploaded_objects is not None and len(uploaded_objects) > 0
-
 eccc_upload = PythonOperator(
     python_callable=trigger_k8s_cronjob,
     task_id='cas-ggircs-eccc-upload',
     op_args=['cas-ggircs-eccc-upload', namespace],
     dag=dag_incremental
 )
-
-should_extract_zips_op = ShortCircuitOperator(
-    task_id='should_extract_zips',
-    provide_context=True,
-    python_callable=should_extract_zips,
-    dag=dag_incremental)
 
 eccc_extract_incremental = PythonOperator(
     python_callable=trigger_k8s_cronjob,
@@ -100,6 +81,5 @@ def trigger_ciip_deploy_db_dag(dag):
         trigger_dag_id="ciip_deploy_db",
         dag=dag)
 
-eccc_upload >> should_extract_zips_op >> eccc_extract_incremental
-eccc_extract_incremental >> load_ggircs(dag_incremental) >> ggircs_read_only_user(dag_incremental) >> trigger_ciip_deploy_db_dag(dag_incremental)
+eccc_upload >> eccc_extract_incremental >> load_ggircs(dag_incremental) >> ggircs_read_only_user(dag_incremental) >> trigger_ciip_deploy_db_dag(dag_incremental)
 eccc_extract_full >> load_ggircs(dag_full) >> ggircs_read_only_user(dag_full) >> trigger_ciip_deploy_db_dag(dag_full)

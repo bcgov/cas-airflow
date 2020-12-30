@@ -4,37 +4,6 @@ orbs:
   gcp-gcr: circleci/gcp-gcr@0.11.0
 
 jobs:
-  test_stream_minio:
-    parameters:
-      cache_version:
-        type: integer
-        default: 2
-    docker:
-      - image: docker:17.05.0-ce-git
-    working_directory: ~/cas-airflow/docker/stream-minio
-    steps:
-      - restore_cache:
-          keys:
-            - v<< parameters.cache_version>>-cas-airflow-stream-minio-{{ .Branch }}
-          paths:
-            - /tmp/cas-airflow-stream-minio.tar
-      - setup_remote_docker
-      - run:
-          name: Load cache
-          command: |
-            set +o pipefail
-            docker load -i /tmp/cas-airflow-stream-minio.tar | true
-      - run:
-          name: Test Docker image
-          environment:
-            DEPTH: 2
-            WEBSITE: https://nodejs.org/dist/
-            FILTER: \.png|\.svg
-          command: |
-            CONTEXT="--env DEPTH=$DEPTH --env WEBSITE=$WEBSITE --env FILTER=$FILTER --env MINIO_HOST=$MINIO_HOST --env MINIO_ACCESS_KEY=$MINIO_ACCESS_KEY --env MINIO_SECRET_KEY=$MINIO_SECRET_KEY"
-            CONTAINER_ID=$(docker run -itd $CONTEXT cas-airflow-stream-minio /bin/bash)
-            docker exec -it $CONTAINER_ID ./test.sh veryuniquebucket$CIRCLE_WORKFLOW_ID
-
   build_cache_and_push:
     executor: gcp-gcr/default
     parameters:
@@ -113,82 +82,11 @@ workflows:
           image_tag: ${CIRCLE_SHA1}
           dockerfile_directory: cas-airflow
           context: cas-pipeline
-          filters:
-            branches:
-              only:
-                - develop
-                - master
       - build_cache_and_push:
           name: airflow__tag_build_and_push
           image_name: cas-airflow
           image_tag: ${CIRCLE_TAG/v/}
           dockerfile_directory: cas-airflow
-          context: cas-pipeline
-          filters:
-            tags:
-              only: /^v.*/
-            branches:
-              ignore: /.*/
-      - build_cache_and_push:
-          name: extract-zips-to-ggircs__sha1_build_and_push
-          image_name: cas-airflow-extract-zips-to-ggircs
-          image_tag: ${CIRCLE_SHA1}
-          dockerfile_directory: cas-airflow/docker/extract-zips-to-ggircs
-          context: cas-pipeline
-          filters:
-            branches:
-              only:
-                - develop
-                - master
-      - build_cache_and_push:
-          name: extract-zips-to-ggircs__tag_build_and_push
-          image_name: cas-airflow-extract-zips-to-ggircs
-          image_tag: ${CIRCLE_TAG/v/}
-          context: cas-pipeline
-          dockerfile_directory: cas-airflow/docker/extract-zips-to-ggircs
-          filters:
-            tags:
-              only: /^v.*/
-            branches:
-              ignore: /.*/
-      # TODO: add generic test job to avoid code duplication below (between build scripts)
-      - build_cache_and_push:
-          name: stream-minio__test_build
-          image_name: cas-airflow-stream-minio
-          image_tag: "test"
-          dockerfile_directory: cas-airflow/docker/stream-minio
-          should_push: false
-          context: cas-pipeline
-          filters:
-            tags:
-              only: /^v.*/
-      - test_stream_minio:
-          requires:
-            - stream-minio__test_build
-          name: stream-minio__test
-          filters:
-            tags:
-              only: /^v.*/
-      - build_cache_and_push:
-          name: stream-minio__sha1_build_and_push
-          requires:
-            - stream-minio__test
-          image_name: cas-airflow-stream-minio
-          image_tag: ${CIRCLE_SHA1}
-          dockerfile_directory: cas-airflow/docker/stream-minio
-          context: cas-pipeline
-          filters:
-            branches:
-              only:
-                - develop
-                - master
-      - build_cache_and_push:
-          name: stream-minio__tag_build_and_push
-          requires:
-            - stream-minio__test
-          image_name: cas-airflow-stream-minio
-          image_tag: ${CIRCLE_TAG/v/}
-          dockerfile_directory: cas-airflow/docker/stream-minio
           context: cas-pipeline
           filters:
             tags:

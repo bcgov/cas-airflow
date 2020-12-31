@@ -14,7 +14,8 @@ from exec_in_pod import exec_in_pod
 
 START_DATE = datetime.now() - timedelta(days=2)
 
-namespace = os.getenv('NAMESPACE')
+ciip_namespace = os.getenv('CIIP_NAMESPACE')
+ggircs_namespace = os.getenv('GGIRCS_NAMESPACE')
 in_cluster = os.getenv('LOCAL_AIRFLOW', False) == 'False'
 
 default_args = {
@@ -83,16 +84,16 @@ ciip_full_backup = DAG(DAG_ID + '_ciip_full', default_args=default_args, schedul
 ggircs_incremental_backup = DAG(DAG_ID + '_ggircs_incremental', default_args=default_args, schedule_interval='@daily')
 ggircs_full_backup = DAG(DAG_ID + '_ggircs_full', default_args=default_args, schedule_interval='@daily', start_date=START_DATE)
 
-def exec_backup_in_pod(dag):
+metabase_incremental_backup = DAG(DAG_ID + '_metabase_incremental', default_args=default_args, schedule_interval='@hourly')
+metabase_full_backup = DAG(DAG_ID + '_metabase_full', default_args=default_args, schedule_interval='@daily', start_date=START_DATE)
+
+
+def exec_backup_in_pod(dag, namespace, deployment_name):
     exec_command = full_exec_command
-    deployment_name = 'cas-ciip-portal-patroni'
     selector = 'spilo-role=master'
 
     if dag.dag_id.find('incremental') != -1:
       exec_command = incremental_exec_command
-
-    if dag.dag_id.find('ggircs') != -1:
-      deployment_name = 'cas-ggircs-patroni'
 
     return PythonOperator(
         python_callable=exec_in_pod,
@@ -101,7 +102,9 @@ def exec_backup_in_pod(dag):
         dag=dag
     )
 
-exec_backup_in_pod(ciip_incremental_backup)
-exec_backup_in_pod(ciip_full_backup)
-exec_backup_in_pod(ggircs_incremental_backup)
-exec_backup_in_pod(ggircs_full_backup)
+exec_backup_in_pod(ciip_incremental_backup, ciip_namespace, 'cas-ciip-portal-patroni')
+exec_backup_in_pod(ciip_full_backup, ciip_namespace, 'cas-ciip-portal-patroni')
+exec_backup_in_pod(ggircs_incremental_backup, ggircs_namespace, 'cas-ggircs-patroni')
+exec_backup_in_pod(ggircs_full_backup, ggircs_namespace,'cas-ggircs-patroni')
+exec_backup_in_pod(metabase_incremental_backup, ggircs_namespace, 'cas-metabase-patroni')
+exec_backup_in_pod(metabase_full_backup, ggircs_namespace,'cas-metabase-patroni')

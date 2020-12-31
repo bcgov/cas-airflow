@@ -1,4 +1,3 @@
-
 route:
   clusterDomain: apps.silver.devops.gov.bc.ca
 
@@ -9,7 +8,6 @@ airflow:
 
   defaultAirflowRepository: gcr.io/ggl-cas-storage/cas-airflow
   defaultAirflowTag: "to_override"
-
 
   # Enable RBAC (default on most clusters these days)
   rbacEnabled: true
@@ -28,21 +26,21 @@ airflow:
 
   # Secrets for all airflow containers
   secret:
-  - envName: PGPASS
-    secretName: cas-airflow-postgresql
-    secretKey: postgres-password
-  - envName: DEFAULT_USER_PASS
-    secretName: airflow-default-user-password
-    secretKey: default-user-pass
-  - envName: AIRFLOW_NAMESPACE
-    secretName: cas-namespaces
-    secretKey: airflow-namespace
-  - envName: GGIRCS_NAMESPACE
-    secretName: cas-namespaces
-    secretKey: ggircs-namespace
-  - envName: CIIP_NAMESPACE
-    secretName: cas-namespaces
-    secretKey: ciip-namespace
+    - envName: PGPASS
+      secretName: cas-airflow-postgresql
+      secretKey: postgres-password
+    - envName: DEFAULT_USER_PASS
+      secretName: airflow-default-user-password
+      secretKey: default-user-pass
+    - envName: AIRFLOW_NAMESPACE
+      secretName: cas-namespaces
+      secretKey: airflow-namespace
+    - envName: GGIRCS_NAMESPACE
+      secretName: cas-namespaces
+      secretKey: ggircs-namespace
+    - envName: CIIP_NAMESPACE
+      secretName: cas-namespaces
+      secretKey: ciip-namespace
 
   # Airflow database config
   data:
@@ -84,7 +82,6 @@ airflow:
     networkPolicy:
       enabled: false
 
-
   config:
     core:
       dag_concurrency: 1
@@ -102,6 +99,7 @@ airflow:
 
     kubernetes:
       run_as_user: "{{ .Values.uid }}"
+      delete_worker_pods: "False"
 
   # Git sync
   dags:

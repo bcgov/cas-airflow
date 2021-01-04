@@ -1,6 +1,15 @@
 route:
   clusterDomain: apps.silver.devops.gov.bc.ca
 
+gcpLogsUpload:
+  enable: true
+  bucketSuffix: airflow-logs
+  image:
+    casShelf:
+      repository: gcr.io/ggl-cas-storage/cas-shelf-tfe-add-app
+      pullPolicy: Always
+      tag: "0.1"
+
 # The values we need to override from the airflow defaults
 airflow:
   uid: 1002490000
@@ -85,6 +94,11 @@ airflow:
   config:
     core:
       dag_concurrency: 1
+    logging:
+      logging_level: INFO
+      remote_logging: True
+      remote_base_log_folder: ~
+      remote_log_conn_id: gcs_logs
     api:
       auth_backend: airflow.api.auth.backend.basic_auth
     webserver:

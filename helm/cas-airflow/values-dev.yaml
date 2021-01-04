@@ -5,4 +5,7 @@ airflow:
   uid: 1002490000
   gid: 1002490000
 
+  config:
+    logging:
+      remote_base_log_folder: gs://0fad32-dev-cas-airflow
   

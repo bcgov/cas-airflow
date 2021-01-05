@@ -19,6 +19,13 @@ airflow:
       secret:
         secretName: gcp-0fad32-dev-airflow-logs-service-account-key
 
-
-
+  webserver:
+    extraVolumeMounts:
+      - name: gcs-credentials
+        mountPath: /gcs
+        readOnly: true
+    extraVolumes:
+      - name: gcs-credentials
+        secret:
+          secretName: gcp-0fad32-dev-airflow-logs-service-account-key
 

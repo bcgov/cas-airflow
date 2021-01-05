@@ -36,8 +36,8 @@ airflow:
   # Secrets for all airflow containers
   secret:
     - envName: PGPASS
-      secretName: cas-airflow-postgresql
-      secretKey: postgres-password
+      secretName: cas-airflow-patroni
+      secretKey: password-superuser
     - envName: DEFAULT_USER_PASS
       secretName: airflow-default-user-password
       secretKey: default-user-pass
@@ -80,16 +80,33 @@ airflow:
       lastName: user
       password: "$(DEFAULT_USER_PASS)"
 
-  # Configuration for postgresql subchart
-  postgresql:
-    enabled: true
-    image: "registry.access.redhat.com/rhscl/postgresql-96-rhel7"
-    imageTag: "1-51.1575996559"
-    # postgres username and password are overridden in the metadata
-    # postgresqlPassword: postgres
-    # postgresqlUsername: postgres
-    networkPolicy:
-      enabled: false
+  # Configuration for cas-postgres subchart
+  cas-postgres:
+    patroni:
+      resources:
+        limits:
+          cpu: 1000m
+          memory: 2Gi
+        requests:
+          cpu: 15m
+          memory: 600Mi
+      persistentVolume:
+        size: 2Gi
+        storageClass: netapp-block-standard
+      replicaCount: 3
+      env:
+        ALLOW_NOSSL: true
+        USE_WALG_BACKUP: "true"
+        USE_WALG_RESTORE: "true"
+      walE:
+        enable: true
+        gcsBucket: ~
+        # kubernetesSecret should be gcp-{{ namespace }}-{{ gcs.bucketSuffix }}-service-account-key
+        kubernetesSecret: ~
+      # options below are required if walE.enable is true
+    namespace: ~
+    gcs:
+      bucketSuffix: ~
 
   config:
     core:

@@ -4,3 +4,27 @@
 airflow:
   uid: 1002480000
   gid: 1002480000
+
+  config:
+    logging:
+      remote_base_log_folder: gs://0fad32-test-airflow-logs
+
+  podTemplateExtraVolumeMounts:
+    - name: gcs-credentials
+      mountPath: /gcs
+      readOnly: true
+
+  podTemplateExtraVolumes:
+    - name: gcs-credentials
+      secret:
+        secretName: gcp-0fad32-test-airflow-logs-service-account-key
+
+  webserver:
+    extraVolumeMounts:
+      - name: gcs-credentials
+        mountPath: /gcs
+        readOnly: true
+    extraVolumes:
+      - name: gcs-credentials
+        secret:
+          secretName: gcp-0fad32-test-airflow-logs-service-account-key

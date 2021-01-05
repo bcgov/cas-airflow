@@ -113,7 +113,7 @@ airflow:
 
     kubernetes:
       run_as_user: "{{ .Values.uid }}"
-      delete_worker_pods: "False"
+      delete_worker_pods: "True"
 
   # Git sync
   dags:

@@ -1,7 +1,7 @@
 apiVersion: security.devops.gov.bc.ca/v1alpha1
 kind: NetworkSecurityPolicy
 metadata:
-  name: cas-airflow-worker-egress-helm
+  name: {{ template "cas-airflow.fullname" . }}-worker-egress
   labels:
 {{ include "cas-airflow.labels" . | nindent 4 }}
 spec:

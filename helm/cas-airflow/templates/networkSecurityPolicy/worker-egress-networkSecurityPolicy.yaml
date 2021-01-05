@@ -1,15 +1,13 @@
 apiVersion: security.devops.gov.bc.ca/v1alpha1
 kind: NetworkSecurityPolicy
 metadata:
-  name: cas-airflow-worker-to-k8s
+  name: cas-airflow-worker-egress-helm
   labels:
 {{ include "cas-airflow.labels" . | nindent 4 }}
 spec:
-  description: allow service account to run builds/deployments
+  description: allow worker to communicate externally (to gcp to store logs)
   source:
     - - $namespace={{ .Release.Namespace }}
       - "@app:k8s:serviceaccountname={{ .Release.Name }}-worker"
   destination:
-    - - int:network=internal-cluster-api-endpoint
-
-
+    - - ext:network=any

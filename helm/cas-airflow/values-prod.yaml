@@ -7,4 +7,4 @@ airflow:
 
   config:
     logging:
-      remote_base_log_folder: gs://0fad32-prod-cas-airflow
+      remote_base_log_folder: gs://0fad32-prod-airflow-logs

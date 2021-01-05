@@ -1,7 +1,7 @@
 apiVersion: security.devops.gov.bc.ca/v1alpha1
 kind: NetworkSecurityPolicy
 metadata:
-  name: custom-airflow-webserver-egress-helm
+  name: cas-airflow-webserver-egress-helm
   labels:
 {{ include "cas-airflow.labels" . | nindent 4 }}
 spec:

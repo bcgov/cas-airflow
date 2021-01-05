@@ -1,7 +1,7 @@
 apiVersion: security.devops.gov.bc.ca/v1alpha1
 kind: NetworkSecurityPolicy
 metadata:
-  name: custom-airflow-scheduler-to-k8s
+  name: cas-airflow-scheduler-to-k8s
   labels:
 {{ include "cas-airflow.labels" . | nindent 4 }}
 spec:

@@ -22,7 +22,9 @@ airflow:
   rbacEnabled: true
 
   # Environment variables for all airflow containers
-  env: []
+  env:
+    - name: GOOGLE_APPLICATION_CREDENTIALS
+      value: /gcs/credentials.json
   # - name: ""
   #   value: ""
 

@@ -29,3 +29,14 @@ airflow:
         secret:
           secretName: gcp-0fad32-prod-airflow-logs-service-account-key
 
+cas-postgres:
+  patroni:
+    walE:
+      enable: true
+      gcsBucket: 0fad32-prod-airflow-backups
+      # kubernetesSecret should be gcp-{{ namespace }}-{{ gcs.bucketSuffix }}-service-account-key
+      kubernetesSecret: gcp-0fad32-prod-airflow-backups-service-account-key
+    # options below are required if walE.enable is true
+  namespace: 0fad32-prod
+  gcs:
+    bucketSuffix: airflow-backups

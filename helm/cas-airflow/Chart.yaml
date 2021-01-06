@@ -15,7 +15,6 @@ dependencies:
   - name: airflow
     version: "1.0.0"
     repository: "file://../../cas-airflow-upstream/chart"
-  - name: postgresql
-    version: 0.13.1-p4
-    repository: "file://../postgresql"
-    condition: postgresql.enabled
+  - name: cas-postgres
+    version: "0.7.4"
+    repository: https://bcgov.github.io/cas-postgres/

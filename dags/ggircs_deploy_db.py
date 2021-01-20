@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-# DAGs to fetch and extract SWRS data from the ECCC website.
-swrs_eccc_import_full will download and extract all zip files in the GCS bucket
-swrs_eccc_import_incremental will only download and extract files that were uploaded in the first task of the DAG
+# DAGs triggering cron jobs to setup the ggircs database
 """
 import os
 import sys
@@ -57,5 +55,17 @@ ggircs_read_only_user = PythonOperator(
         op_args=['cas-ggircs-db-create-readonly-user', namespace],
         dag=dag)
 
+ggircs_app_user = PythonOperator(
+        python_callable=trigger_k8s_cronjob,
+        task_id='ggircs_app_user',
+        op_args=['cas-ggircs-app-user', namespace],
+        dag=dag)
+
+ggircs_app_schema = PythonOperator(
+        python_callable=trigger_k8s_cronjob,
+        task_id='ggircs_app_schema',
+        op_args=['cas-ggircs-schema-deploy-data', namespace],
+        dag=dag)
 
 ggircs_db_init >> ggircs_etl >> ggircs_read_only_user
+ggircs_db_init >> ggircs_app_schema >> ggircs_app_user

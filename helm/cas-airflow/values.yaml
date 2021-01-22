@@ -93,7 +93,8 @@ airflow:
       # The log level should not be decreased to INFO/DEBUG,
       # or only temporarily, as the airflow sheduler is very verbose,
       # putting a strain on the shared logging system
-      logging_level: WARN
+      # with WARN, the webserver currently prints a large json schema
+      logging_level: ERROR
       remote_logging: True
       remote_base_log_folder: ~
       remote_log_conn_id: gcs_logs

@@ -19,6 +19,6 @@ spec:
   - Ingress
   ingress:
   - from:
-    podSelector:
-      matchLabels:
-        release: {{ .Release.Name }}
+    - podSelector:
+        matchLabels:
+          release: {{ .Release.Name }}

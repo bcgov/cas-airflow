@@ -21,10 +21,6 @@ airflow:
   # Enable RBAC (default on most clusters these days)
   rbacEnabled: true
 
-  # Enable Kubernetes Network Policies
-  networkPolicies:
-    enabled: true
-
   # Environment variables for all airflow containers
   env:
     - name: GOOGLE_APPLICATION_CREDENTIALS

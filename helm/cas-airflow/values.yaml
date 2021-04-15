@@ -104,6 +104,11 @@ airflow:
       username: "cas-airflow-admin"
       password: "$(DEFAULT_USER_PASS)"
 
+    smtp:
+      smtp_host: apps.smtp.gov.bc.ca
+      smtp_starttls: false
+      smtp_mail_from: cas-airflow@gov.bc.ca
+
     celery:
       default_queue: celery
 

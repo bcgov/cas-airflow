@@ -25,23 +25,26 @@ default_args = {
 DAG_ID = os.path.basename(__file__).replace(".pyc", "").replace(".py", "")
 SCHEDULE_INTERVAL = None  # Never execute
 
-dag = DAG(DAG_ID, schedule_interval=SCHEDULE_INTERVAL,
-          default_args=default_args)
+dag_local_error = DAG(f'{DAG_ID}_local_error', schedule_interval=SCHEDULE_INTERVAL,
+                      default_args=default_args)
+
+dag_cronjob_error = DAG(f'{DAG_ID}_cronjob_error', schedule_interval=SCHEDULE_INTERVAL,
+                        default_args=default_args)
 
 
 def fail_task():
     raise Exception(
-        'This DAG purposely fails, email notification should be sent')
+        'This DAG purposely fails, email notification should be sent.')
 
 
 email_if_error_in_airflow = PythonOperator(
     python_callable=fail_task,
     task_id='email_if_error_in_airflow',
     op_args=[],
-    dag=dag)
+    dag=dag_local_error)
 
 email_if_error_in_cronjob = PythonOperator(
     python_callable=trigger_k8s_cronjob,
     task_id='email_if_error_in_cronjob',
     op_args=['cas-airflow-test-email-on-failure', namespace],
-    dag=dag)
+    dag=dag_cronjob_error)

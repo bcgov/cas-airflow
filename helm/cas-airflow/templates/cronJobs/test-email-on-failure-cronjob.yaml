@@ -23,18 +23,11 @@ spec:
           activeDeadlineSeconds: 600
           restartPolicy: Never
           containers:
-              name: {{ template "cas-airflow.fullname" . }}-test-email-on-failure
-              image: alpine:3.13.5
+            - name: {{ template "cas-airflow.fullname" . }}-test-email-on-failure
+              image: gcr.io/cas-ggl-storage/alpine:3.13.5
               resources:
-                limits:
-                  cpu: 100m
-                  memory: 32Mi
                 requests:
                   cpu: 100m
                   memory: 32Mi
-              command:
-                - /usr/bin/env
-                - sh
-                - -c
-                - |
-                  exit 1
+              command: ["exit"]
+              args: ["1"]

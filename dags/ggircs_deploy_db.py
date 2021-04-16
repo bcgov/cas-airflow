@@ -17,8 +17,6 @@ sys.path.insert(0, os.path.abspath(os.path.dirname(__file__)))
 YESTERDAY = datetime.now() - timedelta(days=1)
 
 namespace = os.getenv('GGIRCS_NAMESPACE')
-print(f'Executing ggircs_deploy_db DAG in the namespace: {namespace}')
-
 in_cluster = os.getenv('LOCAL_AIRFLOW', False) == False
 
 default_args = {

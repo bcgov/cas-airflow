@@ -29,5 +29,8 @@ spec:
                 requests:
                   cpu: 100m
                   memory: 32Mi
-              command: ["exit"]
-              args: ["1"]
+              command: 
+                - /usr/bin/env
+                - sh
+                - -c
+                - echo "This CronJob purposely fails, airflow should report an error to ggircs@gov.bc.ca" && exit 1

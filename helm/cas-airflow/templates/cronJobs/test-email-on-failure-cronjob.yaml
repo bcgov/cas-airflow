@@ -24,7 +24,7 @@ spec:
           restartPolicy: Never
           containers:
             - name: {{ template "cas-airflow.fullname" . }}-test-email-on-failure
-              image: gcr.io/cas-ggl-storage/alpine:3.13.5
+              image: gcr.io/ggl-cas-storage/alpine:3.13.5
               resources:
                 requests:
                   cpu: 100m

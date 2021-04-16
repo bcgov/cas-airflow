@@ -19,7 +19,8 @@ namespace = os.getenv('AIRFLOW_NAMESPACE')
 
 default_args = {
     **default_dag_args,
-    'start_date': START_DATE
+    'start_date': START_DATE,
+    'retries': 0
 }
 
 DAG_ID = os.path.basename(__file__).replace(".pyc", "").replace(".py", "")

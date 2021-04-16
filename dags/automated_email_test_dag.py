@@ -5,6 +5,7 @@
 """
 from dag_configuration import default_dag_args
 from airflow.operators.python_operator import PythonOperator
+from trigger_k8s_cronjob import trigger_k8s_cronjob
 from datetime import datetime, timedelta
 from airflow import DAG
 import os
@@ -14,7 +15,7 @@ sys.path.insert(0, os.path.abspath(os.path.dirname(__file__)))
 
 START_DATE = datetime.now() - timedelta(days=2)
 
-namespace = os.getenv('GGIRCS_NAMESPACE')
+namespace = os.getenv('AIRFLOW_NAMESPACE')
 
 default_args = {
     **default_dag_args,
@@ -33,8 +34,14 @@ def fail_task():
         'This DAG purposely fails, email notification should be sent')
 
 
-failing_dag = PythonOperator(
+email_if_error_in_airflow = PythonOperator(
     python_callable=fail_task,
-    task_id='failing_dag',
+    task_id='email_if_error_in_airflow',
     op_args=[],
+    dag=dag)
+
+email_if_error_in_cronjob = PythonOperator(
+    python_callable=trigger_k8s_cronjob,
+    task_id='email_if_error_in_cronjob',
+    op_args=['cas-airflow-test-email-on-failure', namespace],
     dag=dag)

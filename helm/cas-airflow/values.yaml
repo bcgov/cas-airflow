@@ -103,6 +103,7 @@ airflow:
     webserver:
       username: "cas-airflow-admin"
       password: "$(DEFAULT_USER_PASS)"
+      web_server_worker_timeout: 300
 
     smtp:
       smtp_host: apps.smtp.gov.bc.ca

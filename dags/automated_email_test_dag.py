@@ -1,7 +1,7 @@
 
 # -*- coding: utf-8 -*-
 """
-# DAG triggering the cas-ggircs-acme-renewal cron job
+# two DAGs triggering the email error flow
 """
 from dag_configuration import default_dag_args
 from airflow.operators.python_operator import PythonOperator

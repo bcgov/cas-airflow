@@ -76,17 +76,17 @@ DAG_ID = os.path.basename(__file__).replace(".pyc", "").replace(".py", "")
 ciip_incremental_backup = DAG(
     DAG_ID + '_ciip_incremental', default_args=default_args, schedule_interval='@hourly')
 ciip_full_backup = DAG(DAG_ID + '_ciip_full', default_args=default_args,
-                       schedule_interval='@daily', start_date=START_DATE)
+                       schedule_interval='0 8 * * *', start_date=START_DATE)
 
 ggircs_incremental_backup = DAG(
     DAG_ID + '_ggircs_incremental', default_args=default_args, schedule_interval='@daily')
 ggircs_full_backup = DAG(DAG_ID + '_ggircs_full', default_args=default_args,
-                         schedule_interval='@daily', start_date=START_DATE)
+                         schedule_interval='0 8 * * *', start_date=START_DATE)
 
 metabase_incremental_backup = DAG(
     DAG_ID + '_metabase_incremental', default_args=default_args, schedule_interval='@hourly')
 metabase_full_backup = DAG(DAG_ID + '_metabase_full', default_args=default_args,
-                           schedule_interval='@daily', start_date=START_DATE)
+                           schedule_interval='0 8 * * *', start_date=START_DATE)
 
 
 def exec_backup_in_pod(dag, namespace, deployment_name):

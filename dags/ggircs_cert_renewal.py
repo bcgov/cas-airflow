@@ -23,7 +23,7 @@ default_args = {
 }
 
 DAG_ID = os.path.basename(__file__).replace(".pyc", "").replace(".py", "")
-SCHEDULE_INTERVAL = '0 0 * * *'
+SCHEDULE_INTERVAL = '0 8 * * *'
 
 dag = DAG(DAG_ID, schedule_interval=SCHEDULE_INTERVAL,
           default_args=default_args)

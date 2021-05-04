@@ -30,7 +30,7 @@ default_args = {
 }
 
 DAG_ID = os.path.basename(__file__).replace(".pyc", "").replace(".py", "")
-SCHEDULE_INTERVAL = '0 0 * * *'
+SCHEDULE_INTERVAL = '0 8 * * *'
 
 dag_incremental = DAG(DAG_ID + '_incremental', schedule_interval=SCHEDULE_INTERVAL,
                       default_args=default_args, user_defined_macros={'json': json}, start_date=START_DATE)

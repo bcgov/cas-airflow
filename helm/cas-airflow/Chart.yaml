@@ -15,5 +15,5 @@ dependencies:
     version: "1.0.0"
     repository: "file://../../cas-airflow-upstream/chart"
   - name: cas-postgres
-    version: "0.8.0"
+    version: "0.8.1"
     repository: https://bcgov.github.io/cas-postgres/

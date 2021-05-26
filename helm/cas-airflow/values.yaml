@@ -135,7 +135,7 @@ cas-postgres:
         cpu: 1000m
         memory: 2Gi
       requests:
-        cpu: 15m
+        cpu: 150m
         memory: 600Mi
     persistentVolume:
       size: 10Gi

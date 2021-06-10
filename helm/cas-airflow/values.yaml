@@ -74,6 +74,9 @@ airflow:
   # Airflow webserver settings
   webserver:
     replicas: 2
+    resources:
+      limits:
+        cpu: 1000m
     defaultUser:
       enabled: true
       role: Admin
@@ -82,6 +85,12 @@ airflow:
       firstName: admin
       lastName: user
       password: "$(DEFAULT_USER_PASS)"
+
+  # Airflow scheduler settings
+  scheduler:
+    resources:
+      limits:
+        cpu: 1000m
 
   postgresql:
     enabled: false
@@ -132,10 +141,10 @@ cas-postgres:
   patroni:
     resources:
       limits:
-        cpu: 1000m
+        cpu: 500m
         memory: 2Gi
       requests:
-        cpu: 150m
+        cpu: 50m
         memory: 600Mi
     persistentVolume:
       size: 10Gi

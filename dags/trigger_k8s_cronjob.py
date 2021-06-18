@@ -40,11 +40,11 @@ def trigger_k8s_cronjob(cronjob_name, namespace):
 
         # Set the job's owner_references list to allow job removal by [failed/successful]_jobs_history_limit & garbage collection
         owner_reference = {
-          "api_version": cronjob.api_version,
-          "controller": True,
-          "kind": cronjob.kind,
-          "name": cronjob.metadata.name,
-          "uid": cronjob.metadata.uid
+            "api_version": cronjob.api_version,
+            "controller": True,
+            "kind": cronjob.kind,
+            "name": cronjob.metadata.name,
+            "uid": cronjob.metadata.uid
         }
         cronjob.spec.job_template.metadata.owner_references = [owner_reference]
 

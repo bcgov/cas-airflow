@@ -20,23 +20,6 @@ def get_cronjob(cronjob_name, namespace):
             "Exception when calling BatchV1Api->list_namespaced_cron_job: %s\n" % e)
     return False
 
-# Deletes all non-active jobs
-def remove_finished_jobs(namespace):
-    configuration = client.Configuration()
-    batch = client.BatchV1Api(client.ApiClient(configuration))
-    try:
-        jobs = batch.list_namespaced_job(namespace).items
-        for job in jobs:
-            if job.status.active == 0:
-                try:
-                    batch.delete_namespaced_job(job.metadata.name, namespace)
-                except ApiException as e:
-                    logging.critical(
-                        "Exception when calling BatchV1Api->delete_namespaced_job: %s\n" % e)
-    except ApiException as e:
-        logging.critical(
-            "Exception when calling BatchV1Api->list_namespaced_jobs: %s\n" % e)
-
 # Creates a job from a cronjob job_template
 def trigger_k8s_cronjob(cronjob_name, namespace):
     try:
@@ -49,13 +32,22 @@ def trigger_k8s_cronjob(cronjob_name, namespace):
 
     cronjob = get_cronjob(cronjob_name, namespace)
 
-    remove_finished_jobs(namespace)
-
     if cronjob:
         date_str = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
         # Change the name of the job to be created to show that it was manually created at time: date_str
         cronjob.spec.job_template.metadata.name = str(
             date_str + cronjob.metadata.name)[:63]
+
+        # Set the job's owner_references list to allow job removal by [failed/successful]_jobs_history_limit & garbage collection
+        owner_reference = {
+          "api_version": cronjob.api_version,
+          "controller": True,
+          "kind": cronjob.kind,
+          "name": cronjob.metadata.name,
+          "uid": cronjob.metadata.uid
+        }
+        cronjob.spec.job_template.metadata.owner_references = [owner_reference]
+
         try:
             # Create a job from the job_template of the cronjob
             created_job = api.create_namespaced_job(

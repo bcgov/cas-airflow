@@ -46,7 +46,7 @@ def trigger_k8s_cronjob(cronjob_name, namespace):
             "name": cronjob.metadata.name,
             "uid": cronjob.metadata.uid
         }
-        cronjob.spec.job_template.metadata.owner_references = [owner_reference]
+        cronjob.spec.job_template.metadata.owner_references.items.append(owner_reference)
 
         try:
             # Create a job from the job_template of the cronjob

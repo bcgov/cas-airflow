@@ -38,15 +38,25 @@ def trigger_k8s_cronjob(cronjob_name, namespace):
         cronjob.spec.job_template.metadata.name = str(
             date_str + cronjob.metadata.name)[:63]
 
-        # Create an OwnerReference object and add it to the metadata.owner_references list
-        owner_reference = client.V1OwnerReference(
-          api_version=cronjob.api_version or 'batch/v1beta1',
-          controller=True,
-          kind=cronjob.kind or 'CronJob',
-          name=cronjob.metadata.name,
-          uid=cronjob.metadata.uid
-        )
-        cronjob.spec.job_template.metadata.owner_references = [owner_reference]
+        try:
+            # Create an OwnerReference object and add it to the metadata.owner_references list
+            owner_reference = client.V1OwnerReference(
+              api_version=cronjob.api_version or 'batch/v1beta1',
+              controller=True,
+              kind=cronjob.kind or 'CronJob',
+              name=cronjob.metadata.name,
+              uid=cronjob.metadata.uid
+            )
+            cronjob.spec.job_template.metadata.owner_references = [owner_reference]
+        except ApiException as e:
+            logging.critical(
+                "Exception when calling BatchV1Api->create_namespaced_job: %s\n" % e)
+            logging.critical(
+              "owner_reference: %s\n" % owner_reference
+            )
+            logging.critical(
+              "cronjob: %s\n" % cronjob
+            )
 
         try:
             # Create a job from the job_template of the cronjob

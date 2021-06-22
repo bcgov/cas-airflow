@@ -40,9 +40,9 @@ def trigger_k8s_cronjob(cronjob_name, namespace):
 
         # Create an OwnerReference object and add it to the metadata.owner_references list
         owner_reference = client.V1OwnerReference(
-          api_version=cronjob.api_version,
+          api_version=cronjob.api_version or 'batch/v1beta1',
           controller=True,
-          kind=cronjob.kind,
+          kind=cronjob.kind or 'CronJob',
           name=cronjob.metadata.name,
           uid=cronjob.metadata.uid
         )

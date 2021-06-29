@@ -77,8 +77,10 @@ airflow:
   webserver:
     replicas: 2
     resources:
+      requests:
+        cpu: 50m
       limits:
-        cpu: 1000m
+        cpu: 500m
     defaultUser:
       enabled: true
       role: Admin

@@ -13,7 +13,7 @@ keywords:
 dependencies:
   - name: airflow
     version: "1.0.0"
-    repository: "file://../../cas-airflow-upstream/chart"
+    repository: "https://airflow.apache.org/"
   - name: cas-postgres
     version: "0.8.0"
     repository: https://bcgov.github.io/cas-postgres/

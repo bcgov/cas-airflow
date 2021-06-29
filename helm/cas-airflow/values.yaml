@@ -14,6 +14,7 @@ gcpLogsUpload:
 airflow:
   uid: 1002490000
   gid: 1002490000
+  executor: KubernetesExecutor
 
   defaultAirflowRepository: gcr.io/ggl-cas-storage/cas-airflow
   defaultAirflowTag: "to_override"
@@ -66,17 +67,20 @@ airflow:
     resultBackendConnection:
       user: postgres
       pass: $PGPASS
-      host: ~
+      host: cas-airflow-patroni
       port: 5432
       db: postgres
       sslmode: disable
+      protocol: postgresql
 
   # Airflow webserver settings
   webserver:
     replicas: 2
     resources:
+      requests:
+        cpu: 50m
       limits:
-        cpu: 1000m
+        cpu: 500m
     defaultUser:
       enabled: true
       role: Admin
@@ -136,6 +140,8 @@ airflow:
     gitSync:
       enabled: false
 
+  statsd:
+    enabled: false
 # Configuration for cas-postgres subchart
 cas-postgres:
   patroni:

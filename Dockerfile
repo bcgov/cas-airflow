@@ -1,3 +1,3 @@
-FROM gcr.io/ggl-cas-storage/cas-airflow-upstream:v2-0-0rc1
+FROM apache/airflow:2.1.0
 
 COPY --chown=airflow:root ./dags /opt/airflow/dags

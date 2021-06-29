@@ -12,13 +12,9 @@ metadata:
 {{ toYaml . | indent 4 }}
 {{- end }}
 spec:
-  podSelector:
-    matchLabels:
-      release: {{ .Release.Name }}
+  podSelector: {}
   policyTypes:
   - Ingress
   ingress:
   - from:
-    - podSelector:
-        matchLabels:
-          release: {{ .Release.Name }}
+    - podSelector: {}

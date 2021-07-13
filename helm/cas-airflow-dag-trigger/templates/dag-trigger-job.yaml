@@ -40,6 +40,8 @@ spec:
             memory: 64Mi
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         env:
+          - name: AIRFLOW_ENDPOINT
+            value: {{ .Values.airflowEndpoint }}
           - name: AIRFLOW_USERNAME
             value: cas-airflow-admin
           - name: AIRFLOW_PASSWORD

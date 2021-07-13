@@ -1,7 +1,7 @@
 # Values
 enable: true
 airflowEndpoint: https://cas-airflow-dev.apps.silver.devops.gov.bc.ca
-dagId: ~
+dagId: ggircs_cert_renewal
 dagConfiguration: "{}"
 airflowSecret:
   name: airflow-default-user-password

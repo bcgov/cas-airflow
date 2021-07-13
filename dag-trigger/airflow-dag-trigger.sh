@@ -8,7 +8,7 @@ dag_id=$1
 
 echo "Fetching state for DAG $dag_id"
 
-dag_url="https://cas-airflow-$RELEASE_SUFFIX.apps.silver.devops.gov.bc.ca/api/v1/dags/${dag_id}"
+dag_url="https://cas-airflow-$RELEASE_SUFFIX.apps.silver.devops.gov.bc.ca/dags/${dag_id}"
 is_paused=$(curl -sSf -u "$AIRFLOW_USERNAME":"$AIRFLOW_PASSWORD" $dag_url | jq .is_paused)
 
 if [ "$is_paused" == "true" ]; then

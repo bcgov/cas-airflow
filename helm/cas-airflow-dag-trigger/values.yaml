@@ -1,0 +1,10 @@
+# Values
+enable: true
+airflowEndpoint: "cas-airflow-url:3000"
+dagId: ~
+dagConfiguration: ~
+airflowSecretName: ~
+image:
+  repository: ~
+  tag: ~
+  pullPolicy: Always

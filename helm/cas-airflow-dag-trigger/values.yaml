@@ -1,10 +1,12 @@
 # Values
 enable: true
-airflowEndpoint: "cas-airflow-url:3000"
+airflowEndpoint: https://cas-airflow-dev.apps.silver.devops.gov.bc.ca
 dagId: ~
-dagConfiguration: ~
-airflowSecretName: ~
+dagConfiguration: "{}"
+airflowSecret:
+  name: airflow-default-user-password
+  key: default-user-pass
 image:
-  repository: ~
-  tag: ~
+  repository: gcr.io/ggl-cas-storage/cas-airflow-dag-trigger
+  tag: 5af71d1c9e53b593081c355df1b260d619bd587c
   pullPolicy: Always

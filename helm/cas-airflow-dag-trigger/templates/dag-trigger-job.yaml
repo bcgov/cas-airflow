@@ -45,13 +45,13 @@ spec:
           - name: AIRFLOW_PASSWORD
             valueFrom:
               secretKeyRef:
-                key: default-user-pass
-                name: {{ .Values.airflowSecretName }}
+                key: {{ .Values.airflowSecret.key }}
+                name: {{ .Values.airflowSecret.name }}
           - name: RELEASE_SUFFIX
             value: {{ include "cas-airflow-dag-trigger.namespaceSuffix" . }}
         command:
           - /usr/bin/env
           - bash
           - -c
-          - ./trigger-airflow-dag.sh {{ .Values.dagId }}
+          - ./airflow-dag-trigger.sh {{ .Values.dagId }}
 {{- end }}

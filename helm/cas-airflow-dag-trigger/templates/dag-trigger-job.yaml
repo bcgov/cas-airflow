@@ -19,14 +19,14 @@ metadata:
 {{- end }}
 spec:
   backoffLimit: 0
-  activeDeadlineSeconds: 1200
+  activeDeadlineSeconds: {{ .Values.activeDeadlineSeconds }}
   template:
     metadata:
       name: {{ template "cas-airflow-dag-trigger.fullname" . }}
       labels:
 {{ include "cas-airflow-dag-trigger.labels" . | indent 8 }}
     spec:
-      activeDeadlineSeconds: 1200
+      activeDeadlineSeconds: {{ .Values.activeDeadlineSeconds }}
       restartPolicy: Never
       containers:
       - name: {{ template "cas-airflow-dag-trigger.fullname" . }}

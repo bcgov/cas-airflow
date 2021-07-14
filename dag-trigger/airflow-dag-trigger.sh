@@ -1,7 +1,5 @@
 #!/usr/bin/env bash
 
-# TODO: move this script to pipeline / airflow project
-
 set -e
 
 dag_id=$1

@@ -8,5 +8,5 @@ airflowSecret:
   key: default-user-pass
 image:
   repository: gcr.io/ggl-cas-storage/cas-airflow-dag-trigger
-  tag: 4c812e37720e147971d1b8f5a10ed0cd61b9018c
+  tag: 0.0.1
   pullPolicy: Always

@@ -52,7 +52,7 @@ spec:
           - name: RELEASE_SUFFIX
             value: {{ include "cas-airflow-dag-trigger.namespaceSuffix" . }}
           - name: DAG_CONF
-            value: {{ .Values.dagConfiguration }}
+            value: {{ .Values.dagConfiguration | quote }}
         command:
           - /usr/bin/env
           - bash

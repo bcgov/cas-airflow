@@ -23,7 +23,7 @@ run_json=$(curl -sSf -u "$AIRFLOW_USERNAME":"$AIRFLOW_PASSWORD" -X POST \
   "$dag_run_url" \
   -H 'Cache-Control: no-cache' \
   -H 'Content-Type: application/json' \
-  -d '{}')
+  -d "{\"conf\": $DAG_CONF}")
 dag_run_id=$(echo "$run_json" | jq -r .dag_run_id)
 
 echo "Started dag run ID: $dag_run_id"

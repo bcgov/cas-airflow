@@ -1,9 +1,9 @@
 apiVersion: v2
 name: cas-airflow
 type: application
-version: 1.0.2
+version: 1.0.3
 appVersion: 0.1.1
-description: Helm chart to deploy cas' flavour of airflow. This chart uses the vanilla chart in the airflow submodule and add cas' own templates and values.
+description: Helm chart to deploy cas' flavour of airflow. This chart uses the vanilla airflow chart and adds cas' own templates and values.
 icon: https://www.astronomer.io/static/airflowNewA.png
 keywords:
   - airflow

@@ -1,4 +1,3 @@
-{{- if .Values.enable }}
 apiVersion: batch/v1
 kind: Job
 metadata:
@@ -53,4 +52,3 @@ spec:
           - bash
           - -c
           - ./airflow-dag-trigger.sh {{ .Values.dagId }} {{ .Values.dagConfiguration | default "{}" | quote }}
-{{- end }}

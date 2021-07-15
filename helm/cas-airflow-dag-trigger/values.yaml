@@ -1,5 +1,4 @@
 # Values
-enable: true
 airflowEndpoint: https://cas-airflow-dev.apps.silver.devops.gov.bc.ca
 activeDeadlineSeconds: 1200
 dagId: ggircs_cert_renewal

@@ -11,8 +11,8 @@ The following table lists the configurable parameters of the DAG trigger chart a
 | `airflowEndpoint`       | Endpoint (URL) of the airflow instance to use                | `https://cas-airflow-dev.apps.silver.devops.gov.bc.ca` |     |
 | `dagId`                 | The ID of the DAG to run, must exist on the airflow instance | `null`                                                 |     |
 | `dagConfiguration`      | Extra configuration for the dag run, in JSON format          | `"{}"`                                                 |     |
-| `helm.hook`             | Affinity labels for pod assignment                           | `pre-upgrade,pre-install`                              |     |
-| `helm.hookWeight`       | Toleration labels for pod assignment                         | `0`                                                    |     |
+| `helm.hook`             | Helm hook setting for the DAG run job                        | `pre-upgrade,pre-install`                              |     |
+| `helm.hookWeight`       | Helm hook weight setting for the DAG run job                 | `0`                                                    |     |
 | `airflowSecret.name`    | Name of the secret containing the airflow password           | `airflow-default-user-password`                        |     |
 | `airflowSecret.key`     | Key of the secret containing the airflow password            | `default-user-pass`                                    |     |
 | `image.repository`      | Repository for the image containing the job                  | `gcr.io/ggl-cas-storage/cas-airflow-dag-trigger`       |     |

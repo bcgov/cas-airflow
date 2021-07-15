@@ -5,6 +5,29 @@ set -euo pipefail
 dag_id=$1
 dag_config=${2:-'{}'}
 
+# =============================================================================
+# Usage:
+# -----------------------------------------------------------------------------
+usage() {
+    cat << EOF
+
+Required env variables:
+
+$AIRFLOW_ENDPOINT
+$AIRFLOW_USERNAME
+$AIRFLOW_PASSWORD
+
+$0 $1 $2
+
+Triggers a run of an Airflow DAG.
+
+  $1 (required)
+    dag_id of an Airflow job (ex. ggircs_cert_renewal)
+  $2
+    conf object for https://airflow.apache.org/docs/apache-airflow/stable/stable-rest-api-ref.html#operation/post_dag_run
+EOF
+}
+
 echo "Fetching state for DAG $dag_id"
 
 dag_url="$AIRFLOW_ENDPOINT/api/v1/dags/${dag_id}"

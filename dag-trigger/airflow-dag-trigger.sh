@@ -2,9 +2,6 @@
 
 set -euo pipefail
 
-dag_id=$1
-dag_config=${2:-'{}'}
-
 # =============================================================================
 # Usage:
 # -----------------------------------------------------------------------------
@@ -13,9 +10,9 @@ usage() {
 
 Required env variables:
 
-$AIRFLOW_ENDPOINT
-$AIRFLOW_USERNAME
-$AIRFLOW_PASSWORD
+AIRFLOW_ENDPOINT
+AIRFLOW_USERNAME
+AIRFLOW_PASSWORD
 
 $0 <Dag ID> <Dag JSON configuration>
 
@@ -33,17 +30,20 @@ Triggers a run of an Airflow DAG.
 EOF
 }
 
-if [ "$1" = '-h' ]; then
-    usage
-    exit 0
-fi
-
 if [ "$#" -lt 1 ]; then
     echo "Passed $# parameters. Expected 1 or 2."
     usage
     echo "exiting with status 1"
     exit 1
 fi
+
+if [ "$1" = '-h' ]; then
+    usage
+    exit 0
+fi
+
+dag_id=$1
+dag_config=${2:-'{}'}
 
 echo "Fetching state for DAG $dag_id"
 

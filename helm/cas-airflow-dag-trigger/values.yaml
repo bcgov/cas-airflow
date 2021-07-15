@@ -4,6 +4,10 @@ airflowEndpoint: https://cas-airflow-dev.apps.silver.devops.gov.bc.ca
 activeDeadlineSeconds: 1200
 dagId: ggircs_cert_renewal
 dagConfiguration: "{}"
+helm:
+  # hook should be null if the job shouldn't be run as a hook
+  hook: "pre-upgrade,pre-install"
+  hookWeight: 0
 airflowSecret:
   name: airflow-default-user-password
   key: default-user-pass

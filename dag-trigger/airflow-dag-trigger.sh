@@ -17,13 +17,13 @@ $AIRFLOW_ENDPOINT
 $AIRFLOW_USERNAME
 $AIRFLOW_PASSWORD
 
-$0 $1 $2
+$0 <Dag ID> <Dag JSON configuration>
 
 Triggers a run of an Airflow DAG.
 
-  $1 (required)
+  Dag ID (required):
     dag_id of an Airflow job (ex. ggircs_cert_renewal)
-  $2
+  Dag JSON configuration:
     conf object for https://airflow.apache.org/docs/apache-airflow/stable/stable-rest-api-ref.html#operation/post_dag_run
 
   Options
@@ -38,7 +38,7 @@ if [ "$1" = '-h' ]; then
     exit 0
 fi
 
-if [ "$#" < 1 ]; then
+if [ "$#" -lt 1 ]; then
     echo "Passed $# parameters. Expected 1 or 2."
     usage
     echo "exiting with status 1"

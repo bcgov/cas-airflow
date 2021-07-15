@@ -136,7 +136,10 @@ airflow:
   # Git sync
   dags:
     persistence:
-      enabled: false
+      enabled: true
+      accessMode: ReadWriteOnce
+      size: 50Mi
+      storageClassName: netapp-file-standard
     gitSync:
       enabled: false
 

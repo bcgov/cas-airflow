@@ -1,11 +1,11 @@
 kind: PersistentVolumeClaim
 apiVersion: v1
 metadata:
-  name: { { .Values.dynamicDagStorage.pvcName } }
-  labels: { { include "cas-airflow.labels" . | nindent 4 } }
+  name: {{ .Values.dynamicDagStorage.pvcName }}
+  labels: {{ include "cas-airflow.labels" . | nindent 4 }}
 spec:
-  accessModes: [{ { .Values.dynamicDagStorage.accessMode | quote } }]
+  accessModes: [{{ .Values.dynamicDagStorage.accessMode | quote }}]
   resources:
     requests:
-      storage: { { .Values.dynamicDagStorage.size | quote } }
+      storage: {{ .Values.dynamicDagStorage.size | quote }}
   storageClassName: "{{ .Values.dynamicDagStorage.storageClassName }}"

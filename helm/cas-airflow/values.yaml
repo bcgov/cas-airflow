@@ -11,7 +11,7 @@ gcpLogsUpload:
       tag: "0.1"
 
 dynamicDagStorage:
-  pvcName: cas-airflow-dynamic-dags
+  pvcName: cas-airflow-dynamic-dags-pvc
   accessMode: ReadWriteMany
   size: 1Gi
   storageClassName: netapp-file-standard
@@ -101,6 +101,13 @@ airflow:
     resources:
       limits:
         cpu: 1000m
+    extraVolumes:
+      - name: cas-airflow-dynamic-dags
+        persistentVolumeClaim:
+          claimName: cas-airflow-dynamic-dags-pvc
+    extraVolumeMounts:
+      - name: cas-airflow-dynamic-dags
+        mountPath: /opt/airflow/dags/test
 
   postgresql:
     enabled: false

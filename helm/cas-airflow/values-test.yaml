@@ -15,7 +15,7 @@ airflow:
         mountPath: /gcs
         readOnly: true
       - name: cas-airflow-dynamic-dags
-        mountPath: /opt/airflow/dags/test
+        mountPath: /opt/airflow/dags/dynamic
     extraVolumes:
       - name: gcs-credentials
         secret:

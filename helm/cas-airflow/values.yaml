@@ -107,7 +107,7 @@ airflow:
           claimName: cas-airflow-dynamic-dags-pvc
     extraVolumeMounts:
       - name: cas-airflow-dynamic-dags
-        mountPath: /opt/airflow/dags/test
+        mountPath: /opt/airflow/dags/dynamic
 
   postgresql:
     enabled: false

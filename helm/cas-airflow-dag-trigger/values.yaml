@@ -1,7 +1,6 @@
 # Values
 airflowEndpoint: https://cas-airflow-dev.apps.silver.devops.gov.bc.ca
-activeDeadlineSeconds: 1200
-dagId: ggircs_cert_renewal
+dagId: null
 dagConfiguration: "{}"
 helm:
   # hook should be null if the job shouldn't be run as a hook
@@ -14,3 +13,4 @@ image:
   repository: gcr.io/ggl-cas-storage/cas-airflow-dag-trigger
   tag: 0.0.1
   pullPolicy: Always
+activeDeadlineSeconds: 1200

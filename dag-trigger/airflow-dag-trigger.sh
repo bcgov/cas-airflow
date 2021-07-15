@@ -48,7 +48,7 @@ dag_config=${2:-'{}'}
 echo "Fetching state for DAG $dag_id"
 
 dag_url="$AIRFLOW_ENDPOINT/api/v1/dags/${dag_id}"
-is_paused=$(curl -sSf -u "$AIRFLOW_USERNAME":"$AIRFLOW_PASSWORD" $dag_url | jq .is_paused)
+is_paused=$(curl -sSf -u "$AIRFLOW_USERNAME":"$AIRFLOW_PASSWORD" "$dag_url" | jq .is_paused)
 
 if [ "$is_paused" == "true" ]; then
   echo "DAG $dag_id is paused and cannot be run at this time."

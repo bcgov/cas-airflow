@@ -25,8 +25,18 @@ Triggers a run of an Airflow DAG.
     dag_id of an Airflow job (ex. ggircs_cert_renewal)
   $2
     conf object for https://airflow.apache.org/docs/apache-airflow/stable/stable-rest-api-ref.html#operation/post_dag_run
+
+  Options
+    -h
+      Prints this message
+
 EOF
 }
+
+if [ "$1" = '-h' ]; then
+    usage
+    exit 0
+fi
 
 echo "Fetching state for DAG $dag_id"
 

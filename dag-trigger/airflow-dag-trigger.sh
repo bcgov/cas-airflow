@@ -70,7 +70,7 @@ echo "Started dag run ID: $dag_run_id"
 function get_run_state() {
   dag_state_url="$dag_url/dagRuns/${dag_run_id}"
   curl -sSf -u "$AIRFLOW_USERNAME":"$AIRFLOW_PASSWORD" -X GET \
-    $dag_state_url \
+    "$dag_state_url" \
     -H 'Cache-Control: no-cache' \
     -H 'Content-Type: application/json' \
     -d '{}' \

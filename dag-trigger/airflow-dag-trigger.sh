@@ -38,6 +38,13 @@ if [ "$1" = '-h' ]; then
     exit 0
 fi
 
+if [ "$#" < 1 ]; then
+    echo "Passed $# parameters. Expected 1 or 2."
+    usage
+    echo "exiting with status 1"
+    exit 1
+fi
+
 echo "Fetching state for DAG $dag_id"
 
 dag_url="$AIRFLOW_ENDPOINT/api/v1/dags/${dag_id}"

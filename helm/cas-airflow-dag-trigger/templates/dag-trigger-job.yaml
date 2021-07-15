@@ -12,7 +12,7 @@ metadata:
 {{- if .Values.helm.hook }}
   annotations:
     "helm.sh/hook": {{ .Values.helm.hook }}
-    "helm.sh/hook-weight": {{ .Values.helm.hookWeight }}
+    "helm.sh/hook-weight": {{ .Values.helm.hookWeight | quote }}
 {{- end }}
 spec:
   backoffLimit: 0

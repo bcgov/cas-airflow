@@ -2,7 +2,7 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-{{- if .Values.control.hook }}
+{{- if .Values.helm.hook }}
   name: {{ template "cas-airflow-dag-trigger.fullname" . }}
 {{- else }}
   name: {{ template "cas-airflow-dag-trigger.fullname" . }}-{{ randAlphaNum 5 | lower }}
@@ -48,11 +48,9 @@ spec:
                 name: {{ .Values.airflowSecret.name }}
           - name: RELEASE_SUFFIX
             value: {{ include "cas-airflow-dag-trigger.namespaceSuffix" . }}
-          - name: DAG_CONF
-            value: {{ .Values.dagConfiguration | quote }}
         command:
           - /usr/bin/env
           - bash
           - -c
-          - ./airflow-dag-trigger.sh {{ .Values.dagId }}
+          - ./airflow-dag-trigger.sh {{ .Values.dagId }} {{ .Values.dagConfiguration | default "{}" | quote }}
 {{- end }}

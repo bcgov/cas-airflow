@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
 
-set -e
+set -euo pipefail
 
 dag_id=$1
+dag_config=${2:-'{}'}
 
 echo "Fetching state for DAG $dag_id"
 
@@ -21,7 +22,7 @@ run_json=$(curl -sSf -u "$AIRFLOW_USERNAME":"$AIRFLOW_PASSWORD" -X POST \
   "$dag_run_url" \
   -H 'Cache-Control: no-cache' \
   -H 'Content-Type: application/json' \
-  -d "{\"conf\": $DAG_CONF}")
+  -d "{\"conf\": $dag_config}")
 dag_run_id=$(echo "$run_json" | jq -r .dag_run_id)
 
 echo "Started dag run ID: $dag_run_id"

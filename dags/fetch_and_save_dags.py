@@ -4,12 +4,10 @@ from dag_configuration import default_dag_args
 import urllib.request
 import logging
 
-import os
-
 DAGS_FOLDER = '/opt/airflow/dags/dynamic'
 
 
-@dag(default_args=default_dag_args, schedule_interval=days_ago(2), tags=[''])
+@dag(default_args=default_dag_args, schedule_interval=None, start_date=days_ago(2), tags=[''])
 def fetch_and_save_dags(org: str = '', repo: str = '', path: str = '', ref: str = ''):
     """
       DAG to fetch dags and store them to a disk location.

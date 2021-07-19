@@ -11,19 +11,22 @@ def fetch_and_save_dags(org: str = '', repo: str = '', ref: str = '', path: str 
     """
       DAG to fetch dags and store them to a disk location.
 
-      :param url: URL of the git repository containing the dag to fetch
-      :type url: str
+      :param org: Github organisation
+      :type org: str
 
-      :param path: the path to the dag to fetch, within the github repository
-      :type path: str
+      :param repo: Github repository
+      :type repo: str
 
       :param ref: the git ref to use when fetching the dag
       :type ref: str
+
+      :param path: the path to the dag to fetch, within the github repository
+      :type path: str
     """
 
     @task()
     def get_file(org, repo, ref, path):
-        url = f'https://raw.githubusercontent/{org}/{repo}/{ref}/{path}'
+        url = f'https://raw.githubusercontent.com/{org}/{repo}/{ref}/{path}'
         logging.critical(f'Retrieving remote DAG: {url}')
         with urllib.request.urlopen(url) as f:
             file = f.read()

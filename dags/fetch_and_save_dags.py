@@ -25,7 +25,7 @@ def fetch_and_save_dags(org: str = '', repo: str = '', ref: str = '', path: str 
     def get_file(org, repo, ref, path):
         url = f'https://raw.githubusercontent/{org}/{repo}/{ref}/{path}'
         logging.critical(f'Retrieving remote DAG: {url}')
-        with urllib.request.urlopen() as f:
+        with urllib.request.urlopen(url) as f:
             file = f.read()
             return file
 

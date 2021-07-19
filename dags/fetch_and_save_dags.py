@@ -6,20 +6,7 @@ import logging
 
 import os
 
-DAG_ID = os.path.basename(__file__).replace(".pyc", "").replace(".py", "")
 DAGS_FOLDER = '/opt/airflow/dags/dynamic'
-
-
-class GetDagOperator(BaseOperator):
-    """Custom operator to sand GET request to provided url"""
-
-    def __init__(self, *, url: str, path: str, ref: str, **kwargs):
-        super().__init__(**kwargs)
-        self.url = url
-        self.path = path
-        self.ref = ref
-
-    def execute(self, context):
 
 
 @dag(default_args=default_dag_args, schedule_interval=days_ago(2), tags=[''])

@@ -115,6 +115,8 @@ airflow:
   config:
     core:
       dag_concurrency: 1
+      min_serialized_dag_update_interval: 10
+      min_serialized_dag_fetch_interval: 5
     logging:
       # The log level should not be decreased to INFO/DEBUG,
       # or only temporarily, as the airflow sheduler is very verbose,

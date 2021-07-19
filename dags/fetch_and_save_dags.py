@@ -1,6 +1,8 @@
 from airflow.decorators import dag, task
 from airflow.utils.dates import days_ago
 from dag_configuration import default_dag_args
+import urllib.request
+import logging
 
 import os
 
@@ -18,11 +20,10 @@ class GetDagOperator(BaseOperator):
         self.ref = ref
 
     def execute(self, context):
-        return httpx.get(self.url).json()
 
 
 @dag(default_args=default_dag_args, schedule_interval=days_ago(2), tags=[''])
-def fetch_and_save_dags(url: str = '', path: str = '', ref: str = ''):
+def fetch_and_save_dags(org: str = '', repo: str = '', path: str = '', ref: str = ''):
     """
       DAG to fetch dags and store them to a disk location.
 
@@ -37,10 +38,24 @@ def fetch_and_save_dags(url: str = '', path: str = '', ref: str = ''):
     """
 
     @task()
-    file = http.get(...)
+    def get_file(url, path, ref):
+        url = f'https://raw.githubusercontent/{org}/{repo}/{ref}/{path}'
+        logging.critical(f'Retrieving remote DAG: {url}')
+        with urllib.request.urlopen() as f:
+            file = f.read()
+            return file
 
-    with open(path, 'w') as file_to_write:
-        file_to_write.write(file)
+    @task()
+    def save_file():
+        file_name = path.split('/')[-1]
+        file_path = f'/opt/airflow/dags/dynamic/{file_name}'
+        logging.critical(f'Saving file to disk: {file_path}')
+        with open(file_path, 'w') as desc:
+            desc.write(file)
+
+    file = get_file()
+
+    save_file(file)
 
 
 dag = fetch_and_save_dags()

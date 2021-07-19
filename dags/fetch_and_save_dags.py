@@ -6,9 +6,8 @@ import logging
 
 DAGS_FOLDER = '/opt/airflow/dags/dynamic'
 
-
 @dag(default_args=default_dag_args, schedule_interval=None, start_date=days_ago(2), tags=[''])
-def fetch_and_save_dags(org: str = '', repo: str = '', path: str = '', ref: str = ''):
+def fetch_and_save_dags(org: str = '', repo: str = '', ref: str = '', path: str = ''):
     """
       DAG to fetch dags and store them to a disk location.
 
@@ -23,7 +22,7 @@ def fetch_and_save_dags(org: str = '', repo: str = '', path: str = '', ref: str 
     """
 
     @task()
-    def get_file(url, path, ref):
+    def get_file(org, repo, ref, path):
         url = f'https://raw.githubusercontent/{org}/{repo}/{ref}/{path}'
         logging.critical(f'Retrieving remote DAG: {url}')
         with urllib.request.urlopen() as f:
@@ -31,14 +30,14 @@ def fetch_and_save_dags(org: str = '', repo: str = '', path: str = '', ref: str 
             return file
 
     @task()
-    def save_file():
+    def save_file(buffer):
         file_name = path.split('/')[-1]
         file_path = f'/opt/airflow/dags/dynamic/{file_name}'
         logging.critical(f'Saving file to disk: {file_path}')
         with open(file_path, 'w') as desc:
-            desc.write(file)
+            desc.write(buffer)
 
-    file = get_file()
+    file = get_file(org, repo, ref, path)
 
     save_file(file)
 

@@ -1,0 +1,40 @@
+name: Release Charts
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: Configure Git
+        run: |
+          git config user.name "$GITHUB_ACTOR"
+          git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
+      - name: Install Helm
+        uses: azure/setup-helm@v1
+        with:
+          version: v3.6.2
+
+      # Needed to release the cas-airflow chart
+      - name: Add helm repos
+        run: |
+          helm repo add charts-incubator https://charts.helm.sh/incubator
+          helm repo add charts-stable https://charts.helm.sh/stable
+          helm repo add cas-postgres https://bcgov.github.io/cas-postgres/
+          helm repo add apache-airflow "https://airflow.apache.org/"
+
+      - name: Run chart-releaser
+        uses: helm/chart-releaser-action@v1.2.1
+        with:
+          charts_dir: helm
+        env:
+          CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"

@@ -1,0 +1,16 @@
+# Values
+airflowEndpoint: https://cas-airflow-dev.apps.silver.devops.gov.bc.ca
+dagId: null
+dagConfiguration: "{}"
+helm:
+  # hook should be null if the job shouldn't be run as a hook
+  hook: "pre-upgrade,pre-install"
+  hookWeight: 0
+airflowSecret:
+  name: airflow-default-user-password
+  key: default-user-pass
+image:
+  repository: gcr.io/ggl-cas-storage/cas-airflow-dag-trigger
+  tag: 0.0.1
+  pullPolicy: Always
+activeDeadlineSeconds: 1200

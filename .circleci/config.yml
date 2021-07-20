@@ -93,3 +93,20 @@ workflows:
               only: /^v.*/
             branches:
               ignore: /.*/
+      - build_cache_and_push:
+          name: airflow_dag_trigger__sha1_build_and_push
+          image_name: cas-airflow-dag-trigger
+          image_tag: ${CIRCLE_SHA1}
+          dockerfile_directory: cas-airflow/dag-trigger
+          context: cas-pipeline
+      - build_cache_and_push:
+          name: airflow_dag_trigger__tag_build_and_push
+          image_name: cas-airflow-dag-trigger
+          image_tag: ${CIRCLE_TAG/v/}
+          dockerfile_directory: cas-airflow/dag-trigger
+          context: cas-pipeline
+          filters:
+            tags:
+              only: /^v.*/
+            branches:
+              ignore: /.*/

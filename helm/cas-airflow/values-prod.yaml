@@ -14,10 +14,15 @@ airflow:
       - name: gcs-credentials
         mountPath: /gcs
         readOnly: true
+      - name: cas-airflow-dynamic-dags
+        mountPath: /opt/airflow/dags/dynamic
     extraVolumes:
       - name: gcs-credentials
         secret:
           secretName: gcp-0fad32-prod-airflow-logs-service-account-key
+      - name: cas-airflow-dynamic-dags
+        persistentVolumeClaim:
+          claimName: cas-airflow-dynamic-dags-pvc
 
   webserver:
     extraVolumeMounts:

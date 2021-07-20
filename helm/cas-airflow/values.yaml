@@ -10,11 +10,20 @@ gcpLogsUpload:
       pullPolicy: Always
       tag: "0.1"
 
+dynamicDagStorage:
+  pvcName: cas-airflow-dynamic-dags-pvc
+  accessMode: ReadWriteMany
+  size: 1Gi
+  storageClassName: netapp-file-standard
+
 # The values we need to override from the airflow defaults
 airflow:
   uid: 1002490000
   gid: 1002490000
   executor: KubernetesExecutor
+
+  # This should match the mounting point of the cas-airflow-dynamic-dags-pvc PVC
+  dynamicDagsPath: /opt/airflow/dags/dynamic
 
   defaultAirflowRepository: gcr.io/ggl-cas-storage/cas-airflow
   defaultAirflowTag: "to_override"
@@ -26,6 +35,11 @@ airflow:
   env:
     - name: GOOGLE_APPLICATION_CREDENTIALS
       value: /gcs/credentials.json
+
+  #
+  extraEnv: |-
+    - name: DYNAMIC_DAGS_PATH
+      value: {{ .Values.dynamicDagsPath }}
 
   # Images
   images:
@@ -95,6 +109,13 @@ airflow:
     resources:
       limits:
         cpu: 1000m
+    extraVolumes:
+      - name: cas-airflow-dynamic-dags
+        persistentVolumeClaim:
+          claimName: cas-airflow-dynamic-dags-pvc
+    extraVolumeMounts:
+      - name: cas-airflow-dynamic-dags
+        mountPath: /opt/airflow/dags/dynamic
 
   postgresql:
     enabled: false
@@ -102,6 +123,8 @@ airflow:
   config:
     core:
       dag_concurrency: 1
+      min_serialized_dag_update_interval: 10
+      min_serialized_dag_fetch_interval: 5
     logging:
       # The log level should not be decreased to INFO/DEBUG,
       # or only temporarily, as the airflow sheduler is very verbose,

@@ -76,8 +76,7 @@ def fetch_and_save_dag_from_github(org: str = '', repo: str = '', ref: str = '',
     wait_task = WaitSensor(
         task_id="wait_for_refresh",
         delta=timedelta(seconds=wait_seconds),
-        mode='reschedule',
-        retry_delay=timedelta(seconds=5)
+        mode='reschedule'
     )
 
     get_file(org, repo, ref, path) >> wait_task

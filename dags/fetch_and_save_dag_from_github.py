@@ -33,7 +33,7 @@ class WaitSensor(BaseSensorOperator):
         return timezone.utcnow() > target_dttm
 
 
-DAGS_FOLDER = '/opt/airflow/dags/dynamic'
+DAGS_FOLDER = os.environ['DYNAMIC_DAGS_PATH']
 
 
 @dag(default_args=default_dag_args, schedule_interval=None, start_date=days_ago(2))

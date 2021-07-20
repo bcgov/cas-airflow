@@ -23,7 +23,7 @@ airflow:
       - name: cas-airflow-dynamic-dags
         persistentVolumeClaim:
           claimName: cas-airflow-dynamic-dags-pvc
- 
+
   webserver:
     extraVolumeMounts:
       - name: gcs-credentials

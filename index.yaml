@@ -29,6 +29,16 @@ entries:
   cas-airflow-dag-trigger:
   - apiVersion: v2
     appVersion: 1.0.0
+    created: "2021-07-20T16:31:27.625894706Z"
+    description: A Helm chart for triggering remote DAGs on an existing airflow instance
+    digest: d2fda6b94ea45a7df2fb572bad67a595f4fa34fde497de099e3cbb2ce01bcc1e
+    name: cas-airflow-dag-trigger
+    type: application
+    urls:
+    - https://github.com/bcgov/cas-airflow/releases/download/cas-airflow-dag-trigger-1.0.5/cas-airflow-dag-trigger-1.0.5.tgz
+    version: 1.0.5
+  - apiVersion: v2
+    appVersion: 1.0.0
     created: "2021-07-14T17:07:09.444810051Z"
     description: A Helm chart for triggering remote DAGs on an existing airflow instance
     digest: d375681291691b0e89b21f55e95eab629b8202b871bd1dd4397781aaee2d5ac0
@@ -47,4 +57,4 @@ entries:
     urls:
     - https://github.com/bcgov/cas-airflow/releases/download/cas-airflow-dag-trigger-0.1.0/cas-airflow-dag-trigger-0.1.0.tgz
     version: 0.1.0
-generated: "2021-07-14T17:07:09.444823251Z"
+generated: "2021-07-20T16:31:27.626050512Z"

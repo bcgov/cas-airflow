@@ -1,11 +1,41 @@
 from airflow.decorators import dag, task
 from airflow.utils.dates import days_ago
+from airflow.sensors.time_delta import TimeDeltaSensor
+from airflow.sensors.base import BaseSensorOperator
+from airflow.utils import timezone
+from airflow import settings
 from dag_configuration import default_dag_args
+from datetime import timedelta
 import urllib.request
 import logging
 import os
+import json
+
+
+class WaitSensor(BaseSensorOperator):
+    """
+    Waits for a timedelta after the task's execution_date + schedule_interval.
+    In Airflow, the daily task stamped with ``execution_date``
+    2016-01-01 can only start running on 2016-01-02. The timedelta here
+    represents the time after the execution period has closed.
+
+    :param delta: time length to wait after execution_date before succeeding
+    :type delta: datetime.timedelta
+    """
+
+    def __init__(self, *, delta, **kwargs):
+        super().__init__(**kwargs)
+        self.delta = delta
+
+    def poke(self, context):
+        dag = context['dag']
+        target_dttm = context['execution_date'] + self.delta
+        self.log.info('Checking if the time (%s) has come', target_dttm)
+        return timezone.utcnow() > target_dttm
+
 
 DAGS_FOLDER = '/opt/airflow/dags/dynamic'
+
 
 @dag(default_args=default_dag_args, schedule_interval=None, start_date=days_ago(2))
 def fetch_and_save_dag_from_github(org: str = '', repo: str = '', ref: str = '', path: str = ''):
@@ -38,8 +68,19 @@ def fetch_and_save_dag_from_github(org: str = '', repo: str = '', ref: str = '',
         logging.critical(f'Saving file to disk: {file_path}')
         urllib.request.urlretrieve(url, filename=file_path)
 
-    get_file(org, repo, ref, path)
+    wait_seconds = settings.MIN_SERIALIZED_DAG_FETCH_INTERVAL + \
+        settings.MIN_SERIALIZED_DAG_UPDATE_INTERVAL
 
+    logging.critical("Waiting seconds:" + str(wait_seconds))
+
+    wait_task = WaitSensor(
+        task_id="wait_for_refresh",
+        delta=timedelta(seconds=wait_seconds),
+        mode='reschedule',
+        retry_delay=timedelta(seconds=5)
+    )
+
+    get_file(org, repo, ref, path) >> wait_task
 
 
 dag = fetch_and_save_dag_from_github()

@@ -1,6 +1,5 @@
 from airflow.decorators import dag, task
 from airflow.utils.dates import days_ago
-from airflow.sensors.time_delta import TimeDeltaSensor
 from airflow.sensors.base import BaseSensorOperator
 from airflow.utils import timezone
 from airflow import settings
@@ -9,7 +8,6 @@ from datetime import timedelta
 import urllib.request
 import logging
 import os
-import json
 
 
 class WaitSensor(BaseSensorOperator):
@@ -26,6 +24,7 @@ class WaitSensor(BaseSensorOperator):
     def __init__(self, *, delta, **kwargs):
         super().__init__(**kwargs)
         self.delta = delta
+        self.log.info(f'Waiting {delta.seconds} seconds')
 
     def poke(self, context):
         dag = context['dag']
@@ -70,8 +69,6 @@ def fetch_and_save_dag_from_github(org: str = '', repo: str = '', ref: str = '',
 
     wait_seconds = settings.MIN_SERIALIZED_DAG_FETCH_INTERVAL + \
         settings.MIN_SERIALIZED_DAG_UPDATE_INTERVAL
-
-    logging.critical("Waiting seconds:" + str(wait_seconds))
 
     wait_task = WaitSensor(
         task_id="wait_for_refresh",

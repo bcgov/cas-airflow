@@ -5,6 +5,7 @@ set -e
 # but you can lay foundation somewhere else if you prefer
 # (optional)
 export AIRFLOW_HOME=.
+export DYNAMIC_DAGS_PATH=./dags/dynamic
 
 AIRFLOW_VERSION=2.1.2
 PYTHON_VERSION="$(python --version | cut -d " " -f 2 | cut -d "." -f 1-2)"

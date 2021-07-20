@@ -33,9 +33,6 @@ class WaitSensor(BaseSensorOperator):
         return timezone.utcnow() > target_dttm
 
 
-DAGS_FOLDER = os.environ['DYNAMIC_DAGS_PATH']
-
-
 @dag(default_args=default_dag_args, schedule_interval=None, start_date=days_ago(2))
 def fetch_and_save_dag_from_github(org: str = '', repo: str = '', ref: str = '', path: str = ''):
     """
@@ -56,7 +53,7 @@ def fetch_and_save_dag_from_github(org: str = '', repo: str = '', ref: str = '',
 
     def get_filepath(path):
         file_name = path.split('/')[-1]
-        file_path = f'{os.environ["AIRFLOW_HOME"]}/dags/dynamic/{file_name}'
+        file_path = f'{os.environ["DYNAMIC_DAGS_PATH"]}/{file_name}'
         return file_path
 
     @task()

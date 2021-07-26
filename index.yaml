@@ -2,6 +2,31 @@ apiVersion: v1
 entries:
   cas-airflow:
   - apiVersion: v2
+    appVersion: 2.1.2
+    created: "2021-07-26T23:52:02.019308387Z"
+    dependencies:
+    - name: airflow
+      repository: https://airflow.apache.org/
+      version: 1.1.0
+    - name: cas-postgres
+      repository: https://bcgov.github.io/cas-postgres/
+      version: 0.8.0
+    description: Helm chart to deploy cas' flavour of airflow, compatible with OpenShift
+      4. This chart uses the vanilla airflow chart and adds cas' own templates and
+      values.
+    digest: 62993e578b561c35add21e9e691d2b2a5015a89033117d72fad3a4d4a51323a1
+    icon: https://www.astronomer.io/static/airflowNewA.png
+    keywords:
+    - airflow
+    - cas
+    - ggircs
+    - bcgov
+    name: cas-airflow
+    type: application
+    urls:
+    - https://github.com/bcgov/cas-airflow/releases/download/cas-airflow-1.0.6/cas-airflow-1.0.6.tgz
+    version: 1.0.6
+  - apiVersion: v2
     appVersion: 2.1.1
     created: "2021-07-14T17:07:09.278950995Z"
     dependencies:
@@ -27,6 +52,16 @@ entries:
     - https://github.com/bcgov/cas-airflow/releases/download/cas-airflow-1.0.4/cas-airflow-1.0.4.tgz
     version: 1.0.4
   cas-airflow-dag-trigger:
+  - apiVersion: v2
+    appVersion: 1.0.0
+    created: "2021-07-26T23:52:02.143955159Z"
+    description: A Helm chart for triggering remote DAGs on an existing airflow instance
+    digest: 49e823e5cf8523612c8cef00edaeaf9d0d076b8a15a503ec5f8d5da1137197c6
+    name: cas-airflow-dag-trigger
+    type: application
+    urls:
+    - https://github.com/bcgov/cas-airflow/releases/download/cas-airflow-dag-trigger-1.0.6/cas-airflow-dag-trigger-1.0.6.tgz
+    version: 1.0.6
   - apiVersion: v2
     appVersion: 1.0.0
     created: "2021-07-20T16:31:27.625894706Z"
@@ -57,4 +92,4 @@ entries:
     urls:
     - https://github.com/bcgov/cas-airflow/releases/download/cas-airflow-dag-trigger-0.1.0/cas-airflow-dag-trigger-0.1.0.tgz
     version: 0.1.0
-generated: "2021-07-20T16:31:27.626050512Z"
+generated: "2021-07-26T23:52:02.143973959Z"

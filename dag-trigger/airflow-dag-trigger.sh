@@ -14,13 +14,13 @@ AIRFLOW_ENDPOINT
 AIRFLOW_USERNAME
 AIRFLOW_PASSWORD
 
-$0 <Dag ID> <Dag JSON configuration>
+$0 <Dag ID> <Base64-encoded Dag JSON configuration>
 
 Triggers a run of an Airflow DAG.
 
   Dag ID (required):
     dag_id of an Airflow job (ex. ggircs_cert_renewal)
-  Dag JSON configuration:
+  Base64-encoded Dag JSON configuration:
     conf object for https://airflow.apache.org/docs/apache-airflow/stable/stable-rest-api-ref.html#operation/post_dag_run
 
   Options
@@ -43,7 +43,7 @@ if [ "$1" = '-h' ]; then
 fi
 
 dag_id=$1
-dag_config=${2:-'{}'}
+dag_config=$(echo "${2:-'e30K'}" | base64 -d) # e30K is the base64 encoding of '{}'
 
 echo "Fetching state for DAG $dag_id"
 

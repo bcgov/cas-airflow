@@ -1,7 +1,7 @@
 # Values
 airflowEndpoint: https://cas-airflow-dev.apps.silver.devops.gov.bc.ca
 dagId: null
-dagConfiguration: "{}"
+dagConfiguration: "e30K"
 helm:
   # hook should be null if the job shouldn't be run as a hook
   hook: "pre-upgrade,pre-install"

@@ -51,4 +51,4 @@ spec:
           - /usr/bin/env
           - bash
           - -c
-          - ./airflow-dag-trigger.sh {{ .Values.dagId }} {{ .Values.dagConfiguration | default "{}" | quote }}
+          - ./airflow-dag-trigger.sh {{ .Values.dagId }} {{ .Values.dagConfiguration | default "e30K" | quote }}

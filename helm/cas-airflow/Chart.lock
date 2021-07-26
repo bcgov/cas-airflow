@@ -1,9 +1,9 @@
 dependencies:
 - name: airflow
   repository: https://airflow.apache.org/
-  version: 1.0.0
+  version: 1.1.0
 - name: cas-postgres
   repository: https://bcgov.github.io/cas-postgres/
   version: 0.8.0
-digest: sha256:271815f1343cd59c568699d594cfc5fee1297c6dc238a3d559048c44eabc331b
-generated: "2021-06-29T11:10:00.957678314-07:00"
+digest: sha256:01eb42b5e4cbbe33310c31f0850dd1ed8df6006e62f8a2e5fa9c43fc9615df8e
+generated: "2021-07-26T16:33:59.103506-07:00"

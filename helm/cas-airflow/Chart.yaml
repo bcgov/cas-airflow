@@ -1,8 +1,8 @@
 apiVersion: v2
 name: cas-airflow
 type: application
-version: 1.0.5
-appVersion: 2.1.1
+version: 1.0.6
+appVersion: 2.1.2
 description: Helm chart to deploy cas' flavour of airflow, compatible with OpenShift 4. This chart uses the vanilla airflow chart and adds cas' own templates and values.
 icon: https://www.astronomer.io/static/airflowNewA.png
 keywords:
@@ -12,7 +12,7 @@ keywords:
   - bcgov
 dependencies:
   - name: airflow
-    version: "1.0.0"
+    version: "1.1.0"
     repository: "https://airflow.apache.org/"
   - name: cas-postgres
     version: "0.8.0"

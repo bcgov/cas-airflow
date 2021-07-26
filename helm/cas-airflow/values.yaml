@@ -131,7 +131,7 @@ airflow:
       # putting a strain on the shared logging system
       # with WARN, the webserver currently prints a large json schema
       logging_level: ERROR
-      remote_logging: True
+      remote_logging: 'True'
       remote_base_log_folder: ~
       remote_log_conn_id: gcs_logs
     api:

@@ -2,9 +2,8 @@
 """
 # DAG to make a full backup of a postgres database to a gcs bucket.
 """
+from walg_backups import create_backup_task
 from dag_configuration import default_dag_args
-from exec_in_pod import exec_in_pod
-from airflow.operators.python_operator import PythonOperator
 from datetime import datetime, timedelta
 from airflow import DAG
 import os
@@ -23,12 +22,6 @@ default_args = {
     'start_date': START_DATE
 }
 
-full_exec_command = [
-    '/bin/sh',
-    '-c',
-    'PGPASSWORD=$PGPASSWORD_SUPERUSER envdir $WALE_ENV_DIR wal-g backup-push $PGDATA'
-]
-
 DAG_ID = os.path.basename(__file__).replace(".pyc", "").replace(".py", "")
 
 ciip_full_backup = DAG(DAG_ID + '_ciip_full', default_args=default_args,
@@ -41,21 +34,9 @@ metabase_full_backup = DAG(DAG_ID + '_metabase_full', default_args=default_args,
                            schedule_interval='0 8 * * *', start_date=START_DATE)
 
 
-def exec_backup_in_pod(dag, namespace, deployment_name):
-    exec_command = full_exec_command
-    selector = 'spilo-role=master'
+create_backup_task(ciip_full_backup, ciip_namespace, 'cas-ciip-portal-patroni')
 
-    return PythonOperator(
-        python_callable=exec_in_pod,
-        task_id='make_postgres_backup',
-        op_args=[deployment_name, namespace, exec_command, selector],
-        dag=dag
-    )
+create_backup_task(ggircs_full_backup, ggircs_namespace, 'cas-ggircs-patroni')
 
-
-exec_backup_in_pod(ciip_full_backup, ciip_namespace, 'cas-ciip-portal-patroni')
-
-exec_backup_in_pod(ggircs_full_backup, ggircs_namespace, 'cas-ggircs-patroni')
-
-exec_backup_in_pod(metabase_full_backup, ggircs_namespace,
+create_backup_task(metabase_full_backup, ggircs_namespace,
                    'cas-metabase-patroni')

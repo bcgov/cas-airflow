@@ -22,7 +22,7 @@ default_args = {
     'start_date': START_DATE
 }
 
-DAG_ID = os.path.basename(__file__).replace(".pyc", "").replace(".py", "")
+DAG_ID = 'walg_backup'
 
 ciip_full_backup = DAG(DAG_ID + '_ciip_full', default_args=default_args,
                        schedule_interval='0 8 * * *', start_date=START_DATE)

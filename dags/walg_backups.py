@@ -1,13 +1,6 @@
 from airflow.operators.python_operator import PythonOperator
-from datetime import datetime, timedelta
 from exec_in_pod import exec_in_pod
 import os
-
-START_DATE = datetime.now() - timedelta(days=2)
-
-ciip_namespace = os.getenv('CIIP_NAMESPACE')
-ggircs_namespace = os.getenv('GGIRCS_NAMESPACE')
-in_cluster = os.getenv('LOCAL_AIRFLOW', False) == 'False'
 
 PATRONI_SELECTOR = 'spilo-role=master'
 

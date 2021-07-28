@@ -18,10 +18,10 @@ full_exec_command = [
 ]
 
 
-def create_backup_task(dag, task_name, namespace, deployment_name):
+def create_backup_task(dag, namespace, deployment_name, task_id='make_postgres_backup'):
     return PythonOperator(
         python_callable=exec_in_pod,
-        task_id=f'make_postgres_backup_{task_name}',
+        task_id=task_id,
         op_args=[deployment_name, namespace,
                  full_exec_command, PATRONI_SELECTOR],
         dag=dag

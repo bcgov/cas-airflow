@@ -93,8 +93,10 @@ airflow:
     resources:
       requests:
         cpu: 50m
+        memory: 700Mi
       limits:
         cpu: 500m
+        memory: 2Gi
     defaultUser:
       enabled: true
       role: Admin
@@ -131,7 +133,7 @@ airflow:
       # putting a strain on the shared logging system
       # with WARN, the webserver currently prints a large json schema
       logging_level: ERROR
-      remote_logging: 'True'
+      remote_logging: "True"
       remote_base_log_folder: ~
       remote_log_conn_id: gcs_logs
     api:
@@ -140,14 +142,12 @@ airflow:
       username: "cas-airflow-admin"
       password: "$(DEFAULT_USER_PASS)"
       web_server_worker_timeout: 300
+      workers: 2
 
     smtp:
       smtp_host: apps.smtp.gov.bc.ca
       smtp_starttls: false
       smtp_mail_from: cas-airflow@gov.bc.ca
-
-    celery:
-      default_queue: celery
 
     scheduler:
       min_file_process_interval: 30

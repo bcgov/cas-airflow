@@ -27,8 +27,7 @@ class WaitSensor(BaseSensorOperator):
         self.log.info(f'Waiting {delta.seconds} seconds')
 
     def poke(self, context):
-        dag = context['dag']
-        target_dttm = context['execution_date'] + self.delta
+        target_dttm = context['start_date'] + self.delta
         self.log.info('Checking if the time (%s) has come', target_dttm)
         return timezone.utcnow() > target_dttm
 
@@ -69,7 +68,7 @@ def fetch_and_save_dag_from_github(org: str = '', repo: str = '', ref: str = '',
 
     wait_task = WaitSensor(
         task_id="wait_for_refresh",
-        delta=timedelta(seconds=wait_seconds),
+        delta=timedelta(seconds=wait_seconds*2),
         mode='reschedule'
     )
 

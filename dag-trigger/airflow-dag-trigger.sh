@@ -42,13 +42,17 @@ if [ "$1" = '-h' ]; then
     exit 0
 fi
 
+_curl() {
+  curl --retry 5 --retry-all-errors -sSf "$@"
+}
+
 dag_id=$1
 dag_config=$(echo "${2:-'e30K'}" | base64 -d) # e30K is the base64 encoding of '{}'
 
 echo "Fetching state for DAG $dag_id"
 
 dag_url="$AIRFLOW_ENDPOINT/api/v1/dags/${dag_id}"
-is_paused=$(curl -sSf -u "$AIRFLOW_USERNAME":"$AIRFLOW_PASSWORD" "$dag_url" | jq .is_paused)
+is_paused=$(_curl -u "$AIRFLOW_USERNAME":"$AIRFLOW_PASSWORD" "$dag_url" | jq .is_paused)
 
 if [ "$is_paused" == "true" ]; then
   echo "DAG $dag_id is paused and cannot be run at this time."
@@ -58,7 +62,7 @@ fi
 dag_run_url="$dag_url/dagRuns"
 echo "Triggering DAG run on airflow API at: $dag_run_url"
 
-run_json=$(curl -sSf -u "$AIRFLOW_USERNAME":"$AIRFLOW_PASSWORD" -X POST \
+run_json=$(_curl -u "$AIRFLOW_USERNAME":"$AIRFLOW_PASSWORD" -X POST \
   "$dag_run_url" \
   -H 'Cache-Control: no-cache' \
   -H 'Content-Type: application/json' \
@@ -69,7 +73,7 @@ echo "Started dag run ID: $dag_run_id"
 
 function get_run_state() {
   dag_state_url="$dag_url/dagRuns/${dag_run_id}"
-  curl -sSf -u "$AIRFLOW_USERNAME":"$AIRFLOW_PASSWORD" -X GET \
+  _curl -u "$AIRFLOW_USERNAME":"$AIRFLOW_PASSWORD" -X GET \
     "$dag_state_url" \
     -H 'Cache-Control: no-cache' \
     -H 'Content-Type: application/json' \

@@ -11,6 +11,6 @@ airflowSecret:
   key: default-user-pass
 image:
   repository: gcr.io/ggl-cas-storage/cas-airflow-dag-trigger
-  tag: 0.0.1
+  tag: ~ # defaults to the chart's version
   pullPolicy: Always
 activeDeadlineSeconds: 1200

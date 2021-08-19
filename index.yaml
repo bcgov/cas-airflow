@@ -3,6 +3,31 @@ entries:
   cas-airflow:
   - apiVersion: v2
     appVersion: 2.1.2
+    created: "2021-08-19T00:11:29.376236273Z"
+    dependencies:
+    - name: airflow
+      repository: https://airflow.apache.org/
+      version: 1.1.0
+    - name: cas-postgres
+      repository: https://bcgov.github.io/cas-postgres/
+      version: 0.8.0
+    description: Helm chart to deploy cas' flavour of airflow, compatible with OpenShift
+      4. This chart uses the vanilla airflow chart and adds cas' own templates and
+      values.
+    digest: 0d2689f7276260d852d47c39f16d6c43875b70c2b062c9fba19fb44301f9add6
+    icon: https://www.astronomer.io/static/airflowNewA.png
+    keywords:
+    - airflow
+    - cas
+    - ggircs
+    - bcgov
+    name: cas-airflow
+    type: application
+    urls:
+    - https://github.com/bcgov/cas-airflow/releases/download/cas-airflow-1.0.8-pre/cas-airflow-1.0.8-pre.tgz
+    version: 1.0.8-pre
+  - apiVersion: v2
+    appVersion: 2.1.2
     created: "2021-08-05T22:24:53.24448954Z"
     dependencies:
     - name: airflow
@@ -78,6 +103,15 @@ entries:
     version: 1.0.4
   cas-airflow-dag-trigger:
   - apiVersion: v2
+    created: "2021-08-19T00:11:29.487815407Z"
+    description: A Helm chart for triggering remote DAGs on an existing airflow instance
+    digest: cbfd19b572d5da3db53c3e7651512e956522b2a3c717a9bd37a717064ad27e3a
+    name: cas-airflow-dag-trigger
+    type: application
+    urls:
+    - https://github.com/bcgov/cas-airflow/releases/download/cas-airflow-dag-trigger-1.0.7-pre/cas-airflow-dag-trigger-1.0.7-pre.tgz
+    version: 1.0.7-pre
+  - apiVersion: v2
     appVersion: 1.0.0
     created: "2021-07-26T23:52:02.143955159Z"
     description: A Helm chart for triggering remote DAGs on an existing airflow instance
@@ -117,4 +151,4 @@ entries:
     urls:
     - https://github.com/bcgov/cas-airflow/releases/download/cas-airflow-dag-trigger-0.1.0/cas-airflow-dag-trigger-0.1.0.tgz
     version: 0.1.0
-generated: "2021-08-05T22:24:53.244526541Z"
+generated: "2021-08-19T00:11:29.487851708Z"

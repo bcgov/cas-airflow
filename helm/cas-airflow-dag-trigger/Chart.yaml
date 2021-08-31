@@ -2,4 +2,4 @@ apiVersion: v2
 name: cas-airflow-dag-trigger
 description: A Helm chart for triggering remote DAGs on an existing airflow instance
 type: application
-version: 1.0.7-pre.3
+version: 1.0.7-pre.9

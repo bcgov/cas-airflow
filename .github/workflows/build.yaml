@@ -1,6 +1,8 @@
 name: Build Containers
 
-on: push
+on:
+  push:
+    branches: ["**"]
 
 jobs:
   cas-airflow-build:

@@ -1,8 +1,9 @@
 name: Build CAS Airflow DAG trigger Container with chart tag
 
 on:
-  tags:
-    - "cas-airflow-dag-trigger-*"
+  push:
+    tags:
+      - "cas-airflow-dag-trigger-*"
 
 jobs:
   cas-airflow-dag-trigger-build:

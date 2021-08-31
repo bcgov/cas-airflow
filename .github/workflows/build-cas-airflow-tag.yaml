@@ -1,8 +1,9 @@
 name: Build CAS Airflow Container with tag
 
 on:
-  tags:
-    - "cas-airflow-[0-9]*"
+  push:
+    tags:
+      - "cas-airflow-[0-9]*"
 
 jobs:
   cas-airflow-build:

@@ -10,7 +10,6 @@ jobs:
       - uses: RafikFarhad/push-to-gcr-github-action@v3.0.2
         with:
           gcloud_service_key: ${{ secrets.GCR_KEY }}
-          registry: gcr.io
           project_id: ggl-cas-storage
           image_name: cas-airflow
           image_tag: latest,${{ github.sha }}
@@ -21,7 +20,6 @@ jobs:
       - uses: RafikFarhad/push-to-gcr-github-action@v3.0.2
         with:
           gcloud_service_key: ${{ secrets.GCR_KEY }}
-          registry: gcr.io
           project_id: ggl-cas-storage
           image_name: cas-airflow-dag-trigger
           image_tag: latest,${{ github.sha }}

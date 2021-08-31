@@ -1,0 +1,15 @@
+name: Build Containers
+
+on: push
+
+jobs:
+  build-and-push-to-gcr:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: RafikFarhad/push-to-gcr-github-action@v3.0.2
+        with:
+          gcloud_service_key: ${{ secrets.GCR_KEY }}
+          registry: gcr.io
+          project_id: ggl-cas-storage
+          image_name: cas-airflow

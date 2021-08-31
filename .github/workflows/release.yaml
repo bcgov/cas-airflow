@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - main
-      - chore/tag-docker-container-with-chart-version
 
 jobs:
   release:

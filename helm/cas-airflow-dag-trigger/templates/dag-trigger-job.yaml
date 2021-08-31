@@ -26,7 +26,7 @@ spec:
       restartPolicy: Never
       containers:
       - name: {{ template "cas-airflow-dag-trigger.fullname" . }}
-        image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
+        image: {{ .Values.image.repository }}:{{ default .Chart.Version .Values.image.tag }}
         resources:
           limits:
             cpu: 50m

@@ -3,7 +3,7 @@ name: Build Containers
 on: push
 
 jobs:
-  build-and-push-to-gcr:
+  cas-airflow-build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -13,3 +13,17 @@ jobs:
           registry: gcr.io
           project_id: ggl-cas-storage
           image_name: cas-airflow
+          image_tag: latest,${{ github.sha }}
+  cas-airflow-dag-trigger-build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: RafikFarhad/push-to-gcr-github-action@v3.0.2
+        with:
+          gcloud_service_key: ${{ secrets.GCR_KEY }}
+          registry: gcr.io
+          project_id: ggl-cas-storage
+          image_name: cas-airflow-dag-trigger
+          image_tag: latest,${{ github.sha }}
+          dockerfile: dag-trigger/Dockerfile
+          context: dag-trigger

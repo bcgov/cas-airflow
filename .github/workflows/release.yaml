@@ -36,4 +36,4 @@ jobs:
         with:
           charts_dir: helm
         env:
-          CR_TOKEN: "${{ secrets.CR_TOKEN }}"
+          CR_TOKEN: "${{ secrets.CR_TOKEN }}" # using a personal access token here so that the build-on-relase workflow can be triggered

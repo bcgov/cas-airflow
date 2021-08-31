@@ -4,7 +4,7 @@
 ### and deploy the helm chart with the required values.
 set -euo pipefail
 
-chart_version=$(helm show chart ./helm/cas-airflow | sed -rn 's/^version: (.*)/\1/p')
+git_sha1=$(git rev-parse HEAD)
 
 helm dep up ./helm/cas-airflow
 helm upgrade --install --timeout 900s \
@@ -14,7 +14,7 @@ helm upgrade --install --timeout 900s \
   --set namespaces.airflow="$AIRFLOW_NAMESPACE_PREFIX-$ENVIRONMENT" \
   --set namespaces.ggircs="$GGIRCS_NAMESPACE_PREFIX-$ENVIRONMENT" \
   --set namespaces.ciip="$CIIP_NAMESPACE_PREFIX-$ENVIRONMENT" \
-  --set airflow.defaultAirflowTag="$chart_version" \
+  --set airflow.defaultAirflowTag="$git_sha1" \
   cas-airflow ./helm/cas-airflow
 
 

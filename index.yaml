@@ -3,6 +3,31 @@ entries:
   cas-airflow:
   - apiVersion: v2
     appVersion: 2.1.2
+    created: "2021-09-01T15:33:26.499002556Z"
+    dependencies:
+    - name: airflow
+      repository: https://airflow.apache.org/
+      version: 1.1.0
+    - name: cas-postgres
+      repository: https://bcgov.github.io/cas-postgres/
+      version: 0.8.0
+    description: Helm chart to deploy cas' flavour of airflow, compatible with OpenShift
+      4. This chart uses the vanilla airflow chart and adds cas' own templates and
+      values.
+    digest: 3b645db695c902f3a58226263b0f8ebcc8c2208cc05babf979e7356df240e798
+    icon: https://www.astronomer.io/static/airflowNewA.png
+    keywords:
+    - airflow
+    - cas
+    - ggircs
+    - bcgov
+    name: cas-airflow
+    type: application
+    urls:
+    - https://github.com/bcgov/cas-airflow/releases/download/cas-airflow-1.0.8/cas-airflow-1.0.8.tgz
+    version: 1.0.8
+  - apiVersion: v2
+    appVersion: 2.1.2
     created: "2021-08-19T00:11:29.376236273Z"
     dependencies:
     - name: airflow
@@ -103,6 +128,15 @@ entries:
     version: 1.0.4
   cas-airflow-dag-trigger:
   - apiVersion: v2
+    created: "2021-09-01T15:33:26.598805074Z"
+    description: A Helm chart for triggering remote DAGs on an existing airflow instance
+    digest: 83bd4b45ec048c43b1190933eee1e40b847cf018828cf4da082b1a812340c77a
+    name: cas-airflow-dag-trigger
+    type: application
+    urls:
+    - https://github.com/bcgov/cas-airflow/releases/download/cas-airflow-dag-trigger-1.0.7/cas-airflow-dag-trigger-1.0.7.tgz
+    version: 1.0.7
+  - apiVersion: v2
     created: "2021-08-19T00:11:29.487815407Z"
     description: A Helm chart for triggering remote DAGs on an existing airflow instance
     digest: cbfd19b572d5da3db53c3e7651512e956522b2a3c717a9bd37a717064ad27e3a
@@ -151,4 +185,4 @@ entries:
     urls:
     - https://github.com/bcgov/cas-airflow/releases/download/cas-airflow-dag-trigger-0.1.0/cas-airflow-dag-trigger-0.1.0.tgz
     version: 0.1.0
-generated: "2021-08-19T00:11:29.487851708Z"
+generated: "2021-09-01T15:33:26.598845575Z"

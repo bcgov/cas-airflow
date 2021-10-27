@@ -34,16 +34,15 @@ def reload_nginx_containers(deployment_name, namespace):
         for pod in api_response.items:
             for container in pod.spec.containers:
                 if 'nginx' in container.name:
-                    pod_container_set = [pod.metadata.name, container.name]
-                    pod_container_list.append(pod_container_set)
+                    pod_container_list.append((pod.metadata.name, container.name))
 
         # Run the reload command in each nginx container
-        for pod_container in pod_container_list:
+        for (pod_name, container_name) in pod_container_list:
             try:
                 api_response = stream(api_instance.connect_post_namespaced_pod_exec,
-                                      pod_container[0],
+                                      pod_name,
                                       namespace,
-                                      container=pod_container[1],
+                                      container=container_name,
                                       command=reload_command,
                                       stderr=True,
                                       stdin=True,

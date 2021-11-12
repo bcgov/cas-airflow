@@ -15,20 +15,22 @@ The dags directory contains the various workflows (Directed Acyclic Graphs)
 - The KubernetesPodOperator allows us to create Pods on Kubernetes.
   - It gives us the freedom to run the command in any arbitrary image, sandboxing the job run inside a docker container.
   - It allows us to select in which namespace to run the job.
-- [`Airflow Kubernetes`](https://airflow.apache.org/docs/stable/kubernetes.html 'Airflow Kubernetes')
+- [`Airflow Kubernetes`](https://airflow.apache.org/docs/stable/kubernetes.html "Airflow Kubernetes")
 
 ## CI/CD
 
 The docker images are built on CircleCI for every commit, and pushed to CAS' google cloud registry if the build occurs on the `develop` or `master` branch, or if the commit is tagged.
 
 Deployement is done with Shipit, using the helm charts defined in the `helm` folder
-  - the `helm install` command should specify namespaces for the different cas application: `helm install --set namespaces.airflow=<< >> --set namespaces.ggircs=<< >> --set namespaces.ciip=<< >>`
+
+- the `helm install` command should specify namespaces for the different CAS applications: `helm install --set namespaces.airflow=<< >> --set namespaces.ggircs=<< >> --set namespaces.ciip=<< >> --set namespaces.cif=<< >>`
 
 There are a couple manual steps required for installation (the first deployment) at the moment:
 
 1. Prior to deploying, the namespace where airflow is deployed should have:
-  - A "github-registry" secret, containing the pull secrets to the docker registry. This should be taken care of by [cas-pipeline](https://github.com/bcgov/cas-pipeline/)'s `make provision`.
-  - An "airflow-default-user-password" secret. This will have airflow create a 'cas-aiflow-admin' user with this password.
+
+- A "github-registry" secret, containing the pull secrets to the docker registry. This should be taken care of by [cas-pipeline](https://github.com/bcgov/cas-pipeline/)'s `make provision`.
+- An "airflow-default-user-password" secret. This will have airflow create a 'cas-aiflow-admin' user with this password.
 
 2. Deploy with shipit
 
@@ -41,18 +43,17 @@ There are a couple manual steps required for installation (the first deployment)
 - [ ] authentication should be done with GitHub (allowing members of https://github.com/orgs/bcgov/teams/cas-developers)
 - [ ] automate the creation of connections on installation
 
-
 ## Contributing
+
 ### Cloning
 
 ```bash
 git clone git@github.com:bcgov/cas-airflow.git ~/cas-airflow && cd $_
 git submodule update --init
 ```
+
 This repository contains the DAGs as well as the helm chart.
 It submodules airflow through the cas-airflow-upstream repository, to use its helm chart as a dependency - and will eventually reference the official airflow instead.
-
-
 
 ### Getting started
 
@@ -75,7 +76,6 @@ asdf reshim
 ```
 
 Be sure to set the `$AIRFLOW_HOME` environment variable if this repository was cloned to a path other than `~/airflow`.
-
 
 ```bash
 airflow db init

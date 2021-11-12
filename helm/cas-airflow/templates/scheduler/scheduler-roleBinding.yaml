@@ -1,4 +1,4 @@
-{{- range (list .Release.Namespace .Values.namespaces.ggircs .Values.namespaces.ciip) }}
+{{- range (list .Release.Namespace .Values.namespaces.ggircs .Values.namespaces.ciip .Values.namespaces.cif) }}
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
@@ -8,7 +8,7 @@ metadata:
   labels:
     release: {{ $.Release.Name }}
     chart: "{{ $.Chart.Name }}-{{ $.Chart.Version }}"
-{{ include "cas-airflow.labels" $ | nindent 4 }}  
+{{ include "cas-airflow.labels" $ | nindent 4 }}
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: Role

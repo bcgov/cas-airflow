@@ -1,4 +1,4 @@
-{{- range (list .Release.Namespace .Values.namespaces.ggircs .Values.namespaces.ciip) }}
+{{- range (list .Release.Namespace .Values.namespaces.ggircs .Values.namespaces.ciip .Values.namespaces.cif) }}
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding

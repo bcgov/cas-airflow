@@ -65,6 +65,9 @@ airflow:
     - envName: CIIP_NAMESPACE
       secretName: cas-namespaces
       secretKey: ciip-namespace
+    - envName: CIF_NAMESPACE
+      secretName: cas-namespaces
+      secretKey: cif-namespace
 
   # Airflow database config
   data:

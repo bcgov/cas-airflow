@@ -24,6 +24,7 @@ spec:
     spec:
       activeDeadlineSeconds: {{ .Values.activeDeadlineSeconds }}
       restartPolicy: Never
+      imagePullSecrets: {{ include "cas-airflow-dag-trigger.imagePullSecrets" . | nindent 8 }}
       containers:
       - name: {{ template "cas-airflow-dag-trigger.fullname" . }}
         image: {{ .Values.image.repository }}:{{ default .Chart.Version .Values.image.tag }}

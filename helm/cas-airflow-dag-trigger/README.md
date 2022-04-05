@@ -15,7 +15,7 @@ The following table lists the configurable parameters of the DAG trigger chart a
 | `helm.hookWeight`       | Helm hook weight setting for the DAG run job                 | `0`                                                    |     |
 | `airflowSecret.name`    | Name of the secret containing the airflow password           | `airflow-default-user-password`                        |     |
 | `airflowSecret.key`     | Key of the secret containing the airflow password            | `default-user-pass`                                    |     |
-| `image.repository`      | Repository for the image containing the job                  | `gcr.io/ggl-cas-storage/cas-airflow-dag-trigger`       |     |
+| `image.repository`      | Repository for the image containing the job                  | `artifacts.developer.gov.bc.ca/google-docker-remote/ggl-cas-storage/cas-airflow-dag-trigger`       |     |
 | `image.tag`             | Tag for the image containing the job                         | `0.0.1`                                                |     |
 | `image.pullPolicy`      | Pull Policy for the image containing the job                 | `Always`                                               |     |
 | `activeDeadlineSeconds` | Pull Policy for the image containing the job                 | `1200`                                                 |     |

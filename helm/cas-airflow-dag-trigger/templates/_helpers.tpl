@@ -76,3 +76,18 @@ Gets the suffix of the namespace. (-dev, -tools, ... )
 {{- (split "-" .Release.Namespace)._1 | trim -}}
 {{- end }}
 
+{{/* 
+Looks up the artifactory service account and 
+generates the image pull secret
+*/}}
+{{- define "cas-airflow-dag-trigger.imagePullSecrets" }}
+{{- $artSa := (lookup "artifactory.devops.gov.bc.ca/v1alpha1" "ArtifactoryServiceAccount" .Release.Namespace .Values.artifactoryServiceAccount) }}
+{{- if $artSa.spec }}
+- name: artifacts-pull-{{ .Values.artifactoryServiceAccount }}-{{ $artSa.spec.current_plate }}
+{{- else }}
+{{/*
+When running helm template, or using --dry-run, lookup returns an empty object
+*/}}
+- name: image-pull-secret-here
+{{- end }}
+{{- end }}

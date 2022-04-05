@@ -19,3 +19,4 @@ The following table lists the configurable parameters of the DAG trigger chart a
 | `image.tag`             | Tag for the image containing the job                         | `0.0.1`                                                |     |
 | `image.pullPolicy`      | Pull Policy for the image containing the job                 | `Always`                                               |     |
 | `activeDeadlineSeconds` | Pull Policy for the image containing the job                 | `1200`                                                 |     |
+| `artifactoryServiceAccount` | Name of the ArtifactoryServiceAccount object to use, to pull images with artifactory (provisioned or created manually) | `cas-artifact-download` |    |

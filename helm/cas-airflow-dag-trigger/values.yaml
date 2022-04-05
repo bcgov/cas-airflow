@@ -14,3 +14,6 @@ image:
   tag: ~ # defaults to the chart's version
   pullPolicy: Always
 activeDeadlineSeconds: 1200
+
+# The name of the ArtifactoryServiceAccount object created in the cas-provision chart
+artifactoryServiceAccount: cas-artifact-download 

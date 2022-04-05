@@ -16,6 +16,9 @@ dynamicDagStorage:
   size: 1Gi
   storageClassName: netapp-file-standard
 
+# The name of the ArtifactoryServiceAccount object created in the cas-provision chart
+artifactoryServiceAccount: cas-artifact-download 
+
 # The values we need to override from the airflow defaults
 airflow:
   uid: 1002490000

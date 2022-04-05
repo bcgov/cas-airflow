@@ -22,9 +22,10 @@ spec:
         spec:
           activeDeadlineSeconds: 600
           restartPolicy: Never
+          imagePullSecrets: {{ include "cas-airflow.imagePullSecrets" . | nindent 12 }}
           containers:
             - name: {{ template "cas-airflow.fullname" . }}-test-email-on-failure
-              image: gcr.io/ggl-cas-storage/alpine:3.13.5
+              image: artifacts.developer.gov.bc.ca/google-docker-remote/ggl-cas-storage/alpine:3.13.5
               resources:
                 requests:
                   cpu: 100m

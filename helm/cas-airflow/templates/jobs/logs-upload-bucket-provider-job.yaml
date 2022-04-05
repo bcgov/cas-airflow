@@ -17,6 +17,7 @@ spec:
       name: {{ template "cas-airflow.fullname" . }}-logs-upload-bucket-provider
       labels: {{ include "cas-airflow.labels" . | nindent 8 }}
     spec:
+      imagePullSecrets: {{ include "cas-airflow.imagePullSecrets" . | nindent 8 }}
       containers:
         - name: {{ template "cas-airflow.fullname" . }}-logs-upload-bucket-provider
           resources:

@@ -6,7 +6,7 @@ gcpLogsUpload:
   bucketSuffix: airflow-logs
   image:
     casShelf:
-      repository: gcr.io/ggl-cas-storage/cas-shelf-tfe-add-app
+      repository: artifacts.developer.gov.bc.ca/google-docker-remote/ggl-cas-storage/cas-shelf-tfe-add-app
       pullPolicy: Always
       tag: "0.1"
 
@@ -15,6 +15,9 @@ dynamicDagStorage:
   accessMode: ReadWriteMany
   size: 1Gi
   storageClassName: netapp-file-standard
+
+# The name of the ArtifactoryServiceAccount object created in the cas-provision chart
+artifactoryServiceAccount: cas-artifact-download 
 
 # The values we need to override from the airflow defaults
 airflow:
@@ -25,7 +28,7 @@ airflow:
   # This should match the mounting point of the cas-airflow-dynamic-dags-pvc PVC
   dynamicDagsPath: /opt/airflow/dags/dynamic
 
-  defaultAirflowRepository: gcr.io/ggl-cas-storage/cas-airflow
+  defaultAirflowRepository: artifacts.developer.gov.bc.ca/google-docker-remote/ggl-cas-storage/cas-airflow
   defaultAirflowTag: "to_override"
 
   # Enable RBAC (default on most clusters these days)

@@ -10,7 +10,10 @@ airflowSecret:
   name: airflow-default-user-password
   key: default-user-pass
 image:
-  repository: gcr.io/ggl-cas-storage/cas-airflow-dag-trigger
+  repository: artifacts.developer.gov.bc.ca/google-docker-remote/ggl-cas-storage/cas-airflow-dag-trigger
   tag: ~ # defaults to the chart's version
   pullPolicy: Always
 activeDeadlineSeconds: 1200
+
+# The name of the ArtifactoryServiceAccount object created in the cas-provision chart
+artifactoryServiceAccount: cas-artifact-download 

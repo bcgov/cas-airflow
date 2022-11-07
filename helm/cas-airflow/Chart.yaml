@@ -1,8 +1,8 @@
 apiVersion: v2
 name: cas-airflow
 type: application
-version: 1.0.12
-appVersion: 2.1.2 # The airflow version
+version: 1.0.13
+appVersion: 2.4.2 # The airflow version
 description: Helm chart to deploy cas' flavour of airflow, compatible with OpenShift 4. This chart uses the vanilla airflow chart and adds cas' own templates and values.
 icon: https://www.astronomer.io/static/airflowNewA.png
 keywords:

@@ -8,7 +8,7 @@ import logging
 def get_cronjob(cronjob_name, namespace):
     configuration = client.Configuration()
     # API client for cronjobs
-    batch = client.BatchV1beta1Api(client.ApiClient(configuration))
+    batch = client.BatchV1Api(client.ApiClient(configuration))
     try:
         cronjobs = batch.list_namespaced_cron_job(namespace).items
         for job in cronjobs:
@@ -41,7 +41,7 @@ def trigger_k8s_cronjob(cronjob_name, namespace):
         try:
             # Create an OwnerReference object and add it to the metadata.owner_references list
             owner_reference = client.V1OwnerReference(
-              api_version=cronjob.api_version or 'batch/v1beta1',
+              api_version=cronjob.api_version or 'batch/v1',
               controller=True,
               kind=cronjob.kind or 'CronJob',
               name=cronjob.metadata.name,

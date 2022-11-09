@@ -12,7 +12,7 @@ keywords:
   - bcgov
 dependencies:
   - name: airflow
-    version: "1.1.0"
+    version: "1.7.0"
     repository: "https://airflow.apache.org/"
   - name: cas-postgres
     version: "0.8.3"

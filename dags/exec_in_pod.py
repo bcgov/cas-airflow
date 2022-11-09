@@ -14,9 +14,7 @@ def get_pod_name(deployment_name, namespace, selector=False):
     except:
         kubernetes.config.load_kube_config()
 
-    configuration = kubernetes.client.Configuration()
-    api_instance = kubernetes.client.CoreV1Api(
-        kubernetes.client.ApiClient(configuration))
+    api_instance = kubernetes.client.CoreV1Api()
 
     try:
         if selector:
@@ -39,9 +37,7 @@ def exec_in_pod(deployment_name, namespace, command, selector=False):
     except:
         kubernetes.config.load_kube_config()
 
-    configuration = kubernetes.client.Configuration()
-    api_instance = kubernetes.client.CoreV1Api(
-        kubernetes.client.ApiClient(configuration))
+    api_instance = kubernetes.client.CoreV1Api()
 
     name = get_pod_name(deployment_name, namespace, selector)
 

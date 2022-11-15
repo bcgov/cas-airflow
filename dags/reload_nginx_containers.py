@@ -21,9 +21,7 @@ def reload_nginx_containers(deployment_name, namespace):
     except:
         kubernetes.config.load_kube_config()
 
-    configuration = kubernetes.client.Configuration()
-    api_instance = kubernetes.client.CoreV1Api(
-        kubernetes.client.ApiClient(configuration))
+    api_instance = kubernetes.client.CoreV1Api()
 
     # Get all pod & container names for pods that have an nginx container
     try:

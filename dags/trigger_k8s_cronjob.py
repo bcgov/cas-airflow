@@ -5,12 +5,9 @@ import time
 import logging
 
 # Retrieves a cron_job by name & namespace
-def get_cronjob(cronjob_name, namespace):
-    configuration = client.Configuration()
-    # API client for cronjobs
-    batch = client.BatchV1beta1Api(client.ApiClient(configuration))
+def get_cronjob(cronjob_name, namespace, batchApi):
     try:
-        cronjobs = batch.list_namespaced_cron_job(namespace).items
+        cronjobs = batchApi.list_namespaced_cron_job(namespace).items
         for job in cronjobs:
             # cronjob names must be unique
             if job.metadata.name == cronjob_name:
@@ -27,10 +24,8 @@ def trigger_k8s_cronjob(cronjob_name, namespace):
     except:
         config.load_kube_config()
 
-    configuration = client.Configuration()
-    api = client.BatchV1Api(client.ApiClient(configuration))
-
-    cronjob = get_cronjob(cronjob_name, namespace)
+    api = client.BatchV1Api()
+    cronjob = get_cronjob(cronjob_name, namespace, api)
 
     if cronjob:
         date_str = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
@@ -41,7 +36,7 @@ def trigger_k8s_cronjob(cronjob_name, namespace):
         try:
             # Create an OwnerReference object and add it to the metadata.owner_references list
             owner_reference = client.V1OwnerReference(
-              api_version=cronjob.api_version or 'batch/v1beta1',
+              api_version=cronjob.api_version or 'batch/v1',
               controller=True,
               kind=cronjob.kind or 'CronJob',
               name=cronjob.metadata.name,
@@ -69,7 +64,7 @@ def trigger_k8s_cronjob(cronjob_name, namespace):
         # Get the uid from the newly created job
         controllerUid = created_job.metadata.uid
 
-        core_v1 = client.CoreV1Api(client.ApiClient(configuration))
+        core_v1 = client.CoreV1Api()
 
         # Create a label_selector from the job's UID
         pod_label_selector = "controller-uid=" + controllerUid

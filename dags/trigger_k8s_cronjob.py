@@ -5,7 +5,7 @@ import time
 import logging
 import random
 
-def retry_with_backoff(fn, retries = 5, backoff_in_seconds = 1):
+def retry_with_backoff(fn, retries = 6, backoff_in_seconds = 1):
   x = 0
   while True:
     try:

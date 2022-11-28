@@ -3,6 +3,21 @@ from kubernetes.client.rest import ApiException
 import datetime
 import time
 import logging
+import random
+
+def retry_with_backoff(fn, retries = 5, backoff_in_seconds = 1):
+  x = 0
+  while True:
+    try:
+      return fn()
+    except:
+      if x == retries:
+        raise
+
+      sleep = (backoff_in_seconds * 2 ** x + 
+               random.uniform(0, 1))
+      time.sleep(sleep)
+      x += 1
 
 # Retrieves a cron_job by name & namespace
 def get_cronjob(cronjob_name, namespace, batchApi):
@@ -68,16 +83,21 @@ def trigger_k8s_cronjob(cronjob_name, namespace):
 
         # Create a label_selector from the job's UID
         pod_label_selector = "controller-uid=" + controllerUid
-        try:
-            # Wait a bit for the job to be created
-            time.sleep(10)
-            # Get the pod name for the newly created job
-            pods_list = core_v1.list_namespaced_pod(
-                namespace, label_selector=pod_label_selector, timeout_seconds=10)
-            pod_name = pods_list.items[0].metadata.name
-        except ApiException as e:
-            logging.critical(
-                "Exception when calling CoreV1Api->list_namespaced_pod: %s\n" % e)
+
+        def get_pod_name(pod_label_selector):
+            try:
+                # Get the pod name for the newly created job
+                pods_list = core_v1.list_namespaced_pod(
+                    namespace, label_selector=pod_label_selector, timeout_seconds=10)
+                pod_name = pods_list.items[0].metadata.name
+                return pod_name
+            except ApiException as e:
+                logging.critical(
+                    "Exception when calling CoreV1Api->list_namespaced_pod: %s\n" % e)
+
+         # Wait a bit initially for the job to be created
+        time.sleep(10)
+        pod_name = retry_with_backoff(get_pod_name(pod_label_selector)) 
 
         try:
             # Get the status of the newly created job

@@ -66,7 +66,7 @@ asdf install
 Use [pip](https://pip.pypa.io/en/stable/user_guide/) to install the correct version of airflow.
 
 ```bash
-pip install -r requirements.txt
+bash run_local.sh
 ```
 
 Then reshim asdf to ensure the correct version of airflow is in your path.

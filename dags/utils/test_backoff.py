@@ -1,17 +1,14 @@
 from backoff import retry_with_backoff
 import pytest
 
-import logging
-logger = logging.getLogger()
-
+# run this test with
+# pytest -s -p no:logging test_backoff.py
+# to see logging during backoff process
 def test_backoff_raises_exception(monkeypatch):
+    # skip actual sleep time
     monkeypatch.setattr("time.sleep", lambda x: None)
     with pytest.raises(Exception):
         retry_with_backoff(monkeypatch)
-
-def test_backoff_fails(monkeypatch):
-    monkeypatch.setattr("time.sleep", lambda x: None)
-    retry_with_backoff(monkeypatch)
 
 def test_backoff_passes():
     def mock_function():

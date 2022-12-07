@@ -37,7 +37,7 @@ airflow:
   # Enable RBAC (default on most clusters these days)
   rbac:
     create: true
-    creaateSCCRoleBinding: false
+    createSCCRoleBinding: false
 
   # Environment variables for all airflow containers
   env:
@@ -61,9 +61,6 @@ airflow:
     - envName: PGPASS
       secretName: cas-airflow-patroni
       secretKey: password-superuser
-    - envName: DEFAULT_USER_PASS
-      secretName: airflow-default-user-password
-      secretKey: default-user-pass
     - envName: AIRFLOW_NAMESPACE
       secretName: cas-namespaces
       secretKey: airflow-namespace
@@ -114,14 +111,6 @@ airflow:
       limits:
         cpu: 500m
         memory: 2Gi
-    # defaultUser:
-    #   enabled: true
-    #   role: Admin
-    #   username: cas-airflow-admin
-    #   email: admin@example.com
-    #   firstName: admin
-    #   lastName: user
-    #   password: "$(DEFAULT_USER_PASS)"
 
   # Airflow scheduler settings
   scheduler:
@@ -161,8 +150,6 @@ airflow:
     api:
       auth_backend: airflow.api.auth.backend.basic_auth
     webserver:
-      username: "cas-airflow-admin"
-      password: "$(DEFAULT_USER_PASS)"
       web_server_worker_timeout: 300
       workers: 2
 

@@ -32,7 +32,7 @@ def map_roles(team_list: List[int]) -> List[str]:
     }
     printthistoo = list(set(team_role_map.get(team, FAB_PUBLIC_ROLE) for team in team_list))
     print(' '.join(printthistoo))
-    return list(set(team_role_map.get(team, FAB_PUBLIC_ROLE) for team in team_list))
+    return list(set(team_role_map.get(team) for team in team_list))
 
 
 class GithubTeamAuthorizer(AirflowSecurityManager):
@@ -73,7 +73,7 @@ AUTH_USER_REGISTRATION = (
     True  # allow users who are not already in the FAB DB to register
 )
 
-FAB_SECURITY_MANAGER_CLASS = "webserverConfig.GithubTeamAuthorizer"
+FAB_SECURITY_MANAGER_CLASS = "GithubTeamAuthorizer"
 
 # If you wish, you can add multiple OAuth providers.
 OAUTH_PROVIDERS = [

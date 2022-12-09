@@ -101,6 +101,7 @@ def trigger_k8s_cronjob(cronjob_name, namespace):
             except ApiException as e:
                 logging.critical(
                     "Exception when calling CoreV1Api->read_namespaced_pod_status: %s\n" % e)
+                break
 
         try:
             # Retrieve and print the log from the finished pod

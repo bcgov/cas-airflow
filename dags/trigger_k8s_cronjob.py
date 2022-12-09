@@ -14,8 +14,10 @@ def get_cronjob(cronjob_name, namespace, batchApi):
             if job.metadata.name == cronjob_name:
                 return job
     except ApiException as e:
-        logging.critical(
-            "Exception when calling BatchV1Api->list_namespaced_cron_job: %s\n" % e)
+        error_string = "Exception when calling BatchV1Api->list_namespaced_cron_job: {}".format(e)
+        logging.critical(error_string)
+        raise Exception from e
+
     return False
 
 # Get the pod name for the newly created job
@@ -83,7 +85,7 @@ def trigger_k8s_cronjob(cronjob_name, namespace):
 
          # Wait a bit initially for the job to be created
         time.sleep(10)
-        pod_name = retry_with_backoff(get_pod_name(namespace, pod_label_selector, core_v1)) 
+        pod_name = retry_with_backoff(get_pod_name(namespace, pod_label_selector, core_v1))
 
         try:
             # Get the status of the newly created job

@@ -11,6 +11,6 @@ def test_backoff_raises_exception(monkeypatch):
         retry_with_backoff(monkeypatch)
 
 def test_backoff_passes():
-    def mock_function():
-        return 0
-    assert 0 == retry_with_backoff(mock_function)
+    def mock_function(x):
+        return x
+    assert 8 == retry_with_backoff(lambda: mock_function(8))

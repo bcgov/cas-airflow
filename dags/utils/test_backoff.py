@@ -14,3 +14,5 @@ def test_backoff_passes():
     def mock_function(x):
         return x
     assert 8 == retry_with_backoff(lambda: mock_function(8))
+    assert "word" == retry_with_backoff(lambda: mock_function("word"))
+    assert None == retry_with_backoff(lambda: mock_function(None))

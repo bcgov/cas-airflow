@@ -25,6 +25,15 @@ airflow:
   gid: 1002490000
   executor: KubernetesExecutor
 
+  defaultUser:
+    enabled: true
+    role: Admin
+    username: cas-airflow-admin
+    email: admin@example.com
+    firstName: admin
+    lastName: user
+    password: "$(DEFAULT_USER_PASS)"
+
   # This should match the mounting point of the cas-airflow-dynamic-dags-pvc PVC
   dynamicDagsPath: /opt/airflow/dags/dynamic
 
@@ -58,6 +67,9 @@ airflow:
 
   # Secrets for all airflow containers
   secret:
+    - envName: DEFAULT_USER_PASS
+      secretName: airflow-default-user-password
+      secretKey: default-user-pass
     - envName: PGPASS
       secretName: cas-airflow-patroni
       secretKey: password-superuser
@@ -111,6 +123,8 @@ airflow:
       limits:
         cpu: 500m
         memory: 2Gi
+    defaultUser:
+      enabled: true
 
   # Airflow scheduler settings
   scheduler:

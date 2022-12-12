@@ -17,7 +17,7 @@ dynamicDagStorage:
   storageClassName: netapp-file-standard
 
 # The name of the ArtifactoryServiceAccount object created in the cas-provision chart
-artifactoryServiceAccount: cas-artifact-download 
+artifactoryServiceAccount: cas-artifact-download
 
 # The values we need to override from the airflow defaults
 airflow:
@@ -30,14 +30,14 @@ airflow:
 
   defaultAirflowRepository: artifacts.developer.gov.bc.ca/google-docker-remote/ggl-cas-storage/cas-airflow
   # Will be overridden by the git commit sha
-  defaultAirflowTag: "to_override" 
+  defaultAirflowTag: "to_override"
 
   airflowVersion: "2.4.2"
 
   # Enable RBAC (default on most clusters these days)
   rbac:
     create: true
-    creaateSCCRoleBinding: false
+    createSCCRoleBinding: false
 
   # Environment variables for all airflow containers
   env:
@@ -61,9 +61,6 @@ airflow:
     - envName: PGPASS
       secretName: cas-airflow-patroni
       secretKey: password-superuser
-    - envName: DEFAULT_USER_PASS
-      secretName: airflow-default-user-password
-      secretKey: default-user-pass
     - envName: AIRFLOW_NAMESPACE
       secretName: cas-namespaces
       secretKey: airflow-namespace
@@ -76,6 +73,12 @@ airflow:
     - envName: CIF_NAMESPACE
       secretName: cas-namespaces
       secretKey: cif-namespace
+    - envName: GH_CLIENT_ID
+      secretName: airflow-oauth
+      secretKey: clientId
+    - envName: GH_CLIENT_SECRET
+      secretName: airflow-oauth
+      secretKey: clientSecret
 
   # Airflow database config
   data:
@@ -108,14 +111,6 @@ airflow:
       limits:
         cpu: 500m
         memory: 2Gi
-    defaultUser:
-      enabled: true
-      role: Admin
-      username: cas-airflow-admin
-      email: admin@example.com
-      firstName: admin
-      lastName: user
-      password: "$(DEFAULT_USER_PASS)"
 
   # Airflow scheduler settings
   scheduler:
@@ -155,8 +150,6 @@ airflow:
     api:
       auth_backend: airflow.api.auth.backend.basic_auth
     webserver:
-      username: "cas-airflow-admin"
-      password: "$(DEFAULT_USER_PASS)"
       web_server_worker_timeout: 300
       workers: 2
 

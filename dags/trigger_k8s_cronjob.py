@@ -1,4 +1,4 @@
-from dags.utils.backoff import retry_with_backoff
+from utils.backoff import retry_with_backoff
 from kubernetes import client, config
 from kubernetes.client.rest import ApiException
 import datetime

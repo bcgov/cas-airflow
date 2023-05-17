@@ -13,7 +13,7 @@ jobs:
       - name: Get the tag name
         id: get_tag_name
         run: echo ::set-output name=CHART_VERSION::${GITHUB_REF/refs\/tags\/cas-airflow-/}
-      - uses: RafikFarhad/push-to-gcr-github-action@v3.0.2
+      - uses: RafikFarhad/push-to-gcr-github-action@v4.1.0
         with:
           gcloud_service_key: ${{ secrets.GCR_KEY }}
           project_id: ggl-cas-storage
@@ -27,7 +27,7 @@ jobs:
       - name: Get the tag name
         id: get_tag_name
         run: echo ::set-output name=CHART_VERSION::${GITHUB_REF/refs\/tags\/cas-airflow-dag-trigger-/}
-      - uses: RafikFarhad/push-to-gcr-github-action@v3.0.2
+      - uses: RafikFarhad/push-to-gcr-github-action@v4.1.0
         with:
           gcloud_service_key: ${{ secrets.GCR_KEY }}
           project_id: ggl-cas-storage

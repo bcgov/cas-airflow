@@ -10,7 +10,7 @@ metadata:
     "helm.sh/hook-weight": "-5"
 spec:
   suspend: true # This cron job is intended to be triggered manually
-  schedule: "* * * * *"
+  schedule: "0 * * * *"
   jobTemplate:
     spec:
       backoffLimit: 0
@@ -30,7 +30,7 @@ spec:
                 requests:
                   cpu: 100m
                   memory: 32Mi
-              command: 
+              command:
                 - /usr/bin/env
                 - sh
                 - -c

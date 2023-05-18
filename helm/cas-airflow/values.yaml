@@ -32,7 +32,7 @@ airflow:
   # Will be overridden by the git commit sha
   defaultAirflowTag: "to_override"
 
-  airflowVersion: "2.6.1"
+  airflowVersion: "2.5.3"
 
   # Enable RBAC (default on most clusters these days)
   rbac:
@@ -172,7 +172,7 @@ airflow:
     scheduler:
       min_file_process_interval: 30
 
-    kubernetes:
+    kubernetes_executor:
       run_as_user: "{{ .Values.uid }}"
       delete_worker_pods: "True"
 

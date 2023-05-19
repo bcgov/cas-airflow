@@ -2,6 +2,31 @@ apiVersion: v1
 entries:
   cas-airflow:
   - apiVersion: v2
+    appVersion: 2.5.3
+    created: "2023-05-19T17:01:12.375001324Z"
+    dependencies:
+    - name: airflow
+      repository: https://airflow.apache.org/
+      version: 1.9.0
+    - name: cas-postgres
+      repository: https://bcgov.github.io/cas-postgres/
+      version: 0.8.3
+    description: Helm chart to deploy cas' flavour of airflow, compatible with OpenShift
+      4. This chart uses the vanilla airflow chart and adds cas' own templates and
+      values.
+    digest: f24b482ecdbef7845c4c57b5b89a6bc8f17946cbee8fb6e2ff1f53a05cde943f
+    icon: https://www.astronomer.io/static/airflowNewA.png
+    keywords:
+    - airflow
+    - cas
+    - ggircs
+    - bcgov
+    name: cas-airflow
+    type: application
+    urls:
+    - https://github.com/bcgov/cas-airflow/releases/download/cas-airflow-2.0.0/cas-airflow-2.0.0.tgz
+    version: 2.0.0
+  - apiVersion: v2
     appVersion: 2.4.2
     created: "2023-02-01T23:27:50.968029616Z"
     dependencies:
@@ -319,4 +344,4 @@ entries:
     urls:
     - https://github.com/bcgov/cas-airflow/releases/download/cas-airflow-dag-trigger-0.1.0/cas-airflow-dag-trigger-0.1.0.tgz
     version: 0.1.0
-generated: "2023-02-01T23:27:50.968086116Z"
+generated: "2023-05-19T17:01:12.37540744Z"

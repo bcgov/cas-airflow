@@ -8,6 +8,8 @@ airflow:
   config:
     logging:
       remote_base_log_folder: gs://0fad32-dev-airflow-logs
+    smtp:
+      smtp_mail_from: cas-airflow-dev@gov.bc.ca
 
   workers:
     extraVolumeMounts:

@@ -31,6 +31,11 @@ jobs:
           helm repo add cas-postgres https://bcgov.github.io/cas-postgres/
           helm repo add apache-airflow "https://airflow.apache.org/"
 
+      - name: Update chart dependencies
+        working-directory: ./helm/cas-airflow
+        run: |
+          helm dep up
+
       - name: Run chart-releaser
         uses: helm/chart-releaser-action@v1.2.1
         with:

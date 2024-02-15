@@ -150,5 +150,7 @@ helm/**/charts/**/*
 .vscode/settings.json
 .scratch
 
+# Terraform
+.terraform
 
 

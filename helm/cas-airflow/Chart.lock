@@ -4,6 +4,9 @@ dependencies:
   version: 1.9.0
 - name: cas-postgres
   repository: https://bcgov.github.io/cas-postgres/
-  version: 0.8.4
-digest: sha256:295f6820703ed656f7f27e76edc8fe133b6566aa06f5836d9c9c89dfe624ff88
-generated: "2023-05-23T16:19:10.676994395-07:00"
+  version: 0.9.1
+- name: terraform-bucket-provision
+  repository: https://bcgov.github.io/cas-pipeline/
+  version: 0.1.2
+digest: sha256:5e04d116248368f28a01be773ebda2b84d473a6739babb4f3afaf6d74721c925
+generated: "2024-02-21T13:58:43.207061-08:00"

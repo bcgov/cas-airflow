@@ -96,6 +96,8 @@ airflow:
       protocol: postgresql
 
   # Airflow webserver settings
+  webserverSecretKeySecretName: cas-airflow-webserver-secret
+
   webserver:
     replicas: 2
     resources:

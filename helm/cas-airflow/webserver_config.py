@@ -58,12 +58,8 @@ class GithubTeamAuthorizer(AirflowSecurityManager,FabAirflowSecurityManagerOverr
         me = remote_app.get("user")
         user_data = me.json()
         team_data = remote_app.get("user/teams")
-        log.debug("AAAAAAAAA-----------~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
-        log.debug(f"team data: {team_data}")
         teams = team_parser(team_data.json())
-        log.debug(f"teams: {teams}")
         roles = map_roles(teams)
-        log.debug(f"roles: {roles}")
         log.debug(
             f"User info from Github: {user_data}\n" f"Team info from Github: {teams}"
         )

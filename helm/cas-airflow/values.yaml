@@ -154,6 +154,10 @@ airflow:
     webserver:
       web_server_worker_timeout: 300
       workers: 2
+      # Prevent airflow to be rendered in an external web frame
+      x_frame_enabled: "False"
+      # Dev, Test and Prod are all external facing
+      warn_deployment_exposure: "False"
 
     smtp:
       smtp_host: apps.smtp.gov.bc.ca

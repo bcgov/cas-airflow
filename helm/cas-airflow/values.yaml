@@ -229,4 +229,4 @@ devops:
 
 terraform-bucket-provision:
   terraform:
-    namespace_apps: ["airflow-backups", "airflow-logs"]
+    namespace_apps: '["airflow-backups", "airflow-logs"]'

@@ -1,4 +1,5 @@
 from airflow.www.security import AirflowSecurityManager
+from airflow.auth.managers.fab.security_manager.override import FabAirflowSecurityManagerOverride
 import logging
 from typing import Dict, Any, List, Union
 import os
@@ -39,8 +40,9 @@ def map_roles(team_list: List[int]) -> List[str]:
     }
     return list(set(team_role_map.get(team, FAB_PUBLIC_ROLE) for team in team_list))
 
-
-class GithubTeamAuthorizer(AirflowSecurityManager):
+# Workaround for Airflow 2.8.1
+# See https://github.com/apache/airflow/issues/36432
+class GithubTeamAuthorizer(AirflowSecurityManager,FabAirflowSecurityManagerOverride):
     # If you ever want to support other providers, see how it is done here:
     # https://github.com/dpgaspar/Flask-AppBuilder/blob/master/flask_appbuilder/security/manager.py#L550
     def get_oauth_user_info(
@@ -65,7 +67,7 @@ class GithubTeamAuthorizer(AirflowSecurityManager):
 
 
 
-FAB_SECURITY_MANAGER_CLASS = "webserver_config.GithubTeamAuthorizer"
+SECURITY_MANAGER_CLASS = GithubTeamAuthorizer
 
 # If you wish, you can add multiple OAuth providers.
 OAUTH_PROVIDERS = [

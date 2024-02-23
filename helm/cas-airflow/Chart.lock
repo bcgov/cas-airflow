@@ -1,12 +1,12 @@
 dependencies:
 - name: airflow
   repository: https://airflow.apache.org/
-  version: 1.9.0
+  version: 1.12.0
 - name: cas-postgres
   repository: https://bcgov.github.io/cas-postgres/
   version: 0.9.1
 - name: terraform-bucket-provision
   repository: https://bcgov.github.io/cas-pipeline/
   version: 0.1.2
-digest: sha256:5e04d116248368f28a01be773ebda2b84d473a6739babb4f3afaf6d74721c925
-generated: "2024-02-21T13:58:43.207061-08:00"
+digest: sha256:637e6993eb39c01233557edee1bfbd7f97f37393ea58374698b778802aaf4eb2
+generated: "2024-02-21T16:50:32.001406-08:00"

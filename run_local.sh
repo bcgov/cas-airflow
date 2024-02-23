@@ -7,7 +7,7 @@ set -e
 export AIRFLOW_HOME=.
 export DYNAMIC_DAGS_PATH=./dags/dynamic
 
-AIRFLOW_VERSION=2.5.3
+AIRFLOW_VERSION=2.8.1
 PYTHON_VERSION="$(python --version | cut -d " " -f 2 | cut -d "." -f 1-2)"
 # For example: 3.6
 CONSTRAINT_URL="https://raw.githubusercontent.com/apache/airflow/constraints-${AIRFLOW_VERSION}/constraints-${PYTHON_VERSION}.txt"

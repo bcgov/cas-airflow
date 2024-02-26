@@ -30,6 +30,7 @@ jobs:
           helm repo add charts-stable https://charts.helm.sh/stable
           helm repo add cas-postgres https://bcgov.github.io/cas-postgres/
           helm repo add apache-airflow "https://airflow.apache.org/"
+          helm repo add pipeline https://bcgov.github.io/cas-pipeline/
 
       - name: Update chart dependencies
         working-directory: ./helm/cas-airflow

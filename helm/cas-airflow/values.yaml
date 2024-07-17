@@ -137,7 +137,7 @@ airflow:
 
   config:
     core:
-      dag_concurrency: 5
+      max_active_tasks_per_dag: 5
       max_active_runs_per_dag: 1
       min_serialized_dag_update_interval: 10
       min_serialized_dag_fetch_interval: 5

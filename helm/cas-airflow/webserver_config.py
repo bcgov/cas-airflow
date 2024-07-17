@@ -1,4 +1,3 @@
-from airflow.www.security import AirflowSecurityManager
 from airflow.auth.managers.fab.security_manager.override import FabAirflowSecurityManagerOverride
 import logging
 from typing import Dict, Any, List, Union
@@ -8,7 +7,7 @@ from flask_appbuilder.security.manager import AUTH_OAUTH
 log = logging.getLogger(__name__)
 log.setLevel(os.getenv("AIRFLOW__LOGGING__FAB_LOGGING_LEVEL", "INFO"))
 
-## Define the security manager class to be used 
+## Define the security manager class to be used
 
 FAB_ADMIN_ROLE = "Admin"
 FAB_VIEWER_ROLE = "Viewer"
@@ -42,7 +41,7 @@ def map_roles(team_list: List[int]) -> List[str]:
 
 # Workaround for Airflow 2.8.1
 # See https://github.com/apache/airflow/issues/36432
-class GithubTeamAuthorizer(AirflowSecurityManager,FabAirflowSecurityManagerOverride):
+class GithubTeamAuthorizer(FabAirflowSecurityManagerOverride):
     # If you ever want to support other providers, see how it is done here:
     # https://github.com/dpgaspar/Flask-AppBuilder/blob/master/flask_appbuilder/security/manager.py#L550
     def get_oauth_user_info(

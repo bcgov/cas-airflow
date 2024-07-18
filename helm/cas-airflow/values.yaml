@@ -115,6 +115,9 @@ airflow:
       firstName: admin
       lastName: user
       password: "$(DEFAULT_USER_PASS)"
+    startupProbe:
+      timeoutSeconds: 120
+      periodSeconds: 60
 
   # Airflow scheduler settings
   scheduler:

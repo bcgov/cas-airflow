@@ -23,7 +23,7 @@ airflow:
   # Will be overridden by the git commit sha
   defaultAirflowTag: "to_override"
 
-  airflowVersion: "2.10.1"
+  airflowVersion: "2.10.3"
 
   # Enable RBAC (default on most clusters these days)
   rbac:

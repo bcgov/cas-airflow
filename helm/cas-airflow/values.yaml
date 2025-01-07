@@ -73,6 +73,9 @@ airflow:
     - envName: GH_CLIENT_SECRET
       secretName: airflow-oauth
       secretKey: clientSecret
+    - envName: BCIERS_NAMESPACE
+      secretName: cas-namespaces
+      secretKey: obps-namespace
 
   # Airflow database config
   data:

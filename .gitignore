@@ -153,4 +153,4 @@ helm/**/charts/**/*
 # Terraform
 .terraform
 
-
+.idea

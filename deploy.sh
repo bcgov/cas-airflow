@@ -16,5 +16,6 @@ helm upgrade --install --timeout 900s \
   --set namespaces.ggircs="$GGIRCS_NAMESPACE_PREFIX-$ENVIRONMENT" \
   --set namespaces.ciip="$CIIP_NAMESPACE_PREFIX-$ENVIRONMENT" \
   --set namespaces.cif="$CIF_NAMESPACE_PREFIX-$ENVIRONMENT" \
+  --set namespaces.obps="$OBPS_NAMESPACE_PREFIX-$ENVIRONMENT" \
   --set airflow.defaultAirflowTag="$git_sha1" \
   cas-airflow ./helm/cas-airflow

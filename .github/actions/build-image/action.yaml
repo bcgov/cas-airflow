@@ -14,6 +14,11 @@ inputs:
   github_token:
     description: "Github token needed to push to ghcr"
     required: true
+  chart_version:
+    description: "Helm chart version"
+  is_chart_release:
+    description: "Image is being built due to a chart release"
+    default: false
 
 runs:
   using: composite
@@ -33,6 +38,7 @@ runs:
           type=sha,format=long,prefix=
           latest
           type=ref,event=pr
+          type=raw,enable=${{ inputs.is_chart_release }},value=${{ chart_version }}
     - name: Login to GitHub Container Registry
       uses: docker/login-action@v3
       with:

@@ -38,7 +38,7 @@ runs:
           type=sha,format=long,prefix=
           latest
           type=ref,event=pr
-          type=raw,enable=${{ inputs.is_chart_release }},value=${{ chart_version }}
+          type=raw,enable=${{ inputs.is_chart_release }},value=${{ inputs.chart_version }}
     - name: Login to GitHub Container Registry
       uses: docker/login-action@v3
       with:

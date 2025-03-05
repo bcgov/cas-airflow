@@ -47,7 +47,6 @@ runs:
         restore-keys: |
           ${{ runner.os }}-buildx-${{ inputs.image_name }}
     - name: Build image
-      shell: bash
       uses: docker/build-push-action@v5
       with:
         context: ${{ inputs.context }}

@@ -17,6 +17,7 @@ jobs:
           image_name: cas-airflow
           context: .
           dockerfile_path: Dockerfile
+          github_token: ${{ secrets.GITHUB_TOKEN }}
   build-cas-airflow-dag-trigger:
     runs-on: ubuntu-latest
     steps:
@@ -30,3 +31,4 @@ jobs:
           image_name: cas-airflow-dag-trigger
           context: dag-trigger
           dockerfile_path: dag-trigger/Dockerfile
+          github_token: ${{ secrets.GITHUB_TOKEN }}

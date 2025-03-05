@@ -11,6 +11,9 @@ inputs:
   dockerfile_path:
     description: "Path to Dockerfile"
     required: true
+  github_token:
+    description: "Github token needed to push to ghcr"
+    required: true
 
 runs:
   using: composite
@@ -35,7 +38,7 @@ runs:
       with:
         registry: ghcr.io
         username: ${{ github.repository_owner }}
-        password: ${{ secrets.GITHUB_TOKEN }}
+        password: ${{ inputs.github_token }}
     - name: Cache Docker layers
       uses: actions/cache@v4
       with:

@@ -1,0 +1,34 @@
+name: Build airflow container images
+
+on:
+  workflow_call:
+
+jobs:
+  build-cas-airflow:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Build cas-airflow
+        uses: ./.github/actions/build-image
+        with:
+          image_name: cas-airflow
+          context: .
+          dockerfile_path: Dockerfile
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+  build-cas-airflow-dag-trigger:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Build cas-airflow dag-trigger
+        uses: ./.github/actions/build-image
+        with:
+          image_name: cas-airflow-dag-trigger
+          context: dag-trigger
+          dockerfile_path: dag-trigger/Dockerfile
+          github_token: ${{ secrets.GITHUB_TOKEN }}

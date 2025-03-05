@@ -19,7 +19,7 @@ airflow:
   # This should match the mounting point of the cas-airflow-dynamic-dags-pvc PVC
   dynamicDagsPath: /opt/airflow/dags/dynamic
 
-  defaultAirflowRepository: artifacts.developer.gov.bc.ca/google-docker-remote/ggl-cas-storage/cas-airflow
+  defaultAirflowRepository: ghcr.io/bcgov/cas-airflow
   # Will be overridden by the git commit sha
   defaultAirflowTag: "to_override"
 

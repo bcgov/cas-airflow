@@ -17,6 +17,7 @@ inputs:
 
 runs:
   using: composite
+  shell: bash
   steps:
     - uses: actions/checkout@v4
     - name: Set up Docker Buildx

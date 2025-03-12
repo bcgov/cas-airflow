@@ -2,7 +2,7 @@ name: Build Containers on chart release
 
 on:
   release:
-    types: [created, published]
+    types: [created, published, released]
 
 jobs:
   cas-airflow-build:

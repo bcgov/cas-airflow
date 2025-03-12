@@ -1,8 +1,11 @@
 name: Build Containers on chart release
 
 on:
-  release:
-    types: [created, published, released]
+  workflow_run:
+    workflows:
+      - release
+    types:
+      - completed
 
 jobs:
   cas-airflow-build:

@@ -1,11 +1,10 @@
 name: Build Containers on chart release
 
 on:
-  workflow_run:
-    workflows:
-      - Release Charts
-    types:
-      - completed
+  push:
+    tags:
+      - cas-airflow-2.*
+      - cas-airflow-dag-trigger*
 
 jobs:
   cas-airflow-build:

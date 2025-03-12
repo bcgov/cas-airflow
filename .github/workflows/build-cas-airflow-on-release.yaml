@@ -1,0 +1,26 @@
+name: Build cas-airflow on release
+
+on:
+  push:
+    branches:
+      - main
+    tags:
+      - cas-airflow-2.*
+
+jobs:
+  cas-airflow-build:
+    needs: [release]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Get the tag name
+        id: get_tag_name
+        run: echo ::set-output name=CHART_VERSION::${GITHUB_REF/refs\/tags\/cas-airflow-/}
+      - uses: ./.github/actions/build-image
+        with:
+          image_name: cas-airflow
+          context: .
+          dockerfile_path: Dockerfile
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          chart_version: ${{ steps.get_tag_name.outputs.CHART_VERSION }}
+          is_chart_release: true

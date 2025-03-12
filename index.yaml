@@ -3,6 +3,34 @@ entries:
   cas-airflow:
   - apiVersion: v2
     appVersion: 2.10.5
+    created: "2025-03-12T17:58:39.823612073Z"
+    dependencies:
+    - name: airflow
+      repository: https://airflow.apache.org/
+      version: 1.15.0
+    - name: cas-postgres
+      repository: https://bcgov.github.io/cas-postgres/
+      version: 0.9.1
+    - name: terraform-bucket-provision
+      repository: https://bcgov.github.io/cas-pipeline/
+      version: 0.1.3
+    description: Helm chart to deploy cas' flavour of airflow, compatible with OpenShift
+      4. This chart uses the vanilla airflow chart and adds cas' own templates and
+      values.
+    digest: 80f8f7113a5826a8cd6e8999505f4979c28c7cd98f626fad0573e28edf5b88be
+    icon: https://www.astronomer.io/static/airflowNewA.png
+    keywords:
+    - airflow
+    - cas
+    - ggircs
+    - bcgov
+    name: cas-airflow
+    type: application
+    urls:
+    - https://github.com/bcgov/cas-airflow/releases/download/cas-airflow-2.0.17/cas-airflow-2.0.17.tgz
+    version: 2.0.17
+  - apiVersion: v2
+    appVersion: 2.10.5
     created: "2025-03-12T17:51:14.468096612Z"
     dependencies:
     - name: airflow
@@ -667,6 +695,15 @@ entries:
     version: 1.0.4
   cas-airflow-dag-trigger:
   - apiVersion: v2
+    created: "2025-03-12T17:58:39.952491066Z"
+    description: A Helm chart for triggering remote DAGs on an existing airflow instance
+    digest: eac2b7d91190b5bd77e3e56e1904ba13c1e1e66353e652e141b6b7b93ede46a6
+    name: cas-airflow-dag-trigger
+    type: application
+    urls:
+    - https://github.com/bcgov/cas-airflow/releases/download/cas-airflow-dag-trigger-1.0.17/cas-airflow-dag-trigger-1.0.17.tgz
+    version: 1.0.17
+  - apiVersion: v2
     created: "2025-03-12T17:51:14.587597417Z"
     description: A Helm chart for triggering remote DAGs on an existing airflow instance
     digest: 6c8b9f75a47618973511f6f601238dade5136f350acfec2c9d0c8b7a06142522
@@ -805,4 +842,4 @@ entries:
     urls:
     - https://github.com/bcgov/cas-airflow/releases/download/cas-airflow-dag-trigger-0.1.0/cas-airflow-dag-trigger-0.1.0.tgz
     version: 0.1.0
-generated: "2025-03-12T17:51:14.587950128Z"
+generated: "2025-03-12T17:58:39.952754597Z"

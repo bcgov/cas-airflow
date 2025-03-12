@@ -3,7 +3,7 @@ name: Build Containers on chart release
 on:
   workflow_run:
     workflows:
-      - release
+      - Release Charts
     types:
       - completed
 

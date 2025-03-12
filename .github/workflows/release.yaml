@@ -41,3 +41,29 @@ jobs:
           charts_dir: helm
         env:
           CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+  cas-airflow-build:
+    needs: [release]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/build-image
+        with:
+          image_name: cas-airflow
+          context: .
+          dockerfile_path: Dockerfile
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          chart_version: 2.0.20
+          is_chart_release: true
+  cas-airflow-dag-trigger-build:
+    needs: [release]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/build-image
+        with:
+          image_name: cas-airflow-dag-trigger
+          context: dag-trigger
+          dockerfile_path: dag-trigger/Dockerfile
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          chart_version: 1.0.20
+          is_chart_release: true

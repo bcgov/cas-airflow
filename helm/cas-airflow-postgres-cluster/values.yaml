@@ -1,0 +1,41 @@
+# Values file to be passed to a deployment of https://github.com/bcgov/cas-postgres/tree/develop/helm/cas-postgres-cluster
+
+# dev, test, prod
+environment: ~
+
+postgresCluster:
+  postgres:
+    replicaCount: 3
+  pgbouncer:
+    replicaCount: 2
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+
+  # The "users" value(s) is passed to the crunch postgres operator to create the database.
+  # See http://access.crunchydata.com/documentation/postgres-operator/latest/tutorials/basic-setup/user-management
+  users:
+    - name: postgres
+      options: "SUPERUSER"
+    - name: airflow
+      databases:
+        - airflow
+        - postgres
+
+gcsBackups:
+  enable: true
+  # Needs to match the "namespace_apps" value in the terraform provisioning chart.
+  # example syntax: bucketName
+  bucketName: af-pgo-backups
+
+terraform-bucket-provision:
+  terraform:
+    # example syntax: '["bucketName"]'
+    namespace_apps: '["af-pgo-backups"]'
+    # !important: unique for the deployment
+    workspace: airflow-pgo
+
+# To configure a KNP allowing external access, for metabase for example
+external-access:
+  enabled: false

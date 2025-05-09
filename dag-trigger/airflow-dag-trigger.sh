@@ -89,7 +89,7 @@ while true; do
       echo "DAG succeeded"
       exit 0
       ;;
-    'running' )
+    'running' | 'queued' )
       echo '...waiting 10 seconds'
       sleep 10
       ;;

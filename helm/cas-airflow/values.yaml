@@ -10,6 +10,9 @@ dynamicDagStorage:
 # The name of the ArtifactoryServiceAccount object created in the cas-provision chart
 artifactoryServiceAccount: cas-artifact-download
 
+database:
+  clusterReleaseName: cas-airflow-db
+
 # The values we need to override from the airflow defaults
 airflow:
   uid: 1002490000
@@ -53,7 +56,7 @@ airflow:
       secretName: airflow-default-user-password
       secretKey: default-user-pass
     - envName: PGPASS
-      secretName: cas-airflow-patroni
+      secretName: cas-airflow-db-cas-postgres-cluster-pguser-airflow
       secretKey: password-superuser
     - envName: AIRFLOW_NAMESPACE
       secretName: cas-namespaces
@@ -80,19 +83,19 @@ airflow:
   # Airflow database config
   data:
     metadataSecretName: cas-airflow-metadata
-    resultBackendSecretName: cas-airflow-metadata
+    resultBackendSecretName: cas-airflow-result-backend
 
     metadataConnection:
-      user: postgres
+      user: airflow
       pass: $PGPASS
       host: ~
       port: 5432
       db: postgres
       sslmode: disable
     resultBackendConnection:
-      user: postgres
+      user: airflow
       pass: $PGPASS
-      host: cas-airflow-patroni
+      host: cas-airflow-db-cas-postgres-cluster
       port: 5432
       db: postgres
       sslmode: disable
@@ -233,3 +236,37 @@ devops:
 terraform-bucket-provision:
   terraform:
     namespace_apps: '["airflow-backups", "airflow-logs"]'
+
+patroni-migration:
+  migrationJob:
+    image: postgres
+    tag: 15
+
+  deployment:
+    name: cas-airflow-scheduler
+    sourceReleaseName: cas-airflow
+    targetReleaseName: cas-airflow-db
+    originalReplicaCount: 3
+
+  from:
+    # Assuming all database information will be in the same secret
+    # Pass either the secret's key or the specific value
+    secretName: cas-airflow-patroni
+    hostSecretKey: ~
+    host: ~ # cas-metabase-patroni.9212c9-dev.svc.cluster.local
+    passwordSecretKey: password-superuser
+    password: ~
+    portSecretKey: ~
+    port: 5432
+    userSecretKey: ~
+    user: postgres
+
+    # The name of the database to migrate
+    db: postgres
+
+  to:
+    # This is necessarily a PGO deployment
+    # superuser to migrate roles
+    superuserSecretName: cas-airflow-db-cas-postgres-cluster-pguser-postgres
+    # new owner of database to run own the migrated database
+    appuserSecretName: cas-airflow-db-cas-postgres-cluster-pguser-airflow

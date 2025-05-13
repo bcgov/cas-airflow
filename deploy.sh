@@ -7,6 +7,11 @@ set -euo pipefail
 git_sha1=$(git rev-parse HEAD)
 
 helm dep up ./helm/cas-airflow
+helm repo add cas-postgres https://bcgov.github.io/cas-postgres/
+helm repo update
+
+helm upgrade --install --values ./helm/cas-airflow-postgres-cluster/values.yaml cas-airflow-db cas-postgres/cas-postgres-cluster
+
 helm upgrade --install --timeout 900s \
   --namespace "$AIRFLOW_NAMESPACE_PREFIX-$ENVIRONMENT" \
   -f ./helm/cas-airflow/values.yaml \

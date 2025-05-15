@@ -4,6 +4,7 @@
 environment: ~
 
 postgresCluster:
+  postgresVersion: 17
   postgres:
     replicaCount: 3
   pgbouncer:

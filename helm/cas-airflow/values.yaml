@@ -240,7 +240,7 @@ terraform-bucket-provision:
 patroni-migration:
   migrationJob:
     image: postgres
-    tag: 15
+    tag: 17
 
   deployment:
     name: cas-airflow-scheduler

@@ -58,6 +58,9 @@ airflow:
     - envName: PGPASS
       secretName: cas-airflow-db-cas-postgres-cluster-pguser-airflow
       secretKey: password
+    - envName: HOST
+      secretName: cas-airflow-db-cas-postgres-cluster-pguser-airflow
+      secretKey: pgbouncer-host
     - envName: AIRFLOW_NAMESPACE
       secretName: cas-namespaces
       secretKey: airflow-namespace
@@ -88,14 +91,14 @@ airflow:
     metadataConnection:
       user: airflow
       pass: $PGPASS
-      host: ~
+      host: $HOST
       port: 5432
       db: postgres
       sslmode: disable
     resultBackendConnection:
       user: airflow
       pass: $PGPASS
-      host: cas-airflow-db-cas-postgres-cluster
+      host: $HOST
       port: 5432
       db: postgres
       sslmode: disable

@@ -57,7 +57,7 @@ airflow:
       secretKey: default-user-pass
     - envName: PGPASS
       secretName: cas-airflow-db-cas-postgres-cluster-pguser-airflow
-      secretKey: password-superuser
+      secretKey: password
     - envName: AIRFLOW_NAMESPACE
       secretName: cas-namespaces
       secretKey: airflow-namespace

@@ -19,9 +19,10 @@ postgresCluster:
   users:
     - name: postgres
       options: "SUPERUSER"
+      databases:
+        - postgres
     - name: airflow
       databases:
-        - airflow
         - postgres
 
 gcsBackups:

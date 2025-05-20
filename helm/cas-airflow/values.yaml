@@ -61,6 +61,9 @@ airflow:
     - envName: HOST
       secretName: cas-airflow-db-cas-postgres-cluster-pguser-airflow
       secretKey: pgbouncer-host
+    - envName: PGBOUNCER_URI
+      secretName: cas-airflow-db-cas-postgres-cluster-pguser-airflow
+      secretKey: pgbouncer-uri
     - envName: AIRFLOW_NAMESPACE
       secretName: cas-namespaces
       secretKey: airflow-namespace

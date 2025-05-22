@@ -47,7 +47,3 @@ cas-postgres:
   namespace: 0fad32-test
   gcs:
     bucketSuffix: airflow-backups
-
-patroni-migration:
-  from:
-    host: cas-airflow-patroni.0fad32-test.svc.cluster.local

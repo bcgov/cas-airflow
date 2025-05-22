@@ -14,9 +14,6 @@ dependencies:
   - name: airflow
     version: "1.15.0"
     repository: "https://airflow.apache.org/"
-  - name: cas-postgres
-    version: "0.9.1"
-    repository: https://bcgov.github.io/cas-postgres/
   - name: terraform-bucket-provision
     version: "0.1.3"
     repository: https://bcgov.github.io/cas-pipeline/

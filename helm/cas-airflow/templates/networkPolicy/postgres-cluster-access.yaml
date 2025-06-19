@@ -1,0 +1,17 @@
+kind: NetworkPolicy
+apiVersion: networking.k8s.io/v1
+metadata:
+  name: {{ include "cas-airflow.fullname" . }}-postgres-cluster-access
+  labels: {{ include "cas-airflow.labels" . | nindent 4 }}
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/instance: {{ .Values.database.clusterReleaseName }}
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              release: {{ include "cas-airflow.name" . }}
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/instance: {{ include "cas-airflow.name" . }}

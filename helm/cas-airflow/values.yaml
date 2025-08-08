@@ -197,33 +197,6 @@ airflow:
 
   statsd:
     enabled: false
-# Configuration for cas-postgres subchart
-cas-postgres:
-  patroni:
-    resources:
-      limits:
-        cpu: 500m
-        memory: 2Gi
-      requests:
-        cpu: 50m
-        memory: 600Mi
-    persistentVolume:
-      size: 10Gi
-      storageClass: netapp-block-standard
-    replicaCount: 3
-    env:
-      ALLOW_NOSSL: true
-      USE_WALG_BACKUP: "true"
-      USE_WALG_RESTORE: "true"
-    walE:
-      enable: true
-      gcsBucket: ~
-      # kubernetesSecret should be gcp-{{ namespace }}-{{ gcs.bucketSuffix }}-service-account-key
-      kubernetesSecret: ~
-    # options below are required if walE.enable is true
-  namespace: ~
-  gcs:
-    bucketSuffix: ~
 
 devops:
   image:
@@ -242,37 +215,3 @@ devops:
 terraform-bucket-provision:
   terraform:
     namespace_apps: '["airflow-backups", "airflow-logs"]'
-
-patroni-migration:
-  migrationJob:
-    image: postgres
-    tag: 17
-
-  deployment:
-    name: cas-airflow-scheduler
-    sourceReleaseName: cas-airflow
-    targetReleaseName: cas-airflow-db
-    originalReplicaCount: 3
-
-  from:
-    # Assuming all database information will be in the same secret
-    # Pass either the secret's key or the specific value
-    secretName: cas-airflow-patroni
-    hostSecretKey: ~
-    host: ~ # cas-metabase-patroni.9212c9-dev.svc.cluster.local
-    passwordSecretKey: password-superuser
-    password: ~
-    portSecretKey: ~
-    port: 5432
-    userSecretKey: ~
-    user: postgres
-
-    # The name of the database to migrate
-    db: postgres
-
-  to:
-    # This is necessarily a PGO deployment
-    # superuser to migrate roles
-    superuserSecretName: cas-airflow-db-cas-postgres-cluster-pguser-postgres
-    # new owner of database to run own the migrated database
-    appuserSecretName: cas-airflow-db-cas-postgres-cluster-pguser-airflow

@@ -35,19 +35,3 @@ airflow:
       - name: gcs-credentials
         secret:
           secretName: gcp-0fad32-test-airflow-logs-service-account-key
-
-cas-postgres:
-  patroni:
-    walE:
-      enable: true
-      gcsBucket: 0fad32-test-airflow-backups
-      # kubernetesSecret should be gcp-{{ namespace }}-{{ gcs.bucketSuffix }}-service-account-key
-      kubernetesSecret: gcp-0fad32-test-airflow-backups-service-account-key
-    # options below are required if walE.enable is true
-  namespace: 0fad32-test
-  gcs:
-    bucketSuffix: airflow-backups
-
-patroni-migration:
-  from:
-    host: cas-airflow-patroni.0fad32-test.svc.cluster.local

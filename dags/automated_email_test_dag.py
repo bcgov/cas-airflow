@@ -26,10 +26,10 @@ default_args = {
 DAG_ID = os.path.basename(__file__).replace(".pyc", "").replace(".py", "")
 SCHEDULE_INTERVAL = None  # Never execute
 
-dag_local_error = DAG(f'{DAG_ID}_local_error', schedule_interval=SCHEDULE_INTERVAL,
+dag_local_error = DAG(f'{DAG_ID}_local_error', schedule=SCHEDULE_INTERVAL,
                       default_args=default_args)
 
-dag_cronjob_error = DAG(f'{DAG_ID}_cronjob_error', schedule_interval=SCHEDULE_INTERVAL,
+dag_cronjob_error = DAG(f'{DAG_ID}_cronjob_error', schedule=SCHEDULE_INTERVAL,
                         default_args=default_args)
 
 

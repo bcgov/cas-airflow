@@ -2,13 +2,17 @@ from airflow.decorators import dag, task
 from airflow.utils.dates import days_ago
 from airflow import settings
 from dag_configuration import default_dag_args
-from datetime import timedelta
+from datetime import datetime, timedelta
 import urllib.request
 import logging
 import os
 import time
 
-@dag(default_args=default_dag_args, schedule_interval=None, start_date=days_ago(2))
+
+START_DATE = datetime.now() - timedelta(days=2)
+
+
+@dag(default_args=default_dag_args, schedule=None, start_date=START_DATE)
 def fetch_and_save_dag_from_github(org: str = '', repo: str = '', ref: str = '', path: str = ''):
     """
       DAG to fetch dags and store them to a disk location.

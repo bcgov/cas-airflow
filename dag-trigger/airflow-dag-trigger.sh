@@ -51,7 +51,7 @@ dag_config=$(echo "${2:-'e30K'}" | base64 -d) # e30K is the base64 encoding of '
 
 echo "Fetching state for DAG $dag_id"
 
-dag_url="$AIRFLOW_ENDPOINT/api/v1/dags/${dag_id}"
+dag_url="$AIRFLOW_ENDPOINT/api/v2/dags/${dag_id}"
 is_paused=$(_curl -u "$AIRFLOW_USERNAME":"$AIRFLOW_PASSWORD" "$dag_url" | jq .is_paused)
 
 if [ "$is_paused" == "true" ]; then

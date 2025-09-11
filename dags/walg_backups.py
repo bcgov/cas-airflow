@@ -1,4 +1,4 @@
-from airflow.operators.python_operator import PythonOperator
+from airflow.providers.standard.operators.python import PythonOperator
 from exec_in_pod import exec_in_pod
 import os
 

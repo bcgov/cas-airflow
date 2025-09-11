@@ -3,6 +3,31 @@ entries:
   cas-airflow:
   - apiVersion: v2
     appVersion: 2.10.5
+    created: "2025-09-11T17:49:13.065038267Z"
+    dependencies:
+    - name: airflow
+      repository: https://airflow.apache.org/
+      version: 1.18.0
+    - name: terraform-bucket-provision
+      repository: https://bcgov.github.io/cas-pipeline/
+      version: 0.1.3
+    description: Helm chart to deploy cas' flavour of airflow, compatible with OpenShift
+      4. This chart uses the vanilla airflow chart and adds cas' own templates and
+      values.
+    digest: 3a16ccb3a0278a125fb61520db0a3e8f182f51aadc96be6ab3d696bcb78e0486
+    icon: https://www.astronomer.io/static/airflowNewA.png
+    keywords:
+    - airflow
+    - cas
+    - ggircs
+    - bcgov
+    name: cas-airflow
+    type: application
+    urls:
+    - https://github.com/bcgov/cas-airflow/releases/download/cas-airflow-2.2.1/cas-airflow-2.2.1.tgz
+    version: 2.2.1
+  - apiVersion: v2
+    appVersion: 2.10.5
     created: "2025-09-09T20:23:26.293003332Z"
     dependencies:
     - name: airflow
@@ -835,6 +860,15 @@ entries:
     version: 1.0.4
   cas-airflow-dag-trigger:
   - apiVersion: v2
+    created: "2025-09-11T17:49:13.312093649Z"
+    description: A Helm chart for triggering remote DAGs on an existing airflow instance
+    digest: 7ded40e76bb1d57219ba8b56e3df2b0d9604adbc0e1b914f326a4a8d0d90d307
+    name: cas-airflow-dag-trigger
+    type: application
+    urls:
+    - https://github.com/bcgov/cas-airflow/releases/download/cas-airflow-dag-trigger-1.1.0/cas-airflow-dag-trigger-1.1.0.tgz
+    version: 1.1.0
+  - apiVersion: v2
     created: "2025-05-09T17:43:43.599623103Z"
     description: A Helm chart for triggering remote DAGs on an existing airflow instance
     digest: 95b5f9e8e8f14eca893dc5935286f103b20294497a34df1490bf9b50edbcebe7
@@ -1018,4 +1052,4 @@ entries:
     urls:
     - https://github.com/bcgov/cas-airflow/releases/download/cas-airflow-dag-trigger-0.1.0/cas-airflow-dag-trigger-0.1.0.tgz
     version: 0.1.0
-generated: "2025-09-09T20:23:26.293201424Z"
+generated: "2025-09-11T17:49:13.312420058Z"

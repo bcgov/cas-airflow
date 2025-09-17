@@ -75,11 +75,18 @@ echo "Fetching state for DAG $dag_id"
 
 if [ "$AIRFLOW_API_VERSION" = "v2" ]; then
   dag_url="$AIRFLOW_ENDPOINT/api/v2/dags/${dag_id}"
+  # Get a JWT token for the user
+  jwt_token=$(curl -X POST ${AIRFLOW_ENDPOINT}/auth/token \
+    -H "Content-Type: application/json" \
+    -d "{\"username\": \"$AIRFLOW_USERNAME\", \"password\": \"$AIRFLOW_PASSWORD\"}" \
+    | jq -r .access_token)
+  auth_params=(-H "Authorization: Bearer $jwt_token")
 elif [ "$AIRFLOW_API_VERSION" = "v1" ]; then
   dag_url="$AIRFLOW_ENDPOINT/api/v1/dags/${dag_id}"
+  auth_params=(-u "$AIRFLOW_USERNAME:$AIRFLOW_PASSWORD")
 fi
 
-is_paused=$(_curl -u "$AIRFLOW_USERNAME":"$AIRFLOW_PASSWORD" "$dag_url" | jq .is_paused)
+is_paused=$(_curl "${auth_params[@]}" "$dag_url" | jq .is_paused)
 
 if [ "$is_paused" == "true" ]; then
   echo "DAG $dag_id is paused and cannot be run at this time."
@@ -89,7 +96,7 @@ fi
 dag_run_url="$dag_url/dagRuns"
 echo "Triggering DAG run on airflow API at: $dag_run_url"
 
-run_json=$(_curl -u "$AIRFLOW_USERNAME":"$AIRFLOW_PASSWORD" -X POST \
+run_json=$(_curl "${auth_params[@]}" -X POST \
   "$dag_run_url" \
   -H 'Cache-Control: no-cache' \
   -H 'Content-Type: application/json' \
@@ -100,7 +107,7 @@ echo "Started dag run ID: $dag_run_id"
 
 function get_run_state() {
   dag_state_url="$dag_url/dagRuns/${dag_run_id}"
-  _curl -u "$AIRFLOW_USERNAME":"$AIRFLOW_PASSWORD" -X GET \
+  _curl "${auth_params[@]}" -X GET \
     "$dag_state_url" \
     -H 'Cache-Control: no-cache' \
     -H 'Content-Type: application/json' \

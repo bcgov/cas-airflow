@@ -19,6 +19,7 @@ helm upgrade --install --timeout 900s \
   --namespace "$AIRFLOW_NAMESPACE_PREFIX-$ENVIRONMENT" \
   -f ./helm/cas-airflow/values.yaml \
   --set-file airflow.webserver.webserverConfig=./helm/cas-airflow/webserver_config.py \
+  --set-file airflow.apiServer.apiServerConfig=./helm/cas-airflow/webserver_config.py \
   -f "./helm/cas-airflow/values-$ENVIRONMENT.yaml" \
   --set namespaces.airflow="$AIRFLOW_NAMESPACE_PREFIX-$ENVIRONMENT" \
   --set namespaces.ggircs="$GGIRCS_NAMESPACE_PREFIX-$ENVIRONMENT" \

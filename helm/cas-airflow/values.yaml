@@ -169,9 +169,9 @@ airflow:
       remote_log_conn_id: gcs_logs
     api:
       auth_backends: airflow.api.auth.backend.basic_auth, airflow.api.auth.backend.session
+      workers: 2
     webserver:
       web_server_worker_timeout: 300
-      workers: 2
       # Prevent airflow to be rendered in an external web frame
       x_frame_enabled: "False"
       # Dev, Test and Prod are all external facing

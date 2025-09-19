@@ -108,9 +108,9 @@ airflow:
       protocol: postgresql
 
   # Airflow webserver settings
-  webserverSecretKeySecretName: cas-airflow-webserver-secret
+  apiSecretKeySecretName: cas-airflow-webserver-secret
 
-  webserver:
+  apiServer:
     replicas: 2
     resources:
       requests:
@@ -170,10 +170,10 @@ airflow:
     api:
       auth_backends: airflow.api.auth.backend.basic_auth, airflow.api.auth.backend.session
       workers: 2
-    webserver:
       web_server_worker_timeout: 300
       # Prevent airflow to be rendered in an external web frame
       x_frame_enabled: "False"
+    webserver:
       # Dev, Test and Prod are all external facing
       warn_deployment_exposure: "False"
 

@@ -1,5 +1,4 @@
 from airflow.decorators import dag, task
-from airflow.utils.dates import days_ago
 from airflow import settings
 from dag_configuration import default_dag_args
 from datetime import datetime, timedelta

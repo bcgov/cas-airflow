@@ -1,4 +1,6 @@
-from airflow.auth.managers.fab.security_manager.override import FabAirflowSecurityManagerOverride
+from airflow.providers.fab.auth_manager.security_manager.override import (
+    FabAirflowSecurityManagerOverride,
+)
 import logging
 from typing import Dict, Any, List, Union
 import os

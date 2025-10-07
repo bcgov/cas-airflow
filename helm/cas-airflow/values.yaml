@@ -107,8 +107,8 @@ airflow:
       sslmode: disable
       protocol: postgresql
 
-  # Airflow webserver settings
-  apiSecretKeySecretName: cas-airflow-webserver-secret
+  # Airflow api server settings
+  apiSecretKeySecretName: cas-airflow-api-secret
 
   apiServer:
     replicas: 2

@@ -143,6 +143,9 @@ airflow:
     extraVolumeMounts:
       - name: cas-airflow-dynamic-dags
         mountPath: /opt/airflow/dags/dynamic
+    env:
+      - name: PYTHONPATH
+        value: "/opt/airflow/dags"
 
   postgresql:
     enabled: false

@@ -21,7 +21,11 @@ postgresCluster:
       options: "SUPERUSER"
       databases:
         - postgres
+      password:
+        type: AlphaNumeric
     - name: airflow
+      password:
+        type: AlphaNumeric
       databases:
         - postgres
 

@@ -26,7 +26,7 @@ airflow:
   # Will be overridden by the git commit sha
   defaultAirflowTag: "to_override"
 
-  airflowVersion: "2.10.5"
+  airflowVersion: "3.0.6"
 
   # Enable RBAC (default on most clusters these days)
   rbac:
@@ -107,10 +107,10 @@ airflow:
       sslmode: disable
       protocol: postgresql
 
-  # Airflow webserver settings
-  webserverSecretKeySecretName: cas-airflow-webserver-secret
+  # Airflow api server settings
+  apiSecretKeySecretName: cas-airflow-api-secret
 
-  webserver:
+  apiServer:
     replicas: 2
     resources:
       requests:
@@ -143,6 +143,9 @@ airflow:
     extraVolumeMounts:
       - name: cas-airflow-dynamic-dags
         mountPath: /opt/airflow/dags/dynamic
+    env:
+      - name: PYTHONPATH
+        value: "/opt/airflow/dags"
 
   postgresql:
     enabled: false
@@ -169,11 +172,11 @@ airflow:
       remote_log_conn_id: gcs_logs
     api:
       auth_backends: airflow.api.auth.backend.basic_auth, airflow.api.auth.backend.session
-    webserver:
-      web_server_worker_timeout: 300
       workers: 2
+      web_server_worker_timeout: 300
       # Prevent airflow to be rendered in an external web frame
       x_frame_enabled: "False"
+    webserver:
       # Dev, Test and Prod are all external facing
       warn_deployment_exposure: "False"
 

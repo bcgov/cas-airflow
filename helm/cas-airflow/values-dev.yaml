@@ -26,7 +26,7 @@ airflow:
         persistentVolumeClaim:
           claimName: cas-airflow-dynamic-dags-pvc
 
-  webserver:
+  apiServer:
     replicas: 2
     extraVolumeMounts:
       - name: gcs-credentials

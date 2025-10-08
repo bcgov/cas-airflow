@@ -100,7 +100,7 @@ run_json=$(_curl "${auth_params[@]}" -X POST \
   "$dag_run_url" \
   -H 'Cache-Control: no-cache' \
   -H 'Content-Type: application/json' \
-  -d "{\"conf\": $dag_config}")
+  -d "{\"logical_date\": null, \"conf\": $dag_config}")
 dag_run_id=$(echo "$run_json" | jq -r .dag_run_id)
 
 echo "Started dag run ID: $dag_run_id"

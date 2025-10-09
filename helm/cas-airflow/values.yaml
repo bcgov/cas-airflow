@@ -131,6 +131,18 @@ airflow:
       timeoutSeconds: 120
       periodSeconds: 60
 
+  # createUserJob.args param uses the webserver.defaultUser values as of Airflow 3.1.0,
+  # So we need to override them here instead of in apiServer.defaultUser
+  webserver:
+    defaultUser:
+      enabled: true
+      role: Admin
+      username: cas-airflow-admin
+      email: admin@example.com
+      firstName: admin
+      lastName: user
+      password: "$(DEFAULT_USER_PASS)"
+
   # Airflow scheduler settings
   scheduler:
     resources:

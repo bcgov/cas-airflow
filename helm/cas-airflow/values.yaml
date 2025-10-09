@@ -147,6 +147,22 @@ airflow:
       - name: PYTHONPATH
         value: "/opt/airflow/dags"
 
+  # Airflow dag processor settings
+  dagProcessor:
+    resources:
+      limits:
+        cpu: 1000m
+    extraVolumes:
+      - name: cas-airflow-dynamic-dags
+        persistentVolumeClaim:
+          claimName: cas-airflow-dynamic-dags-pvc
+    extraVolumeMounts:
+      - name: cas-airflow-dynamic-dags
+        mountPath: /opt/airflow/dags/dynamic
+    env:
+      - name: PYTHONPATH
+        value: "/opt/airflow/dags"
+
   postgresql:
     enabled: false
 

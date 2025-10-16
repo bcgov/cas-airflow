@@ -81,9 +81,11 @@ if [ "$AIRFLOW_API_VERSION" = "v2" ]; then
     -d "{\"username\": \"$AIRFLOW_USERNAME\", \"password\": \"$AIRFLOW_PASSWORD\"}" \
     | jq -r .access_token)
   auth_params=(-H "Authorization: Bearer $jwt_token")
+  extra_arguments="\"logical_date\": null, "
 elif [ "$AIRFLOW_API_VERSION" = "v1" ]; then
   dag_url="$AIRFLOW_ENDPOINT/api/v1/dags/${dag_id}"
   auth_params=(-u "$AIRFLOW_USERNAME:$AIRFLOW_PASSWORD")
+  extra_arguments=""
 fi
 
 is_paused=$(_curl "${auth_params[@]}" "$dag_url" | jq .is_paused)
@@ -100,7 +102,7 @@ run_json=$(_curl "${auth_params[@]}" -X POST \
   "$dag_run_url" \
   -H 'Cache-Control: no-cache' \
   -H 'Content-Type: application/json' \
-  -d "{\"logical_date\": null, \"conf\": $dag_config}")
+  -d "{$extra_arguments\"conf\": $dag_config}")
 dag_run_id=$(echo "$run_json" | jq -r .dag_run_id)
 
 echo "Started dag run ID: $dag_run_id"

@@ -26,7 +26,7 @@ airflow:
   # Will be overridden by the git commit sha
   defaultAirflowTag: "to_override"
 
-  airflowVersion: "3.1.0"
+  airflowVersion: "3.1.1"
 
   # Enable RBAC (default on most clusters these days)
   rbac:
@@ -131,7 +131,7 @@ airflow:
       timeoutSeconds: 120
       periodSeconds: 60
 
-  # createUserJob.args param uses the webserver.defaultUser values as of Airflow 3.1.0,
+  # createUserJob.args param uses the webserver.defaultUser values as of Airflow 3.1.1,
   # So we need to override them here instead of in apiServer.defaultUser
   webserver:
     defaultUser:

@@ -8,10 +8,10 @@ spec:
   host: {{ .Release.Name }}-{{ include "cas-airflow.namespaceSuffix" . }}.{{ .Values.route.clusterDomain }}
   to:
     kind: Service
-    name: {{ .Release.Name }}-webserver
+    name: {{ .Release.Name }}-api-server
     weight: 100
   port:
-    targetPort: airflow-ui
+    targetPort: api-server
   tls:
     termination: edge
     insecureEdgeTerminationPolicy: Allow

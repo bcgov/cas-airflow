@@ -52,7 +52,7 @@ jobs:
           context: .
           dockerfile_path: Dockerfile
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          chart_version: 2.2.1
+          chart_version: 3.0.0
           is_chart_release: true
   cas-airflow-dag-trigger-build:
     needs: [release]
@@ -65,5 +65,5 @@ jobs:
           context: dag-trigger
           dockerfile_path: dag-trigger/Dockerfile
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          chart_version: 1.2.1
+          chart_version: 1.2.2
           is_chart_release: true

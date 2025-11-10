@@ -1,4 +1,4 @@
-from airflow.decorators import dag, task
+from airflow.sdk import dag, task
 from airflow import settings
 from dag_configuration import default_dag_args
 from datetime import datetime, timedelta

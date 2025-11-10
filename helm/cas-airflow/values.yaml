@@ -26,7 +26,7 @@ airflow:
   # Will be overridden by the git commit sha
   defaultAirflowTag: "to_override"
 
-  airflowVersion: "2.10.5"
+  airflowVersion: "3.1.2"
 
   # Enable RBAC (default on most clusters these days)
   rbac:
@@ -107,10 +107,10 @@ airflow:
       sslmode: disable
       protocol: postgresql
 
-  # Airflow webserver settings
-  webserverSecretKeySecretName: cas-airflow-webserver-secret
+  # Airflow api server settings
+  apiSecretKeySecretName: cas-airflow-api-secret
 
-  webserver:
+  apiServer:
     replicas: 2
     resources:
       requests:
@@ -131,6 +131,18 @@ airflow:
       timeoutSeconds: 120
       periodSeconds: 60
 
+  # createUserJob.args param uses the webserver.defaultUser values as of Airflow 3.1.2,
+  # So we need to override them here instead of in apiServer.defaultUser
+  webserver:
+    defaultUser:
+      enabled: true
+      role: Admin
+      username: cas-airflow-admin
+      email: admin@example.com
+      firstName: admin
+      lastName: user
+      password: "$(DEFAULT_USER_PASS)"
+
   # Airflow scheduler settings
   scheduler:
     resources:
@@ -143,6 +155,25 @@ airflow:
     extraVolumeMounts:
       - name: cas-airflow-dynamic-dags
         mountPath: /opt/airflow/dags/dynamic
+    env:
+      - name: PYTHONPATH
+        value: "/opt/airflow/dags"
+
+  # Airflow dag processor settings
+  dagProcessor:
+    resources:
+      limits:
+        cpu: 1000m
+    extraVolumes:
+      - name: cas-airflow-dynamic-dags
+        persistentVolumeClaim:
+          claimName: cas-airflow-dynamic-dags-pvc
+    extraVolumeMounts:
+      - name: cas-airflow-dynamic-dags
+        mountPath: /opt/airflow/dags/dynamic
+    env:
+      - name: PYTHONPATH
+        value: "/opt/airflow/dags"
 
   postgresql:
     enabled: false
@@ -169,11 +200,11 @@ airflow:
       remote_log_conn_id: gcs_logs
     api:
       auth_backends: airflow.api.auth.backend.basic_auth, airflow.api.auth.backend.session
-    webserver:
+      workers: 1
       web_server_worker_timeout: 300
-      workers: 2
       # Prevent airflow to be rendered in an external web frame
       x_frame_enabled: "False"
+    webserver:
       # Dev, Test and Prod are all external facing
       warn_deployment_exposure: "False"
 

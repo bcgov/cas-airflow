@@ -147,7 +147,8 @@ airflow:
   scheduler:
     resources:
       limits:
-        cpu: 1000m
+        cpu: 500m
+        memory: 1.3Gi
     extraVolumes:
       - name: cas-airflow-dynamic-dags
         persistentVolumeClaim:
@@ -163,7 +164,8 @@ airflow:
   dagProcessor:
     resources:
       limits:
-        cpu: 1000m
+        cpu: 500m
+        memory: 1Gi
     extraVolumes:
       - name: cas-airflow-dynamic-dags
         persistentVolumeClaim:

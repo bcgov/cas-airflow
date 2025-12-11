@@ -6,10 +6,10 @@ airflow:
   gid: 1002480000
 
   config:
-    logging:
-      remote_base_log_folder: gs://0fad32-test-airflow-logs
     smtp:
       smtp_mail_from: cas-airflow-test@gov.bc.ca
+    elasticsearch:
+      target_index: "airflow-logs-test"
 
   workers:
     extraVolumeMounts:

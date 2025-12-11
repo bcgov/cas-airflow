@@ -198,8 +198,12 @@ airflow:
       # with WARN, the webserver currently prints a large json schema
       logging_level: ERROR
       remote_logging: "True"
-      remote_base_log_folder: ~
-      remote_log_conn_id: gcs_logs
+      remote_log_conn_id: elk
+      delete_local_logs: "False"
+    elasticsearch:
+      write_to_es: "True"
+      json_format: "True"
+      write_stdout: "True"
     api:
       auth_backends: airflow.api.auth.backend.basic_auth, airflow.api.auth.backend.session
       workers: 1

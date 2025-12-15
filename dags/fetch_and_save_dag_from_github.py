@@ -10,25 +10,26 @@ import time
 
 START_DATE = datetime.now() - timedelta(days=2)
 
+DAG_DOC = """
+DAG to fetch dags and store them to a disk location.
 
-@dag(default_args=default_dag_args, schedule=None, start_date=START_DATE)
-def fetch_and_save_dag_from_github(org: str = '', repo: str = '', ref: str = '', path: str = ''):
-    """
-      DAG to fetch dags and store them to a disk location.
+The following parameters are available:
 
-      :param org: Github organisation
-      :type org: str
+**org**(_str_): Github organization
+**repo**(_str_): Github repository
+**ref**(_str_): the git ref to use when fetching the dag
+**path**(_str_): the path to the dag to fetch, within the github repository
+"""
 
-      :param repo: Github repository
-      :type repo: str
-
-      :param ref: the git ref to use when fetching the dag
-      :type ref: str
-
-      :param path: the path to the dag to fetch, within the github repository
-      :type path: str
-    """
-
+@dag(
+    default_args=default_dag_args,
+    schedule=None,
+    start_date=START_DATE,
+    doc_md=DAG_DOC,
+)
+def fetch_and_save_dag_from_github(
+    org: str = "", repo: str = "", ref: str = "", path: str = ""
+):
     wait_seconds = settings.MIN_SERIALIZED_DAG_FETCH_INTERVAL + \
         settings.MIN_SERIALIZED_DAG_UPDATE_INTERVAL
 

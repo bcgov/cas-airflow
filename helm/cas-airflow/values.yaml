@@ -115,10 +115,7 @@ airflow:
     resources:
       requests:
         cpu: 50m
-        memory: 700Mi
-      limits:
-        cpu: 500m
-        memory: 2Gi
+        memory: 400Mi
     defaultUser:
       enabled: true
       role: Admin
@@ -146,9 +143,9 @@ airflow:
   # Airflow scheduler settings
   scheduler:
     resources:
-      limits:
-        cpu: 500m
-        memory: 1500Mi
+      requests:
+        cpu: 50m
+        memory: 600Mi
     extraVolumes:
       - name: cas-airflow-dynamic-dags
         persistentVolumeClaim:
@@ -163,9 +160,9 @@ airflow:
   # Airflow dag processor settings
   dagProcessor:
     resources:
-      limits:
-        cpu: 500m
-        memory: 1Gi
+      requests:
+        cpu: 50m
+        memory: 800Mi
     extraVolumes:
       - name: cas-airflow-dynamic-dags
         persistentVolumeClaim:

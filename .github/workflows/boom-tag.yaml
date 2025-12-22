@@ -1,0 +1,28 @@
+name: Boom Tag
+
+on:
+  pull_request:
+    branches: [develop, main]
+  workflow_dispatch:
+
+
+jobs:
+  remove-docker-tag:
+    runs-on: ubuntu-latest
+
+    # Sets the permissions granted to the `GITHUB_TOKEN` for the actions in this job.
+    # (required)
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+    - name: Prune
+      uses: vlaurin/action-ghcr-prune@v0.6.0
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        organization: bcgov
+        container: cas-airflow
+        dry-run: false # Dry-run first, then change to `false`
+        prune-tags-regexes: |
+          ^3.1.0

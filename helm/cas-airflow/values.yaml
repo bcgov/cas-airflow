@@ -120,15 +120,14 @@ airflow:
       timeoutSeconds: 120
       periodSeconds: 60
 
-  jobs:
-    createUserJob:
-      defaultUser:
-        email: admin@example.com
-        firstName: admin
-        lastName: user
-        password: "$(DEFAULT_USER_PASS)"
-        role: Admin
-        username: cas-airflow-admin
+  createUserJob:
+    defaultUser:
+      email: admin@example.com
+      firstName: admin
+      lastName: user
+      password: "$(DEFAULT_USER_PASS)"
+      role: Admin
+      username: cas-airflow-admin
 
   # Airflow scheduler settings
   scheduler:

@@ -13,6 +13,13 @@ artifactoryServiceAccount: cas-artifact-download
 database:
   clusterReleaseName: cas-airflow-db
 
+namespaces:
+  airflow: ~
+  ggircs: ~
+  ciip: ~
+  cif: ~
+  obps: ~
+
 # The values we need to override from the airflow defaults
 airflow:
   uid: 1002490000

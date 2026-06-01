@@ -2,7 +2,7 @@ kind: Route
 apiVersion: route.openshift.io/v1
 metadata:
   name: {{ .Release.Name }}-web
-  labels: 
+  labels:
 {{ include "cas-airflow.labels" . | nindent 4 }}
 spec:
   host: {{ .Release.Name }}-{{ include "cas-airflow.namespaceSuffix" . }}.{{ .Values.route.clusterDomain }}

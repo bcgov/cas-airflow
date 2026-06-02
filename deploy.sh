@@ -11,6 +11,7 @@ helm repo add cas-postgres https://bcgov.github.io/cas-postgres/
 helm repo update
 
 helm upgrade --install \
+  --namespace "$AIRFLOW_NAMESPACE_PREFIX-$ENVIRONMENT" \
   -f ./helm/cas-airflow-postgres-cluster/values.yaml \
   -f "./helm/cas-airflow/values-$ENVIRONMENT.yaml" \
   cas-airflow-db cas-postgres/cas-postgres-cluster

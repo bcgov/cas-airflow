@@ -49,7 +49,7 @@ def fetch_and_save_dag_from_github(
     @task()
     def wait_task(seconds):
         time.sleep(seconds)
-        
+
 
     get_file(org, repo, ref, path) >> wait_task(wait_seconds*2)
 

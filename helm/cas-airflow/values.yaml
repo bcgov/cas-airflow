@@ -13,6 +13,13 @@ artifactoryServiceAccount: cas-artifact-download
 database:
   clusterReleaseName: cas-airflow-db
 
+namespaces:
+  airflow: ~
+  ggircs: ~
+  ciip: ~
+  cif: ~
+  obps: ~
+
 # The values we need to override from the airflow defaults
 airflow:
   uid: 1002490000
@@ -26,7 +33,7 @@ airflow:
   # Will be overridden by the git commit sha
   defaultAirflowTag: "to_override"
 
-  airflowVersion: "3.1.8"
+  airflowVersion: "3.2.2"
 
   # Enable RBAC (default on most clusters these days)
   rbac:

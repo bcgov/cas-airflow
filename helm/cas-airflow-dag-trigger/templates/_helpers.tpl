@@ -76,8 +76,8 @@ Gets the suffix of the namespace. (-dev, -tools, ... )
 {{- (split "-" .Release.Namespace)._1 | trim -}}
 {{- end }}
 
-{{/* 
-Looks up the artifactory service account and 
+{{/*
+Looks up the artifactory service account and
 generates the image pull secret
 */}}
 {{- define "cas-airflow-dag-trigger.imagePullSecrets" }}

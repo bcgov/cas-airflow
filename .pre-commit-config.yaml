@@ -7,4 +7,5 @@ repos:
       - id: trailing-whitespace
       - id: check-json
       - id: check-yaml
+        exclude: ^helm/.*/templates/
       - id: end-of-file-fixer

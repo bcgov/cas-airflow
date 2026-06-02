@@ -1,6 +1,3 @@
-FROM apache/airflow:3.1.8
-
-# Install the standard providers for Airflow 2 -- can be removed when we upgrade to Airflow 3
-RUN pip install --no-cache-dir "apache-airflow==${AIRFLOW_VERSION}" apache-airflow-providers-standard
+FROM apache/airflow:3.2.2
 
 COPY --chown=airflow:root ./dags /opt/airflow/dags

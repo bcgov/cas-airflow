@@ -1,5 +1,4 @@
 from airflow.sdk import dag, task
-from airflow import settings
 from dag_configuration import default_dag_args
 from datetime import datetime, timedelta
 import urllib.request
@@ -30,8 +29,8 @@ The following parameters are available:
 def fetch_and_save_dag_from_github(
     org: str = "", repo: str = "", ref: str = "", path: str = ""
 ):
-    wait_seconds = settings.MIN_SERIALIZED_DAG_FETCH_INTERVAL + \
-        settings.MIN_SERIALIZED_DAG_UPDATE_INTERVAL
+    # Matches legacy settings value from MIN_SERIALIZED_DAG_FETCH_INTERVAL + MIN_SERIALIZED_DAG_UPDATE_INTERVAL
+    wait_seconds = 15
 
     def get_filepath(path):
         file_name = path.split('/')[-1]

@@ -9,6 +9,10 @@ postgresCluster:
     replicaCount: 3
   pgbouncer:
     replicaCount: 2
+    config:
+      global:
+        # Reduce the login failure cache timeout from the 15s default to catch a pool leader change faster
+        server_login_retry: "7"
   resources:
     requests:
       cpu: 100m

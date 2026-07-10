@@ -169,6 +169,18 @@ airflow:
     env:
       - name: PYTHONPATH
         value: "/opt/airflow/dags"
+    # Git bundles and sync
+    dagBundleConfigList:
+      - name: local-dags
+        classpath: "airflow.dag_processing.bundles.local.LocalDagBundle"
+        kwargs:
+          path: "/opt/airflow/dags"
+      - name: git-reg-dags
+        classpath: "airflow.providers.git.bundles.git.GitDagBundle"
+        kwargs:
+          repo_url: "https://github.com/BCgov/cas-airflow.git"
+          subdir: "dags"
+          tracking_ref: "develop"
 
   postgresql:
     enabled: false

@@ -41,6 +41,8 @@ airflow:
   env:
     - name: GOOGLE_APPLICATION_CREDENTIALS
       value: /gcs/credentials.json
+    - name: AIRFLOW__DAG_PROCESSOR__DAG_BUNDLE_STORAGE_PATH
+      value: "/opt/airflow/dag_bundles"
 
   # Images
   images:

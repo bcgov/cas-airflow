@@ -26,9 +26,6 @@ airflow:
   gid: 1002490000
   executor: KubernetesExecutor
 
-  # This should match the mounting point of the cas-airflow-dynamic-dags-pvc PVC
-  dynamicDagsPath: /opt/airflow/dags/dynamic
-
   defaultAirflowRepository: ghcr.io/bcgov/cas-airflow
   # Will be overridden by the git commit sha
   defaultAirflowTag: "to_override"
@@ -44,11 +41,6 @@ airflow:
   env:
     - name: GOOGLE_APPLICATION_CREDENTIALS
       value: /gcs/credentials.json
-
-  #
-  extraEnv: |
-    - name: DYNAMIC_DAGS_PATH
-      value: {{ .Values.dynamicDagsPath }}
 
   # Images
   images:
@@ -142,16 +134,6 @@ airflow:
       requests:
         cpu: 50m
         memory: 600Mi
-    extraVolumes:
-      - name: cas-airflow-dynamic-dags
-        persistentVolumeClaim:
-          claimName: cas-airflow-dynamic-dags-pvc
-    extraVolumeMounts:
-      - name: cas-airflow-dynamic-dags
-        mountPath: /opt/airflow/dags/dynamic
-    env:
-      - name: PYTHONPATH
-        value: "/opt/airflow/dags"
 
   # Airflow dag processor settings
   dagProcessor:
@@ -159,13 +141,6 @@ airflow:
       requests:
         cpu: 50m
         memory: 800Mi
-    extraVolumes:
-      - name: cas-airflow-dynamic-dags
-        persistentVolumeClaim:
-          claimName: cas-airflow-dynamic-dags-pvc
-    extraVolumeMounts:
-      - name: cas-airflow-dynamic-dags
-        mountPath: /opt/airflow/dags/dynamic
     env:
       - name: PYTHONPATH
         value: "/opt/airflow/dags"
@@ -227,7 +202,6 @@ airflow:
       run_as_user: "{{ .Values.uid }}"
       delete_worker_pods: "True"
 
-  # Git sync
   dags:
     persistence:
       enabled: false

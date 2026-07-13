@@ -148,14 +148,34 @@ airflow:
         value: "/opt/airflow/dags"
     # Git bundles and sync
     dagBundleConfigList:
-      - name: local-dags
-        classpath: "airflow.dag_processing.bundles.local.LocalDagBundle"
-        kwargs:
-          path: "/opt/airflow/dags"
-      - name: git-reg-dags
+      - name: git-airflow-dags
         classpath: "airflow.providers.git.bundles.git.GitDagBundle"
         kwargs:
           repo_url: "https://github.com/BCgov/cas-airflow.git"
+          subdir: "dags"
+          tracking_ref: "develop"
+      - name: git-reg-dags
+        classpath: "airflow.providers.git.bundles.git.GitDagBundle"
+        kwargs:
+          repo_url: "https://github.com/BCgov/cas-registration.git"
+          subdir: "dags"
+          tracking_ref: "develop"
+      - name: git-cif-dags
+        classpath: "airflow.providers.git.bundles.git.GitDagBundle"
+        kwargs:
+          repo_url: "https://github.com/BCgov/cas-cif.git"
+          subdir: "dags"
+          tracking_ref: "develop"
+      - name: git-data-warehouse-dags
+        classpath: "airflow.providers.git.bundles.git.GitDagBundle"
+        kwargs:
+          repo_url: "https://github.com/BCgov/cas-data-warehouse.git"
+          subdir: "dags"
+          tracking_ref: "develop"
+      - name: git-ggircs-dags
+        classpath: "airflow.providers.git.bundles.git.GitDagBundle"
+        kwargs:
+          repo_url: "https://github.com/BCgov/cas-ggircs.git"
           subdir: "dags"
           tracking_ref: "develop"
 

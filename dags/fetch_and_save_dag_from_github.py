@@ -1,23 +1,19 @@
 from airflow.sdk import dag, task
 from dag_configuration import default_dag_args
 from datetime import datetime, timedelta
-import urllib.request
 import logging
-import os
-import time
-
+import warnings
 
 START_DATE = datetime.now() - timedelta(days=2)
 
+# Update the UI documentation to prominently display the deprecation notice
 DAG_DOC = """
-DAG to fetch dags and store them to a disk location.
+# DEPRECATED
 
-The following parameters are available:
+This Dag is **deprecated** and has been replaced by the built-in Airflow Git Dag Sync.
+Please update to stop calling this DAG.
 
-**org**(_str_): Github organization
-**repo**(_str_): Github repository
-**ref**(_str_): the git ref to use when fetching the dag
-**path**(_str_): the path to the dag to fetch, within the github repository
+**Current Behavior:** This DAG will succeed without fetching or saving any files, to prevent upstream deployment failures.
 """
 
 @dag(
@@ -29,28 +25,21 @@ The following parameters are available:
 def fetch_and_save_dag_from_github(
     org: str = "", repo: str = "", ref: str = "", path: str = ""
 ):
-    # Matches legacy settings value from MIN_SERIALIZED_DAG_FETCH_INTERVAL + MIN_SERIALIZED_DAG_UPDATE_INTERVAL
-    wait_seconds = 15
-
-    def get_filepath(path):
-        file_name = path.split('/')[-1]
-        file_path = f'{os.environ["DYNAMIC_DAGS_PATH"]}/{file_name}'
-        return file_path
 
     @task()
-    def get_file(org, repo, ref, path):
-        url = f'https://raw.githubusercontent.com/{org}/{repo}/{ref}/{path}'
-        logging.critical(f'Retrieving remote DAG: {url}')
-        file_path = get_filepath(path)
-        logging.critical(f'Saving file to disk: {file_path}')
-        urllib.request.urlretrieve(url, filename=file_path)
+    def log_deprecation_warning(org, repo, ref, path):
+        message = (
+            f"Dag 'fetch_and_save_dag_from_github' is DEPRECATED. "
+            f"The request from repo '{org}/{repo}' (ref: {ref}, path: {path}) was safely skipped. "
+        )
 
-    @task()
-    def wait_task(seconds):
-        time.sleep(seconds)
+        warnings.warn(message, DeprecationWarning, stacklevel=2)
 
+        logging.critical("!" * 80)
+        logging.critical(message)
+        logging.critical("!" * 80)
 
-    get_file(org, repo, ref, path) >> wait_task(wait_seconds*2)
+    log_deprecation_warning(org, repo, ref, path)
 
 
 dag = fetch_and_save_dag_from_github()

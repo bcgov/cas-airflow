@@ -2,11 +2,15 @@
 
 Configuration of [Apache Airflow](https://airflow.apache.org/) for the Climate Action Secretariat projects.
 
-This repository contains the docker images, helm charts, and DAGs required to automate various workflows for the CAS team.
+This repository contains the docker images, helm charts, and Dags required to automate various workflows for the CAS team.
 
-## DAGs
+## Dags
 
-The dags directory contains the various workflows (Directed Acyclic Graphs)
+The dags directory contains the various workflows (Directed acyclic graphs)
+
+## Adding Dags
+
+Dags are automatically loaded from git repositories defined in the helm chart values under `airflow.dagProcessor.dagBundleConfigList`. These have been set up to fetch from the `dags/` directory in each repository, from the `develop` branch for `-dev` and `main` (`master` for older repos) for `-prod`.
 
 ### Running tasks using the Kubernetes executor and KubernetesPodOperator
 
@@ -52,7 +56,7 @@ git clone git@github.com:bcgov/cas-airflow.git ~/cas-airflow && cd $_
 git submodule update --init
 ```
 
-This repository contains the DAGs as well as the helm chart.
+This repository contains the Dags as well as the helm chart.
 It submodules airflow through the cas-airflow-upstream repository, to use its helm chart as a dependency - and will eventually reference the official airflow instead.
 
 ### Getting started

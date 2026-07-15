@@ -153,7 +153,7 @@ airflow:
         kwargs:
           repo_url: "https://github.com/BCgov/cas-airflow.git"
           subdir: "dags"
-          tracking_ref: "develop"
+          tracking_ref: "test_var_dags"
       - name: git-reg-dags
         classpath: "airflow.providers.git.bundles.git.GitDagBundle"
         kwargs:

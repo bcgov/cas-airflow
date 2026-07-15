@@ -1,3 +1,4 @@
+# airflow DAG
 from datetime import datetime
 from airflow.decorators import dag, task
 import os
@@ -10,7 +11,7 @@ sys.path.insert(0, os.path.abspath(os.path.dirname(__file__)))
 BCIERS_NAMESPACE = os.getenv("BCIERS_NAMESPACE")
 
 # Define which environments this Dag loads in to
-CURRENT_ENV = os.environ.get("ENVIRONMENT")
+CURRENT_ENV = os.environ.get("ENVIRONMENT", "dev")
 ALLOWED_ENVIRONMENTS = ["dev", "test"]
 FAKE_NOT_ALLOWED_ENV = "prod"
 
@@ -20,7 +21,6 @@ default_args = {
     'start_date': datetime(2026, 7, 1),
     'retries': 1,
     'depends_on_past': False,
-    'email': ['ggircs@gov.bc.ca', 'pierre.bastianelli@gov.bc.ca'],
     'email_on_failure': True,
     'email_on_retry': False,
 }

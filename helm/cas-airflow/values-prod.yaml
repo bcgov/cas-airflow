@@ -37,6 +37,9 @@ airflow:
         secret:
 
   dagProcessor:
+    env:
+      - name: ENVIRONMENT
+        value: test
     dagBundleConfigList:
       - name: git-airflow-dags
         classpath: "airflow.providers.git.bundles.git.GitDagBundle"

@@ -38,6 +38,9 @@ airflow:
           secretName: gcp-0fad32-test-airflow-logs-service-account-key
 
   dagProcessor:
+    env:
+      - name: ENVIRONMENT
+        value: test
     dagBundleConfigList:
       - name: git-airflow-dags
         classpath: "airflow.providers.git.bundles.git.GitDagBundle"

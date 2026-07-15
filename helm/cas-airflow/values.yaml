@@ -146,6 +146,8 @@ airflow:
     env:
       - name: PYTHONPATH
         value: "/opt/airflow/dags"
+      - name: ENVIRONMENT
+        value: dev
     # Git bundles and sync
     dagBundleConfigList:
       - name: git-airflow-dags

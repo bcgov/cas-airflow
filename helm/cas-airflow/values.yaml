@@ -1,6 +1,7 @@
 route:
   clusterDomain: apps.silver.devops.gov.bc.ca
 
+# Legacy storage for Dags, used with fetch_and_save. Keeping as backup short-term.
 dynamicDagStorage:
   pvcName: cas-airflow-dynamic-dags-pvc
   accessMode: ReadWriteMany

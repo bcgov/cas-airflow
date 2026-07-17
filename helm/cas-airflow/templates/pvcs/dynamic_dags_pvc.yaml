@@ -1,4 +1,5 @@
 kind: PersistentVolumeClaim
+# Legacy storage for Dags, used with fetch_and_save. Keeping as backup short-term.
 apiVersion: v1
 metadata:
   name: {{ .Values.dynamicDagStorage.pvcName }}

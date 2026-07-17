@@ -46,6 +46,9 @@ airflow:
       value: /gcs/credentials.json
     - name: AIRFLOW__DAG_PROCESSOR__DAG_BUNDLE_STORAGE_PATH
       value: "/opt/airflow/dag_bundles"
+    # Allows for the dags to import the common configuration `dags/dag_configuration.py`
+    - name: PYTHONPATH
+      value: "/opt/airflow/dags:/opt/airflow/dag_bundles"
 
   #
   extraEnv: |
@@ -168,9 +171,6 @@ airflow:
     extraVolumeMounts:
       - name: cas-airflow-dynamic-dags
         mountPath: /opt/airflow/dags/dynamic
-    env:
-      - name: PYTHONPATH
-        value: "/opt/airflow/dags"
     # Git bundles and sync
     dagBundleConfigList:
       - name: local-dags

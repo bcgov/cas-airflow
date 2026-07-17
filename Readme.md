@@ -12,6 +12,27 @@ The dags directory contains the various workflows (Directed acyclic graphs)
 
 Dags are automatically loaded from git repositories defined in the helm chart values under `airflow.dagProcessor.dagBundleConfigList`. These have been set up to fetch from the `dags/` directory in each repository, from the `develop` branch for `-dev` and `main` (`master` for older repos) for `-prod`.
 
+### Conditional Dags
+
+If you have a Dag that should be loaded or unloaded based on the environment, there is an `ENVIRONMENT` env var that is exposed as `dev`, `test`, or `prod`. This can be used in the Dag file itself to allow or disallow certain Dags from DagBundles being loaded. A further example of this can be found in the `cas-registration` repository, in the `dags/bc_obps_reset_data.py` file.
+
+sample_conditional_dag.py
+
+```python
+import os
+# ...other imports and definitions
+
+# Define which environments this Dag loads in to:
+CURRENT_ENV = os.environ.get("ENVIRONMENT")
+ALLOWED_ENVIRONMENTS = ["dev", "prod"]
+
+# ...Dag here
+
+# This Dag will be found by the Git DagBundle process, but *not* loaded by airflow if not in the allowed environments:
+if CURRENT_ENV in ALLOWED_ENVIRONMENTS:
+    dag_only_in_dev_and_prod()
+```
+
 ### Running tasks using the Kubernetes executor and KubernetesPodOperator
 
 - The Kubernetes Executor allows us to run tasks on Kubernetes as Pods.

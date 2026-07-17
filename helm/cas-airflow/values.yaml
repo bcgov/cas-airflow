@@ -44,6 +44,9 @@ airflow:
       value: /gcs/credentials.json
     - name: AIRFLOW__DAG_PROCESSOR__DAG_BUNDLE_STORAGE_PATH
       value: "/opt/airflow/dag_bundles"
+    # Allows for the dags to import the common configuration `dags/dag_configuration.py`
+    - name: PYTHONPATH
+      value: "/opt/airflow/dags:/opt/airflow/dag_bundles"
 
   # Images
   images:
@@ -145,8 +148,6 @@ airflow:
         cpu: 50m
         memory: 800Mi
     env:
-      - name: PYTHONPATH
-        value: "/opt/airflow/dags"
       - name: ENVIRONMENT
         value: dev
     # Git bundles and sync

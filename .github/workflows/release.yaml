@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           fetch-depth: 0
 
@@ -21,7 +21,7 @@ jobs:
       - name: Install Helm
         uses: azure/setup-helm@v1
         with:
-          version: v3.6.2
+          version: v3.21.3
 
       # Needed to release the cas-airflow chart
       - name: Add helm repos
@@ -46,20 +46,20 @@ jobs:
     needs: [release]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: ./.github/actions/build-image
         with:
           image_name: cas-airflow
           context: .
           dockerfile_path: Dockerfile
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          chart_version: 3.1.2
+          chart_version: 3.3.0
           is_chart_release: true
   cas-airflow-dag-trigger-build:
     needs: [release]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: ./.github/actions/build-image
         with:
           image_name: cas-airflow-dag-trigger

@@ -6,14 +6,14 @@
 from dag_configuration import default_dag_args
 from airflow.providers.standard.operators.python import PythonOperator
 from trigger_k8s_cronjob import trigger_k8s_cronjob
-from datetime import datetime, timedelta
-from airflow import DAG
+from datetime import datetime, timezone
 import os
 import sys
+from airflow.sdk import DAG
 sys.path.insert(0, os.path.abspath(os.path.dirname(__file__)))
 
 
-START_DATE = datetime.now() - timedelta(days=2)
+START_DATE = datetime(2020, 1, 1, tzinfo=timezone.utc)
 
 namespace = os.getenv('AIRFLOW_NAMESPACE')
 

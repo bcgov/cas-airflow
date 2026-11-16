@@ -1,13 +1,13 @@
 from airflow.sdk import dag, task
 from dag_configuration import default_dag_args
-from datetime import datetime, timedelta
+from datetime import datetime, timezone
 import urllib.request
 import logging
 import os
 import time
 
 
-START_DATE = datetime.now() - timedelta(days=2)
+START_DATE = datetime(2020, 1, 1, tzinfo=timezone.utc)
 
 DAG_DOC = """
 DAG to fetch dags and store them to a disk location.

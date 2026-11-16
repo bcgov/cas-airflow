@@ -11,6 +11,7 @@ on:
 
 permissions:
   contents: read
+  packages: write
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -19,3 +20,6 @@ concurrency:
 jobs:
   build-images:
     uses: ./.github/workflows/build-images.yaml
+    permissions:
+      packages: write
+      contents: read

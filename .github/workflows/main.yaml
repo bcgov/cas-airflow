@@ -10,7 +10,8 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: {}
+  contents: read
+  packages: write
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}

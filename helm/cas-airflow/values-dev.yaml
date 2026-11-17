@@ -11,6 +11,10 @@ airflow:
     smtp:
       smtp_mail_from: cas-airflow-dev@gov.bc.ca
 
+  env:
+    - name: ENVIRONMENT
+      value: dev
+
   workers:
     kubernetes:
       extraVolumeMounts:
@@ -39,9 +43,6 @@ airflow:
           secretName: gcp-0fad32-dev-airflow-logs-service-account-key
 
   dagProcessor:
-    env:
-      - name: ENVIRONMENT
-        value: dev
     # Git bundles and sync
     dagBundleConfigList:
       - name: git-airflow-dags

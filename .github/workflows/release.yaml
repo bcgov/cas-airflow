@@ -5,9 +5,14 @@ on:
     branches:
       - main
 
+permissions:
+  contents: read
+
 jobs:
   release:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - name: Checkout
         uses: actions/checkout@v7
@@ -19,9 +24,9 @@ jobs:
           git config user.name "$GITHUB_ACTOR"
           git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
       - name: Install Helm
-        uses: azure/setup-helm@v1
+        uses: azure/setup-helm@v5
         with:
-          version: v3.21.3
+          version: "4.3.1"
 
       # Needed to release the cas-airflow chart
       - name: Add helm repos
@@ -45,6 +50,8 @@ jobs:
   cas-airflow-build:
     needs: [release]
     runs-on: ubuntu-latest
+    permissions:
+      packages: write
     steps:
       - uses: actions/checkout@v7
       - uses: ./.github/actions/build-image
@@ -53,11 +60,13 @@ jobs:
           context: .
           dockerfile_path: Dockerfile
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          chart_version: 3.3.0
+          chart_version: 3.4.0
           is_chart_release: true
   cas-airflow-dag-trigger-build:
     needs: [release]
     runs-on: ubuntu-latest
+    permissions:
+      packages: write
     steps:
       - uses: actions/checkout@v7
       - uses: ./.github/actions/build-image

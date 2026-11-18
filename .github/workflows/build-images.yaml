@@ -3,9 +3,14 @@ name: Build airflow container images
 on:
   workflow_call:
 
+permissions:
+  packages: write
+
 jobs:
   build-cas-airflow:
     runs-on: ubuntu-latest
+    permissions:
+      packages: write
     steps:
       - name: Checkout
         uses: actions/checkout@v7
@@ -20,6 +25,8 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
   build-cas-airflow-dag-trigger:
     runs-on: ubuntu-latest
+    permissions:
+      packages: write
     steps:
       - name: Checkout
         uses: actions/checkout@v7

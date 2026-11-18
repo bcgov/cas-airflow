@@ -141,6 +141,11 @@ airflow:
       role: Admin
       username: cas-airflow-admin
 
+  logs:
+    presistence:
+      enabled: true
+      size: 1Gi
+
   # Airflow scheduler settings
   scheduler:
     resources:

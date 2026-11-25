@@ -11,6 +11,17 @@ airflow:
     smtp:
       smtp_mail_from: cas-airflow-prod@gov.bc.ca
 
+  env:
+    - name: GOOGLE_APPLICATION_CREDENTIALS
+      value: /gcs/credentials.json
+    - name: AIRFLOW__DAG_PROCESSOR__DAG_BUNDLE_STORAGE_PATH
+      value: "/opt/airflow/dag_bundles"
+    # Allows for the dags to import the common configuration `dags/dag_configuration.py`
+    - name: PYTHONPATH
+      value: "/opt/airflow/dags:/opt/airflow/dag_bundles"
+    - name: ENVIRONMENT
+      value: prod
+
   workers:
     kubernetes:
       extraVolumeMounts:
